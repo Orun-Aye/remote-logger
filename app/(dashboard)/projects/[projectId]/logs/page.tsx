@@ -61,6 +61,7 @@ export default function ProjectLogsPage() {
 
   // 2. Get global state from Zustand
   const selectedTimeRange = useApperioStore((s) => s.selectedTimeRange);
+  const customTimeRange = useApperioStore((s) => s.customTimeRange);
   const selectedEnvironment = useApperioStore((s) => s.selectedEnvironment);
 
   // 3. Local filter state
@@ -102,7 +103,24 @@ export default function ProjectLogsPage() {
   const apiFilters: ApiLogFilters = useMemo(() => {
     const parsed = parseStructuredQuery(structuredQuery);
 
-    const hours = TIME_RANGE_HOURS[selectedTimeRange] || 24;
+    // Resolve the active time window. For presets (1h…30d) we compute a
+    // start from "now − hours". For "custom", we read the explicit
+    // start/end from the global store. If "custom" is selected but no
+    // range is set yet, fall back to 24h to avoid an unbounded query.
+    let startDateIso: string;
+    let endDateIso: string | undefined;
+    if (selectedTimeRange === "custom" && customTimeRange) {
+      startDateIso = customTimeRange.start.toISOString();
+      endDateIso = customTimeRange.end.toISOString();
+    } else {
+      const hours =
+        TIME_RANGE_HOURS[selectedTimeRange as keyof typeof TIME_RANGE_HOURS] ??
+        24;
+      startDateIso = new Date(
+        Date.now() - hours * 60 * 60 * 1000,
+      ).toISOString();
+      endDateIso = undefined;
+    }
 
     // Structured query wins over filter bar; filter bar is the fallback.
     const levels =
@@ -144,12 +162,19 @@ export default function ProjectLogsPage() {
       services,
       search,
       release,
-      startDate: new Date(Date.now() - hours * 60 * 60 * 1000).toISOString(),
+      startDate: startDateIso,
+      ...(endDateIso ? { endDate: endDateIso } : {}),
       limit: 500,
       ...(environments ? { environments } : {}),
       ...(eventTypes ? { eventTypes } : {}),
     } as ApiLogFilters;
-  }, [structuredQuery, filters, selectedTimeRange, selectedEnvironment]);
+  }, [
+    structuredQuery,
+    filters,
+    selectedTimeRange,
+    customTimeRange,
+    selectedEnvironment,
+  ]);
 
   // 6. Fetch logs
   const { data: logsData, isLoading, refetch } = useLogs(projectId, apiFilters);

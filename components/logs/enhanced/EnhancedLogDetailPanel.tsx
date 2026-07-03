@@ -99,24 +99,70 @@ function SyntaxHighlightedJSON({ data }: { data: any }) {
   );
 }
 
-export function EnhancedLogDetailPanel({ log, onClose }: EnhancedLogDetailPanelProps) {
-  if (!log) {
-    return (
-      <div className="h-full flex items-center justify-center text-text-muted">
-        <div className="text-center space-y-2">
-          <p className="text-sm">No log selected</p>
-          <p className="text-xs">Select a log entry to view details</p>
-          <p className="text-xs font-mono text-signal/60">Press j/k to navigate</p>
+function EmptyDetailState() {
+  return (
+    <div className="h-full flex flex-col items-center justify-center px-10 py-10">
+      <div className="w-full max-w-sm rounded-lg border border-border-faint bg-bg-void overflow-hidden">
+        <div className="flex items-center gap-1.5 px-3 py-2 border-b border-border-faint bg-bg-surface">
+          <span className="w-2.5 h-2.5 rounded-full bg-[#ff5f57]" />
+          <span className="w-2.5 h-2.5 rounded-full bg-[#ffbd2e]" />
+          <span className="w-2.5 h-2.5 rounded-full bg-[#28c840]" />
+          <span className="ml-2 text-[11px] font-mono text-text-muted">
+            apperio / log-detail
+          </span>
+        </div>
+        <div
+          className="px-3.5 py-4 font-mono text-text-muted"
+          style={{ fontSize: 12, lineHeight: 1.9 }}
+        >
+          <div>
+            <span className="text-signal">$</span>{" "}
+            <span className="text-text-secondary">select-log</span>{" "}
+            <span className="text-data">--interactive</span>
+          </div>
+          <div className="mt-1 opacity-60"># No log selected yet.</div>
+          <div className="opacity-60">
+            # Use <span className="text-text-primary">j/k</span> to navigate or click a row.
+          </div>
+          <div className="mt-2">
+            <span className="text-signal">$</span>{" "}
+            <span
+              className="inline-block align-middle rounded-sm bg-signal animate-cursor-blink"
+              style={{ width: 7, height: 13 }}
+            />
+          </div>
         </div>
       </div>
-    );
+      <div className="mt-5 flex gap-4 text-[11px] font-mono text-text-muted">
+        <span>
+          <kbd className="px-1.5 py-0.5 bg-bg-elevated border border-border-subtle rounded">j</kbd>{" "}
+          /{" "}
+          <kbd className="px-1.5 py-0.5 bg-bg-elevated border border-border-subtle rounded">k</kbd>{" "}
+          navigate
+        </span>
+        <span>
+          <kbd className="px-1.5 py-0.5 bg-bg-elevated border border-border-subtle rounded">Esc</kbd>{" "}
+          close
+        </span>
+        <span>
+          <kbd className="px-1.5 py-0.5 bg-bg-elevated border border-border-subtle rounded">⌘R</kbd>{" "}
+          refresh
+        </span>
+      </div>
+    </div>
+  );
+}
+
+export function EnhancedLogDetailPanel({ log, onClose }: EnhancedLogDetailPanelProps) {
+  if (!log) {
+    return <EmptyDetailState />;
   }
 
   const levelColor = LEVEL_COLORS[log.level as keyof typeof LEVEL_COLORS] || LEVEL_COLORS.info;
   const timestamp = new Date(log.timestamp);
 
   return (
-    <div className="h-full flex flex-col bg-bg-surface">
+    <div className="h-full flex flex-col bg-bg-surface animate-slide-in-right">
       {/* Header */}
       <div className="border-b border-border-subtle bg-bg-elevated px-6 py-4">
         <div className="flex items-start justify-between gap-4">

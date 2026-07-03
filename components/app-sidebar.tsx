@@ -34,7 +34,6 @@ import {
   TrendingDown,
   Globe,
   FileCode,
-  LayoutGrid,
   ChevronRight,
   Wifi,
   MousePointerClick,
@@ -174,14 +173,6 @@ export function AppSidebar() {
       badgeVariant: "destructive" as "destructive" | undefined,
       advanced: false,
     },
-    {
-      title: "Custom Dashboards",
-      url: "/custom-dashboards",
-      icon: LayoutGrid,
-      badge: undefined as string | undefined,
-      badgeVariant: undefined as "destructive" | undefined,
-      advanced: true,
-    },
   ];
 
   // Check if a top-level navigation item is active
@@ -190,7 +181,6 @@ export function AppSidebar() {
     if (url === "/projects") return pathname === "/projects";
     if (url === "/logs") return pathname === "/logs";
     if (url === "/alerts") return pathname === "/alerts";
-    if (url === "/custom-dashboards") return pathname.startsWith("/custom-dashboards");
     return pathname.startsWith(url);
   };
 

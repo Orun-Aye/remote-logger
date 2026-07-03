@@ -6,6 +6,7 @@ import { cn } from "@/lib/utils";
 interface LogExplorerSplitPaneProps {
   leftPanel: React.ReactNode;
   rightPanel: React.ReactNode;
+  hasSelection?: boolean;
   defaultSplitPercentage?: number;
   minSplitPercentage?: number;
   maxSplitPercentage?: number;
@@ -14,13 +15,20 @@ interface LogExplorerSplitPaneProps {
 export function LogExplorerSplitPane({
   leftPanel,
   rightPanel,
-  defaultSplitPercentage = 50,
-  minSplitPercentage = 30,
-  maxSplitPercentage = 70,
+  hasSelection = false,
+  defaultSplitPercentage = 62,
+  minSplitPercentage = 28,
+  maxSplitPercentage = 78,
 }: LogExplorerSplitPaneProps) {
   const [splitPercentage, setSplitPercentage] = useState(defaultSplitPercentage);
   const [isDragging, setIsDragging] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (hasSelection && splitPercentage > 70) {
+      setSplitPercentage(62);
+    }
+  }, [hasSelection, splitPercentage]);
 
   const handleMouseDown = useCallback((e: React.MouseEvent) => {
     e.preventDefault();
@@ -31,8 +39,7 @@ export function LogExplorerSplitPane({
     (e: MouseEvent) => {
       if (!isDragging || !containerRef.current) return;
 
-      const container = containerRef.current;
-      const containerRect = container.getBoundingClientRect();
+      const containerRect = containerRef.current.getBoundingClientRect();
       const newPercentage = ((e.clientX - containerRect.left) / containerRect.width) * 100;
 
       const clampedPercentage = Math.min(
@@ -50,28 +57,26 @@ export function LogExplorerSplitPane({
   }, []);
 
   useEffect(() => {
-    if (isDragging) {
-      document.addEventListener("mousemove", handleMouseMove);
-      document.addEventListener("mouseup", handleMouseUp);
-
-      return () => {
-        document.removeEventListener("mousemove", handleMouseMove);
-        document.removeEventListener("mouseup", handleMouseUp);
-      };
-    }
+    if (!isDragging) return;
+    document.addEventListener("mousemove", handleMouseMove);
+    document.addEventListener("mouseup", handleMouseUp);
+    return () => {
+      document.removeEventListener("mousemove", handleMouseMove);
+      document.removeEventListener("mouseup", handleMouseUp);
+    };
   }, [isDragging, handleMouseMove, handleMouseUp]);
 
   return (
     <div
       ref={containerRef}
       className={cn(
-        "flex h-full w-full relative",
+        "flex h-full w-full overflow-hidden",
         isDragging && "select-none cursor-col-resize"
       )}
     >
-      {/* Left Panel */}
+      {/* Left panel */}
       <div
-        className="h-full overflow-auto border-r border-border-subtle bg-bg-base"
+        className="h-full overflow-hidden bg-bg-base min-w-0"
         style={{ width: `${splitPercentage}%` }}
       >
         {leftPanel}
@@ -79,22 +84,24 @@ export function LogExplorerSplitPane({
 
       {/* Resizer */}
       <div
-        className={cn(
-          "w-1 h-full cursor-col-resize relative group hover:bg-signal/20 transition-colors",
-          isDragging && "bg-signal/30"
-        )}
         onMouseDown={handleMouseDown}
+        className={cn(
+          "relative h-full w-1 shrink-0 cursor-col-resize border-l border-border-subtle transition-colors duration-150",
+          isDragging ? "bg-signal/20" : "hover:bg-signal/10"
+        )}
       >
-        <div className="absolute inset-y-0 -left-1 -right-1 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-          <div className="w-0.5 h-12 bg-signal rounded-full shadow-[var(--glow-signal-sm)]" />
-        </div>
+        <div
+          className={cn(
+            "absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-10 w-0.5 rounded-full transition-all duration-150",
+            isDragging
+              ? "bg-signal shadow-[0_0_8px_var(--signal-glow)]"
+              : "bg-border-accent"
+          )}
+        />
       </div>
 
-      {/* Right Panel */}
-      <div
-        className="h-full overflow-auto bg-bg-surface"
-        style={{ width: `${100 - splitPercentage}%` }}
-      >
+      {/* Right panel — empty state is self-affording, no extra dim */}
+      <div className="h-full overflow-hidden bg-bg-surface min-w-0 flex-1">
         {rightPanel}
       </div>
     </div>

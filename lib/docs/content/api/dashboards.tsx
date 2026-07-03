@@ -18,7 +18,6 @@ const toc: TocItem[] = [
   { id: "timeseries", title: "Time Series Data", level: 2 },
   { id: "errors", title: "Error Analysis", level: 2 },
   { id: "performance", title: "Performance Metrics", level: 2 },
-  { id: "custom-dashboards", title: "Custom Dashboards", level: 2 },
   { id: "export", title: "Data Export", level: 2 },
 ];
 
@@ -28,7 +27,7 @@ export default function ApiDashboardsPage() {
       <DocsContent
         slug="api/dashboards"
         title="Dashboards API"
-        description="Dashboard metrics, analytics, time series, and custom dashboard endpoints."
+        description="Dashboard metrics, analytics, time series, and export endpoints."
       >
         <DocH2 id="overview-endpoint">Dashboard Overview</DocH2>
         <EndpointBlock
@@ -213,63 +212,6 @@ export default function ApiDashboardsPage() {
     }
   }
 }`}
-        />
-
-        <DocH2 id="custom-dashboards">Custom Dashboards</DocH2>
-        <DocP>
-          Create personalized dashboards with configurable widgets:
-        </DocP>
-
-        <EndpointBlock
-          method="POST"
-          path="/api/v1/custom-dashboards"
-          description="Create a custom dashboard"
-        />
-        <CodeBlock
-          language="json"
-          code={`// Request body
-{
-  "name": "Frontend Performance",
-  "description": "Web vitals and page load metrics",
-  "projectId": "proj_abc123",
-  "widgets": [
-    {
-      "type": "timeseries",
-      "title": "Page Load Times",
-      "config": {
-        "metric": "responseTime",
-        "timeRange": "24h",
-        "granularity": "hour"
-      },
-      "position": { "x": 0, "y": 0, "w": 6, "h": 4 }
-    },
-    {
-      "type": "stat",
-      "title": "Error Rate",
-      "config": {
-        "metric": "errorRate",
-        "timeRange": "24h"
-      },
-      "position": { "x": 6, "y": 0, "w": 3, "h": 2 }
-    }
-  ]
-}`}
-        />
-
-        <EndpointBlock
-          method="GET"
-          path="/api/v1/custom-dashboards"
-          description="List user's custom dashboards"
-        />
-        <EndpointBlock
-          method="PUT"
-          path="/api/v1/custom-dashboards/:id"
-          description="Update a custom dashboard"
-        />
-        <EndpointBlock
-          method="DELETE"
-          path="/api/v1/custom-dashboards/:id"
-          description="Delete a custom dashboard"
         />
 
         <DocH2 id="export">Data Export</DocH2>

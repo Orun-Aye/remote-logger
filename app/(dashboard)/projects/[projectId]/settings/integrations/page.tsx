@@ -23,6 +23,12 @@ import {
   AlertCircle,
 } from "lucide-react";
 import { useProject } from "@/hooks/project.hooks";
+import {
+  useGithubConnection,
+  useGithubRepos,
+  useLinkGithubRepo,
+  useUnlinkGithubRepo,
+} from "@/hooks/integrations.hooks";
 import { toast } from "sonner";
 import { SignalDot } from "@/components/shared/SignalDot";
 
@@ -509,6 +515,8 @@ export default function IntegrationSettingsPage() {
         </CardContent>
       </Card>
 
+      <LinkedGithubRepoCard projectId={projectId} project={project} />
+
       {/* Save */}
       <div className="flex justify-end">
         <Button variant="signal" onClick={handleSave} disabled={saving}>
@@ -521,5 +529,182 @@ export default function IntegrationSettingsPage() {
         </Button>
       </div>
     </div>
+  );
+}
+
+function LinkedGithubRepoCard({
+  projectId,
+  project,
+}: {
+  projectId: string;
+  project: any;
+}) {
+  const { data: ghStatus } = useGithubConnection();
+  const linked = project?.integrationSettings?.githubRepo;
+  const linkRepo = useLinkGithubRepo(projectId);
+  const unlinkRepo = useUnlinkGithubRepo(projectId);
+  const [search, setSearch] = useState("");
+  const [picked, setPicked] = useState<{
+    owner: string;
+    repo: string;
+    branch: string;
+  } | null>(null);
+  const { data: repos, isLoading: reposLoading } = useGithubRepos(
+    search,
+    !!ghStatus?.connected && !linked,
+  );
+
+  const onSave = async () => {
+    if (!picked) return;
+    try {
+      await linkRepo.mutateAsync(picked);
+      toast.success(`Linked ${picked.owner}/${picked.repo}`);
+      setPicked(null);
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Failed to link repo");
+    }
+  };
+
+  const onUnlink = async () => {
+    try {
+      await unlinkRepo.mutateAsync();
+      toast.success("Repo unlinked");
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Failed to unlink repo");
+    }
+  };
+
+  return (
+    <Card className="bg-bg-surface border-border-subtle">
+      <CardHeader>
+        <div className="flex items-center gap-3">
+          <div className="w-9 h-9 rounded-lg bg-signal/10 flex items-center justify-center text-signal">
+            <Link2 className="w-5 h-5" />
+          </div>
+          <div>
+            <CardTitle className="text-sm font-medium text-text-primary">
+              Linked Repository
+            </CardTitle>
+            <CardDescription className="text-xs text-text-muted mt-0.5">
+              Connect a GitHub repo so commits show up as deploy events on the
+              project overview.
+            </CardDescription>
+          </div>
+        </div>
+      </CardHeader>
+      <CardContent>
+        {!ghStatus?.connected && (
+          <div className="text-sm text-text-muted">
+            You haven&apos;t connected a GitHub account yet.{" "}
+            <a
+              href="/settings/integrations"
+              className="text-signal hover:underline"
+            >
+              Connect GitHub in Account Settings →
+            </a>
+          </div>
+        )}
+
+        {ghStatus?.connected && linked && (
+          <div className="flex items-center justify-between gap-4">
+            <div className="space-y-1">
+              <div className="font-mono text-sm text-text-primary">
+                {linked.owner}/{linked.repo}
+              </div>
+              <div className="font-mono text-xs text-text-muted">
+                branch · {linked.branch || "main"}
+              </div>
+            </div>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={onUnlink}
+              disabled={unlinkRepo.isPending}
+              className="border-border-subtle"
+            >
+              {unlinkRepo.isPending ? (
+                <Loader2 className="h-3.5 w-3.5 animate-spin" />
+              ) : (
+                "Unlink"
+              )}
+            </Button>
+          </div>
+        )}
+
+        {ghStatus?.connected && !linked && (
+          <div className="space-y-3">
+            <Input
+              placeholder="Search your repositories..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+            />
+            <div className="max-h-64 overflow-y-auto rounded-md border border-border-subtle divide-y divide-border-faint">
+              {reposLoading && (
+                <div className="px-3 py-4 text-center text-xs text-text-muted">
+                  Loading repos…
+                </div>
+              )}
+              {!reposLoading && repos && repos.length === 0 && (
+                <div className="px-3 py-4 text-center text-xs text-text-muted">
+                  No matching repositories.
+                </div>
+              )}
+              {!reposLoading &&
+                repos?.map((r) => {
+                  const isPicked =
+                    picked?.owner === r.owner && picked?.repo === r.repo;
+                  return (
+                    <button
+                      key={r.fullName}
+                      type="button"
+                      onClick={() =>
+                        setPicked({
+                          owner: r.owner,
+                          repo: r.repo,
+                          branch: r.defaultBranch || "main",
+                        })
+                      }
+                      className={`flex w-full items-center justify-between px-3 py-2 text-left text-sm transition-colors ${
+                        isPicked ? "bg-signal/10" : "hover:bg-bg-elevated"
+                      }`}
+                    >
+                      <span className="truncate font-mono">{r.fullName}</span>
+                      <span className="ml-2 text-xs text-text-muted font-mono">
+                        {r.defaultBranch}
+                      </span>
+                    </button>
+                  );
+                })}
+            </div>
+            {picked && (
+              <div className="flex items-center gap-2">
+                <Label className="text-xs text-text-secondary shrink-0">
+                  Branch
+                </Label>
+                <Input
+                  className="font-mono text-sm"
+                  value={picked.branch}
+                  onChange={(e) =>
+                    setPicked((p) => (p ? { ...p, branch: e.target.value } : p))
+                  }
+                />
+                <Button
+                  variant="signal"
+                  size="sm"
+                  onClick={onSave}
+                  disabled={linkRepo.isPending}
+                >
+                  {linkRepo.isPending ? (
+                    <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                  ) : (
+                    "Link"
+                  )}
+                </Button>
+              </div>
+            )}
+          </div>
+        )}
+      </CardContent>
+    </Card>
   );
 }

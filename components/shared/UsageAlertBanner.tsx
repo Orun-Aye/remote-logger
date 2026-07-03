@@ -14,7 +14,6 @@ const resourceLabels: Record<string, string> = {
   projects: "Projects",
   teamMembers: "Team Members",
   alertRules: "Alert Rules",
-  customDashboards: "Custom Dashboards",
   apiTokens: "API Tokens",
 };
 
@@ -59,7 +58,6 @@ export function UsageAlertBanner() {
     projects: usage.limits.maxProjects,
     teamMembers: usage.limits.maxTeamMembers,
     alertRules: usage.limits.maxAlertRules,
-    customDashboards: usage.limits.maxCustomDashboards,
     apiTokens: usage.limits.maxApiTokens,
   };
 

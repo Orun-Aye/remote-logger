@@ -19,7 +19,6 @@ export interface LogEntry {
   eventType?: "error" | "performance" | "interaction" | "network" | "console" | "pageview"
   userAgent?: string
   url?: string
-  responseTime?: string
   referrer?: string
   correlationId?: string
   sessionId?: string
