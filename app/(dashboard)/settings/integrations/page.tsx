@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { Suspense, useEffect } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { format } from "date-fns";
 import {
@@ -19,7 +19,16 @@ import {
 } from "@/hooks/integrations.hooks";
 import { integrationsService } from "@/services/integrations.service";
 
+// useSearchParams requires a Suspense boundary for static prerendering
 export default function UserIntegrationsPage() {
+  return (
+    <Suspense fallback={null}>
+      <UserIntegrationsContent />
+    </Suspense>
+  );
+}
+
+function UserIntegrationsContent() {
   const search = useSearchParams();
   const router = useRouter();
   const { data: status, isLoading, refetch } = useGithubConnection();
