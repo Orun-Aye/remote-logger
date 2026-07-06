@@ -47,6 +47,13 @@ interface AnomalyMarker {
   label?: string;
 }
 
+export interface DeployMarkerLine {
+  /** Must match (or be snapped to) an x-axis bucket value in `data`. */
+  timestamp: string;
+  label?: string;
+  verdict?: "healthy" | "improved" | "degraded" | "unknown";
+}
+
 interface TimeSeriesChartProps {
   data: TimeSeriesDataPoint[];
   series: TimeSeriesConfig[];
@@ -61,6 +68,8 @@ interface TimeSeriesChartProps {
   className?: string;
   /** Anomaly markers rendered as dashed vertical reference lines */
   anomalies?: AnomalyMarker[];
+  /** Deploy/release markers rendered as solid vertical reference lines (Phase 7) */
+  deployMarkers?: DeployMarkerLine[];
 }
 
 // ---------------------------------------------------------------------------
@@ -202,6 +211,13 @@ const ANOMALY_SEVERITY_COLORS: Record<string, string> = {
   info: "var(--data-info, #4d8ef8)",
 };
 
+const DEPLOY_VERDICT_COLORS: Record<string, string> = {
+  degraded: "var(--status-danger, #ef4444)",
+  improved: "var(--signal, #00d97e)",
+  healthy: "var(--signal, #00d97e)",
+  unknown: "var(--data-info, #4d8ef8)",
+};
+
 export function TimeSeriesChart({
   data,
   series,
@@ -215,6 +231,7 @@ export function TimeSeriesChart({
   formatTooltip,
   className,
   anomalies,
+  deployMarkers,
 }: TimeSeriesChartProps) {
   const [hoveredSeries, setHoveredSeries] = useState<string | null>(null);
 
@@ -378,6 +395,24 @@ export function TimeSeriesChart({
               />
             );
           })}
+
+          {/* Deploy/release markers (Phase 7 Change Intelligence) */}
+          {deployMarkers?.map((m, i) => (
+            <ReferenceLine
+              key={`deploy-${i}`}
+              x={m.timestamp}
+              stroke={DEPLOY_VERDICT_COLORS[m.verdict || "unknown"]}
+              strokeWidth={1.5}
+              strokeOpacity={0.8}
+              label={{
+                value: m.label || "Deploy",
+                position: "insideTopRight",
+                fill: DEPLOY_VERDICT_COLORS[m.verdict || "unknown"],
+                fontSize: 10,
+                fontWeight: 600,
+              }}
+            />
+          ))}
 
           {/* Anomaly markers */}
           {anomalies?.map((a, i) => (
