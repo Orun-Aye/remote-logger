@@ -428,7 +428,7 @@ export function WaitlistPage() {
 
               <h1
                 className="mb-6 text-balance font-display font-extrabold leading-[1.06] tracking-[-0.03em]"
-                style={{ fontSize: "clamp(26px, 5.2vw, 64px)" }}
+                style={{ fontSize: "clamp(20px, 5.2vw, 40px)" }}
               >
                 <span data-hero-headline className="block">
                   Your code shipped at 14:02.
