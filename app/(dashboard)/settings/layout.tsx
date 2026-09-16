@@ -2,7 +2,7 @@
 
 import { usePathname } from "next/navigation";
 import Link from "next/link";
-import { User, Lock, Heart, Key, Shield, ShieldCheck } from "lucide-react";
+import { User, Lock, Heart, Key, Shield, ShieldCheck, Plug } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const settingsTabs = [
@@ -10,6 +10,7 @@ const settingsTabs = [
   { name: "Password", href: "/settings/password", icon: Lock },
   { name: "Security", href: "/settings/security", icon: ShieldCheck },
   { name: "Preferences", href: "/settings/preferences", icon: Heart },
+  { name: "Integrations", href: "/settings/integrations", icon: Plug },
   { name: "API Tokens", href: "/settings/tokens", icon: Key },
   { name: "Privacy & Data", href: "/settings/privacy", icon: Shield },
 ];

@@ -40,10 +40,13 @@ export const useProjects = (filters: ProjectFilters = {}) => {
  * Hook to get a specific project by its ID.
  * @param projectId The ID of the project.
  */
-export const useProject = (projectId: string) => {
+export const useProject = (
+  projectId: string,
+  options: { timeRange?: number } = {}
+) => {
   return useQuery({
-    queryKey: queryKeys.details(projectId),
-    queryFn: () => projectService.getProjectById(projectId),
+    queryKey: [...queryKeys.details(projectId), options.timeRange ?? "default"],
+    queryFn: () => projectService.getProjectById(projectId, options),
     enabled: !!projectId,
     staleTime: 10 * 60 * 1000, // 10 minutes
   });

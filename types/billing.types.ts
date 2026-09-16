@@ -22,7 +22,6 @@ export interface PlanLimits {
   maxTeamMembers: number;
   retentionDays: number;
   maxAlertRules: number;
-  maxCustomDashboards: number;
   maxApiTokens: number;
   aiInsights: "none" | "basic" | "full";
   aiInsightsPerDay: number;
@@ -74,7 +73,6 @@ export interface UsageData {
     projects: number;
     teamMembers: number;
     alertRules: number;
-    customDashboards: number;
     apiTokens: number;
   };
   percentages: {
@@ -83,7 +81,6 @@ export interface UsageData {
     projects: number;
     teamMembers: number;
     alertRules: number;
-    customDashboards: number;
     apiTokens: number;
   };
 }

@@ -24,6 +24,14 @@ export type IntegrationSettings = {
   email?: { recipients?: string[] };
   webhook?: { url?: string; headers?: Record<string, string> };
   github?: { repo?: string; owner?: string; enabled?: boolean };
+  /** Repo linked for Change Intelligence. Set via POST /projects/:id/github-link. */
+  githubRepo?: {
+    owner: string;
+    repo: string;
+    branch: string;
+    linkedAt?: string;
+    linkedBy?: string;
+  };
 };
 
 // The main project data structure.

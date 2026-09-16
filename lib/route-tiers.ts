@@ -7,7 +7,6 @@
 
 // Advanced route path patterns (checked with startsWith)
 export const ADVANCED_ROUTE_PREFIXES = [
-  "/custom-dashboards",
   "/integrations",
   "/billing",
   "/organization",
@@ -98,7 +97,6 @@ export function isAdvancedRoute(pathname: string): boolean {
  * Feature names for the UpgradeGate display.
  */
 export const FEATURE_LABELS: Record<string, string> = {
-  "custom-dashboards": "Custom Dashboards",
   "funnels": "Funnel Analysis",
   "regressions": "Regression Detection",
   "insights": "AI-Powered Insights",

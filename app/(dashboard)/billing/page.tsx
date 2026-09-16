@@ -23,7 +23,6 @@ import {
   FolderKanban,
   Users,
   Bell,
-  LayoutGrid,
   Key,
 } from "lucide-react";
 import Link from "next/link";
@@ -72,7 +71,6 @@ const usageMetrics = [
   { key: "projects" as const, label: "Projects", limitKey: "maxProjects" as const, icon: FolderKanban },
   { key: "teamMembers" as const, label: "Team Members", limitKey: "maxTeamMembers" as const, icon: Users },
   { key: "alertRules" as const, label: "Alert Rules", limitKey: "maxAlertRules" as const, icon: Bell },
-  { key: "customDashboards" as const, label: "Custom Dashboards", limitKey: "maxCustomDashboards" as const, icon: LayoutGrid },
   { key: "apiTokens" as const, label: "API Tokens", limitKey: "maxApiTokens" as const, icon: Key },
 ];
 

@@ -34,7 +34,6 @@ import {
   TrendingDown,
   Globe,
   FileCode,
-  LayoutGrid,
   ChevronRight,
   Wifi,
   MousePointerClick,
@@ -49,6 +48,8 @@ import {
   CreditCard,
   Plug,
   Mail,
+  GitCommitHorizontal,
+  CircleDot,
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
@@ -79,6 +80,8 @@ const getProjectStatus = (project: any): "ok" | "warn" | "danger" | "info" => {
 // Sub-navigation items for the active project section
 const projectSubNavItems = [
   { title: "Overview", path: "", icon: LayoutDashboard, advanced: false },
+  { title: "Changes", path: "/changes", icon: GitCommitHorizontal, advanced: false },
+  { title: "Issues", path: "/issues", icon: CircleDot, advanced: false },
   { title: "Logs", path: "/logs", icon: ScrollText, advanced: false },
   { title: "Errors", path: "/errors", icon: Bug, advanced: false },
   { title: "Performance", path: "/performance", icon: Gauge, advanced: false },
@@ -174,14 +177,6 @@ export function AppSidebar() {
       badgeVariant: "destructive" as "destructive" | undefined,
       advanced: false,
     },
-    {
-      title: "Custom Dashboards",
-      url: "/custom-dashboards",
-      icon: LayoutGrid,
-      badge: undefined as string | undefined,
-      badgeVariant: undefined as "destructive" | undefined,
-      advanced: true,
-    },
   ];
 
   // Check if a top-level navigation item is active
@@ -190,7 +185,6 @@ export function AppSidebar() {
     if (url === "/projects") return pathname === "/projects";
     if (url === "/logs") return pathname === "/logs";
     if (url === "/alerts") return pathname === "/alerts";
-    if (url === "/custom-dashboards") return pathname.startsWith("/custom-dashboards");
     return pathname.startsWith(url);
   };
 

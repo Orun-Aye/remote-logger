@@ -10,8 +10,15 @@ interface FeatureCardProps {
   icon: ReactNode;
   visual?: ReactNode;
   span?: 1 | 2;
+  /** Honest build state. Omit for anything already running. */
+  status?: "beta" | "next";
   className?: string;
 }
+
+const STATUS_LABEL: Record<"beta" | "next", string> = {
+  beta: "In the beta",
+  next: "Next up",
+};
 
 export function FeatureCard({
   pain,
@@ -20,13 +27,15 @@ export function FeatureCard({
   icon,
   visual,
   span = 1,
+  status,
   className,
 }: FeatureCardProps) {
   return (
     <div
       data-stagger
+      data-spotlight
       className={cn(
-        "group relative rounded-xl border border-border-subtle bg-bg-surface/60 backdrop-blur-sm p-6 overflow-hidden transition-all duration-300",
+        "spotlight-card group relative rounded-xl border border-border-subtle bg-bg-surface/60 backdrop-blur-sm p-6 overflow-hidden transition-all duration-300",
         "hover:border-signal/30 hover:shadow-[0_0_40px_var(--signal-glow)]",
         span === 2 && "md:col-span-2",
         className
@@ -49,6 +58,18 @@ export function FeatureCard({
           <h3 className="font-display font-bold text-base text-text-primary">
             {title}
           </h3>
+          {status && (
+            <span
+              className={cn(
+                "ml-auto shrink-0 rounded-full border px-2 py-0.5 text-[9px] font-display font-semibold uppercase tracking-[0.1em]",
+                status === "beta"
+                  ? "border-data/30 bg-data/10 text-data"
+                  : "border-border-subtle bg-bg-elevated/60 text-text-muted"
+              )}
+            >
+              {STATUS_LABEL[status]}
+            </span>
+          )}
         </div>
 
         {/* Description */}

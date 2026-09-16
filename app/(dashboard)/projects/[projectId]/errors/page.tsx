@@ -24,6 +24,7 @@ import { SignalDot } from "@/components/shared/SignalDot";
 import { ViewToggle, type ViewMode } from "@/components/shared/ViewToggle";
 import { CHART_COLORS } from "@/lib/charts/observatory-theme";
 import { useAnomalies } from "@/hooks/anomaly.hook";
+import { useDeployMarkers } from "@/hooks/changes.hooks";
 
 // ---------------------------------------------------------------------------
 // Types for API response shapes
@@ -304,6 +305,29 @@ export default function ErrorAnalyticsPage() {
     }));
   }, [anomalyData]);
 
+  // Deploy markers for chart overlays (Phase 7 Change Intelligence)
+  const markerRange = useMemo(() => {
+    if (selectedTimeRange === "custom" && customTimeRange) {
+      return { from: customTimeRange.start, to: customTimeRange.end };
+    }
+    const rangeMs: Record<string, number> = {
+      "1h": 60 * 60 * 1000,
+      "6h": 6 * 60 * 60 * 1000,
+      "24h": 24 * 60 * 60 * 1000,
+      "7d": 7 * 24 * 60 * 60 * 1000,
+      "30d": 30 * 24 * 60 * 60 * 1000,
+    };
+    const ms = rangeMs[selectedTimeRange] ?? rangeMs["24h"];
+    return { from: new Date(Date.now() - ms), to: new Date() };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedTimeRange, customTimeRange, timeRangeParams]);
+
+  const { data: deployMarkerData } = useDeployMarkers(
+    projectId,
+    markerRange.from,
+    markerRange.to
+  );
+
   // Normalize data — handle both raw arrays and wrapped objects from API
   const extractArray = <T,>(raw: unknown, ...keys: string[]): T[] => {
     if (Array.isArray(raw)) return raw;
@@ -321,6 +345,31 @@ export default function ErrorAnalyticsPage() {
       ? (statsData as ErrorStatsData)
       : null;
   const timeline: ErrorTimelinePoint[] = extractArray(timelineData, "timeline", "data");
+
+  // Snap deploy markers to the nearest timeline bucket so the categorical
+  // x-axis can place the reference line
+  const deployMarkerLines = useMemo(() => {
+    if (!deployMarkerData?.length || !timeline.length) return [];
+    const buckets = timeline.map((p) => ({
+      ts: p.timestamp,
+      time: +new Date(p.timestamp),
+    }));
+    return deployMarkerData.map((m) => {
+      const target = +new Date(m.date);
+      let nearest = buckets[0];
+      for (const b of buckets) {
+        if (Math.abs(b.time - target) < Math.abs(nearest.time - target)) {
+          nearest = b;
+        }
+      }
+      return {
+        timestamp: nearest.ts,
+        label: m.kind === "release" ? m.release || "Release" : "Deploy",
+        verdict: m.verdict as "healthy" | "improved" | "degraded" | "unknown" | undefined,
+      };
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [deployMarkerData, timeline]);
   const topErrors: TopError[] = extractArray(topErrorsData, "errors", "topErrors", "data");
   const distribution: ErrorDistributionItem[] = extractArray(distributionData, "distribution", "data");
   const trends: ErrorTrendPoint[] = extractArray(trendsData, "trends", "data");
@@ -455,6 +504,7 @@ export default function ErrorAnalyticsPage() {
                   formatXAxis={formatChartTimestamp}
                   showLegend={false}
                   anomalies={anomalyMarkers}
+                  deployMarkers={deployMarkerLines}
                 />
               </div>
             );

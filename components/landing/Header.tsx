@@ -7,8 +7,10 @@ import { useEffect, useState } from "react";
 import { Menu, X } from "lucide-react";
 
 const navItems = [
-  { href: "#features", label: "Features" },
   { href: "#how-it-works", label: "How It Works" },
+  { href: "#features", label: "Features" },
+  { href: "#comparison", label: "Compare" },
+  { href: "#faq", label: "FAQ" },
   { href: "/docs", label: "Docs" },
 ];
 

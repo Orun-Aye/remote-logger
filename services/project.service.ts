@@ -52,10 +52,21 @@ export const projectService = {
    * Get a specific project by its ID.
    * @param projectId - The ID of the project to fetch.
    */
-  getProjectById: async (projectId: string) => {
+  getProjectById: async (
+    projectId: string,
+    options: { timeRange?: number } = {}
+  ) => {
     try {
+      const params = new URLSearchParams({
+        populateRefs: "true",
+        includeAnalytics: "true",
+        includeRecommendations: "true",
+      });
+      if (options.timeRange !== undefined) {
+        params.set("timeRange", String(options.timeRange));
+      }
       const response = await apiClient.get<ApiResponse<Project>>(
-        `/projects/${projectId}?populateRefs=true&includeAnalytics=true&includeRecommendations=true`
+        `/projects/${projectId}?${params.toString()}`
       );
       if (response.data.status === "error") {
         throw new ApiError(
