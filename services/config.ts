@@ -31,6 +31,15 @@ function removeCookie(name: string): void {
   document.cookie = name + '=; Max-Age=-99999999;';
 }
 
+/**
+ * The raw JWT, for the rare case that needs it outside an apiClient request:
+ * top-level browser navigations to the API cannot carry an Authorization
+ * header, so they pass the token as a query param instead.
+ */
+export function getAuthToken(): string {
+  return getCookie("authToken");
+}
+
 export const apiClient = axios.create({
   baseURL: BASE_URL,
   timeout: 10000,

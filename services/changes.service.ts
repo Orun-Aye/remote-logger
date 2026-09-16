@@ -154,10 +154,26 @@ export interface IssueDraft {
   source: "ai" | "template";
 }
 
+export interface GithubAppInstallation {
+  installationId: number;
+  accountLogin: string;
+  accountType: "User" | "Organization";
+  repositorySelection: "all" | "selected";
+  /** Full names ("owner/repo"). Empty when repositorySelection is "all". */
+  repositories: string[];
+  suspended: boolean;
+  installedAt: string;
+  /** github.com page for adding or removing repos from this installation. */
+  manageUrl: string;
+}
+
 export interface GithubAppStatus {
   enabled: boolean;
   installUrl: string | null;
+  /** Only present when the status was queried with an owner + repo. */
   coversRepo?: boolean;
+  coveringInstallationId?: number;
+  installations: GithubAppInstallation[];
 }
 
 // ---------------------------------------------------------------------------
@@ -405,9 +421,16 @@ export const changesService = {
         `/integrations/github/app-status?${params.toString()}`,
       );
       assertSuccess(response, "Failed to load GitHub App status");
-      return response.data.data || { enabled: false, installUrl: null };
+      return (
+        response.data.data || {
+          enabled: false,
+          installUrl: null,
+          installations: [],
+        }
+      );
     } catch (error) {
-      return { enabled: false, installUrl: null };
+      // The card degrades to "not connected" rather than blocking the page.
+      return { enabled: false, installUrl: null, installations: [] };
     }
   },
 };

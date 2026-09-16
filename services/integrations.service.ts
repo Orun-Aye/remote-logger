@@ -1,4 +1,4 @@
-import { apiClient } from "./config";
+import { apiClient, getAuthToken } from "./config";
 import { ApiError, handleApiError } from "./auth.service";
 
 export interface ApiResponse<T = any> {
@@ -70,6 +70,20 @@ export const integrationsService = {
     const params = new URLSearchParams();
     if (returnTo) params.set("returnTo", returnTo);
     return `${base}/integrations/github/connect?${params.toString()}`;
+  },
+
+  /**
+   * Absolute URL that starts a GitHub App installation. Opened as a top-level
+   * navigation, so the JWT rides along as `?token=` — the install route uses
+   * optionalAuth precisely because no Authorization header can be set here.
+   */
+  getAppInstallUrl: (returnTo?: string): string => {
+    const base = apiClient.defaults.baseURL || "";
+    const params = new URLSearchParams();
+    if (returnTo) params.set("returnTo", returnTo);
+    const token = getAuthToken();
+    if (token) params.set("token", token);
+    return `${base}/integrations/github/install?${params.toString()}`;
   },
 
   disconnectGithub: async (): Promise<void> => {

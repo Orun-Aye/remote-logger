@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, Suspense } from "react";
 import { useParams } from "next/navigation";
 import {
   Card,
@@ -31,6 +31,8 @@ import {
 } from "@/hooks/integrations.hooks";
 import { toast } from "sonner";
 import { SignalDot } from "@/components/shared/SignalDot";
+import { GithubAppCard } from "@/components/integrations/GithubAppCard";
+import { useGithubAppStatus } from "@/hooks/changes.hooks";
 
 // Validation helpers
 function isValidUrl(value: string): boolean {
@@ -515,6 +517,14 @@ export default function IntegrationSettingsPage() {
         </CardContent>
       </Card>
 
+      {/* useSearchParams (install round-trip) needs a Suspense boundary */}
+      <Suspense fallback={null}>
+        <GithubAppCard
+          projectId={projectId}
+          linkedRepo={project?.integrationSettings?.githubRepo}
+        />
+      </Suspense>
+
       <LinkedGithubRepoCard projectId={projectId} project={project} />
 
       {/* Save */}
@@ -540,6 +550,7 @@ function LinkedGithubRepoCard({
   project: any;
 }) {
   const { data: ghStatus } = useGithubConnection();
+  const { data: appStatus } = useGithubAppStatus();
   const linked = project?.integrationSettings?.githubRepo;
   const linkRepo = useLinkGithubRepo(projectId);
   const unlinkRepo = useUnlinkGithubRepo(projectId);
@@ -553,6 +564,38 @@ function LinkedGithubRepoCard({
     search,
     !!ghStatus?.connected && !linked,
   );
+
+  // Repos reachable through an App installation. Without an OAuth token there
+  // is no /user/repos to search, so the installation list is the only source
+  // of pickable repos for an App-only setup.
+  const installationRepos = (appStatus?.installations ?? []).flatMap((i) =>
+    i.repositories.map((fullName) => {
+      const [owner, repo] = fullName.split("/");
+      return { owner, repo, fullName };
+    }),
+  );
+  const filteredInstallationRepos = search
+    ? installationRepos.filter((r) =>
+        r.fullName.toLowerCase().includes(search.toLowerCase()),
+      )
+    : installationRepos;
+
+  // Prefer the richer OAuth listing (it knows default branches); fall back to
+  // whatever the App installation covers.
+  const useOauthList = !!ghStatus?.connected;
+  const pickable = useOauthList
+    ? (repos ?? []).map((r) => ({
+        owner: r.owner,
+        repo: r.repo,
+        fullName: r.fullName,
+        defaultBranch: r.defaultBranch || "main",
+      }))
+    : filteredInstallationRepos.map((r) => ({
+        ...r,
+        defaultBranch: "main",
+      }));
+  const canPick = useOauthList || installationRepos.length > 0;
+  const listLoading = useOauthList && reposLoading;
 
   const onSave = async () => {
     if (!picked) return;
@@ -593,19 +636,19 @@ function LinkedGithubRepoCard({
         </div>
       </CardHeader>
       <CardContent>
-        {!ghStatus?.connected && (
+        {!canPick && !linked && (
           <div className="text-sm text-text-muted">
-            You haven&apos;t connected a GitHub account yet.{" "}
+            No GitHub access yet. Install the GitHub App above, or{" "}
             <a
               href="/settings/integrations"
               className="text-signal hover:underline"
             >
-              Connect GitHub in Account Settings →
+              connect a personal account in Account Settings →
             </a>
           </div>
         )}
 
-        {ghStatus?.connected && linked && (
+        {linked && (
           <div className="flex items-center justify-between gap-4">
             <div className="space-y-1">
               <div className="font-mono text-sm text-text-primary">
@@ -631,26 +674,30 @@ function LinkedGithubRepoCard({
           </div>
         )}
 
-        {ghStatus?.connected && !linked && (
+        {canPick && !linked && (
           <div className="space-y-3">
             <Input
-              placeholder="Search your repositories..."
+              placeholder={
+                useOauthList
+                  ? "Search your repositories..."
+                  : "Search repositories covered by the App..."
+              }
               value={search}
               onChange={(e) => setSearch(e.target.value)}
             />
             <div className="max-h-64 overflow-y-auto rounded-md border border-border-subtle divide-y divide-border-faint">
-              {reposLoading && (
+              {listLoading && (
                 <div className="px-3 py-4 text-center text-xs text-text-muted">
                   Loading repos…
                 </div>
               )}
-              {!reposLoading && repos && repos.length === 0 && (
+              {!listLoading && pickable.length === 0 && (
                 <div className="px-3 py-4 text-center text-xs text-text-muted">
                   No matching repositories.
                 </div>
               )}
-              {!reposLoading &&
-                repos?.map((r) => {
+              {!listLoading &&
+                pickable.map((r) => {
                   const isPicked =
                     picked?.owner === r.owner && picked?.repo === r.repo;
                   return (
@@ -661,7 +708,7 @@ function LinkedGithubRepoCard({
                         setPicked({
                           owner: r.owner,
                           repo: r.repo,
-                          branch: r.defaultBranch || "main",
+                          branch: r.defaultBranch,
                         })
                       }
                       className={`flex w-full items-center justify-between px-3 py-2 text-left text-sm transition-colors ${

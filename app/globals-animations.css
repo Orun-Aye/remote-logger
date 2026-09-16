@@ -528,3 +528,82 @@ html {
     stroke-dasharray: none !important;
   }
 }
+
+/* ============================================================================
+   MARKETING SURFACES — marquee, spotlight, gradient sweep
+   ============================================================================ */
+
+/* Infinite horizontal marquee. Track must contain the item list twice so the
+   -50% translation lands exactly on the duplicate and loops seamlessly. */
+@keyframes marquee-x {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+
+.animate-marquee {
+  animation: marquee-x 40s linear infinite;
+}
+
+/* Fades the marquee into the page edges instead of cutting items off. */
+.marquee-mask {
+  -webkit-mask-image: linear-gradient(
+    90deg,
+    transparent 0%,
+    #000 10%,
+    #000 90%,
+    transparent 100%
+  );
+  mask-image: linear-gradient(
+    90deg,
+    transparent 0%,
+    #000 10%,
+    #000 90%,
+    transparent 100%
+  );
+}
+
+/* Pointer-following glow. Paired with the useSpotlight hook, which writes
+   --spot-x / --spot-y on the card. Invisible until the pointer sets them. */
+.spotlight-card {
+  position: relative;
+}
+
+.spotlight-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity var(--dur-slow, 400ms) var(--ease-smooth, ease);
+  background: radial-gradient(
+    260px circle at var(--spot-x, 50%) var(--spot-y, 50%),
+    var(--signal-glow, rgba(0, 217, 126, 0.12)),
+    transparent 70%
+  );
+}
+
+.spotlight-card:hover::before {
+  opacity: 1;
+}
+
+/* Slow conic sweep for the charter-member panel border. */
+@keyframes border-sweep {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+.animate-border-sweep {
+  animation: border-sweep 8s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-marquee,
+  .animate-border-sweep {
+    animation: none !important;
+  }
+
+  .spotlight-card::before {
+    display: none;
+  }
+}
