@@ -64,11 +64,17 @@ export const integrationsService = {
     }
   },
 
-  /** Returns the absolute redirect URL the user should open to start the OAuth flow. */
+  /**
+   * Absolute URL that starts the OAuth flow. Opened as a top-level
+   * navigation, so the JWT rides along as `?token=` — the connect route uses
+   * optionalAuth precisely because no Authorization header can be set here.
+   */
   getConnectUrl: (returnTo?: string): string => {
     const base = apiClient.defaults.baseURL || "";
     const params = new URLSearchParams();
     if (returnTo) params.set("returnTo", returnTo);
+    const token = getAuthToken();
+    if (token) params.set("token", token);
     return `${base}/integrations/github/connect?${params.toString()}`;
   },
 
