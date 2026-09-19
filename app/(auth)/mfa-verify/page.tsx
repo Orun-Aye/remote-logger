@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Loader2, ShieldCheck, KeyRound, ArrowLeft } from "lucide-react";
 import { mfaService } from "@/services/mfa.service";
 import { toast } from "sonner";
-import Cookies from "js-cookie";
+import { establishSession } from "@/services/auth.service";
 
 export default function MfaVerifyPage() {
   const router = useRouter();
@@ -54,10 +54,8 @@ export default function MfaVerifyPage() {
     try {
       const result = await mfaService.validateMfa(mfaToken, codeToValidate.trim());
 
-      // Store the full JWT and clean up
-      if (result?.token) {
-        Cookies.set("authToken", result.token, { expires: 7 });
-      }
+      // Store the full JWT plus the user payload, then clean up
+      establishSession(result);
       sessionStorage.removeItem("mfaToken");
 
       toast.success("Welcome back!");

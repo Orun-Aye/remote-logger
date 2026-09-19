@@ -13,6 +13,7 @@ import { usePathname } from "next/navigation";
 import { useBetaAccess } from "@/store/apperio-store";
 import { isAdvancedRoute, FEATURE_LABELS } from "@/lib/route-tiers";
 import { UpgradeGate } from "@/components/shared/UpgradeGate";
+import { useHydrateCurrentUser } from "@/hooks/useHydrateCurrentUser";
 
 function getFeatureName(pathname: string): string {
   // Extract the most specific segment for the label
@@ -28,8 +29,11 @@ function DashboardShell({ children }: { children: React.ReactNode }) {
   useAutoRefresh();
   const pathname = usePathname();
   const { betaTier } = useBetaAccess();
+  const userLoaded = useHydrateCurrentUser();
 
-  const shouldGate = betaTier === "core" && isAdvancedRoute(pathname);
+  // Wait for the profile before gating, otherwise the default "core" briefly
+  // flashes the upgrade overlay at a full-tier user on every load.
+  const shouldGate = userLoaded && betaTier === "core" && isAdvancedRoute(pathname);
 
   return (
     <SidebarProvider defaultOpen={true}>

@@ -1,7 +1,8 @@
 import { SignUpType } from "@/lib/schemas/auth";
 import axios, { AxiosError } from "axios";
-import Cookies from "js-cookie"; 
+import Cookies from "js-cookie";
 import { apiClient } from "./config";
+import { useApperioStore } from "@/store/apperio-store";
 
 export interface ApiResponse<T = any> {
   status: "success" | "error";
@@ -21,6 +22,31 @@ export class ApiError extends Error {
     this.name = "ApiError";
   }
 }
+
+/**
+ * Persists a session: the JWT cookie plus the user payload the dashboard reads.
+ *
+ * Both halves matter. `useBetaAccess` derives betaTier from the store's
+ * currentUser and falls back to "core" when it is null, so setting the cookie
+ * alone leaves every user gated out of advanced routes regardless of their
+ * actual tier. Call this from every path that receives a token.
+ */
+export const establishSession = (data: any): void => {
+  if (data?.token) {
+    Cookies.set("authToken", data.token, { expires: 7 });
+  }
+
+  if (data?._id) {
+    const name = [data.firstName, data.lastName].filter(Boolean).join(" ");
+    useApperioStore.getState().setCurrentUser({
+      id: String(data._id),
+      email: data.email,
+      name: name || undefined,
+      betaAccess: data.betaAccess,
+      betaTier: data.betaTier,
+    });
+  }
+};
 
 export const handleApiError = (error: unknown): never => {
   if (axios.isAxiosError(error)) {
@@ -65,9 +91,7 @@ export const authService = {
         )
       }
 
-      if (response.data.data?.token) {
-        Cookies.set('authToken', response.data.data.token, { expires: 7 }); // expires in 7 days
-      }
+      establishSession(response.data.data);
 
       return response.data.data;
     } catch (error) {
@@ -94,9 +118,7 @@ export const authService = {
         return response.data.data;
       }
 
-      if (response.data.data.token) {
-        Cookies.set('authToken', response.data.data.token, { expires: 7 });
-      }
+      establishSession(response.data.data);
 
       return response.data.data
     } catch (error) {
@@ -110,6 +132,7 @@ export const authService = {
   signOut: async (): Promise<void> => {
     try {
       Cookies.remove('authToken');
+      useApperioStore.getState().setCurrentUser(null);
     } catch (error) {
       console.error('Sign out error:', error)
     } 
@@ -154,9 +177,7 @@ export const authService = {
         );
       }
 
-      if (response.data.data?.token) {
-        Cookies.set("authToken", response.data.data.token, { expires: 7 });
-      }
+      establishSession(response.data.data);
 
       return response.data.data;
     } catch (error) {
