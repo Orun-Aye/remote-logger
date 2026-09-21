@@ -1,4 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
 import { changesService } from "@/services/changes.service";
 
 const changesKeys = {
@@ -68,10 +69,19 @@ export function useBackfillChanges(projectId: string) {
   return useMutation({
     mutationFn: () => changesService.backfill(projectId),
     onSuccess: () => {
+      toast.success("Syncing from GitHub");
       // The backfill runs async server-side; refresh shortly after
       setTimeout(() => {
         qc.invalidateQueries({ queryKey: ["changes", "feed", projectId] });
       }, 4000);
+    },
+    onError: (err: any) => {
+      // Most often a 409: no repo is linked, so there is nothing to import.
+      // axios rejects before assertSuccess runs, so the server's message is
+      // on the response, not on err.message.
+      toast.error(
+        err?.response?.data?.message || "Failed to sync from GitHub",
+      );
     },
   });
 }
