@@ -13,6 +13,19 @@ export interface ApiResponse<T = any> {
 // Types (mirror logger_backend Phase 7 models)
 // ---------------------------------------------------------------------------
 
+/** Why an explanation could not be generated; absent when `source` is "ai" or "cache". */
+export type ExplainUnavailableReason =
+  | "disabled"
+  | "missing_api_key"
+  | "rate_limited"
+  | "request_failed";
+
+export interface ExplainChangeResult {
+  explanation: string;
+  source: "ai" | "cache" | "unavailable";
+  reason?: ExplainUnavailableReason;
+}
+
 export interface ChangeCommit {
   _id: string;
   itemType: "commit";
@@ -33,7 +46,7 @@ export interface ChangeCommit {
   aiSummary?: string;
   aiTechnicalSummary?: string;
   aiExplanation?: string;
-  aiSummaryStatus: "pending" | "complete" | "skipped" | "failed";
+  aiSummaryStatus: "pending" | "complete" | "skipped" | "failed" | "budget_exceeded";
   source: "webhook" | "backfill";
 }
 
@@ -74,6 +87,14 @@ export interface ChangeDeployment {
 }
 
 export type ChangeFeedItem = ChangeCommit | ChangeDeployment;
+
+export type ChangesFeedMeta = {
+  page: number;
+  limit: number;
+  total: number;
+  /** This month's AI commit summaries vs the per-project cap. */
+  aiSummaryUsage?: { month: string; used: number; limit: number };
+};
 
 export interface DeployMarker {
   date: string;
@@ -201,7 +222,7 @@ export const changesService = {
       type?: "commit" | "deployment" | "release";
       author?: string;
     } = {},
-  ): Promise<{ items: ChangeFeedItem[]; meta: { page: number; limit: number; total: number } }> => {
+  ): Promise<{ items: ChangeFeedItem[]; meta: ChangesFeedMeta }> => {
     try {
       const params = new URLSearchParams();
       params.set("page", String(opts.page ?? 1));
@@ -226,10 +247,10 @@ export const changesService = {
   explainChange: async (
     projectId: string,
     sha: string,
-  ): Promise<{ explanation: string; source: "ai" | "cache" | "unavailable" }> => {
-    const response = await apiClient.post<
-      ApiResponse<{ explanation: string; source: "ai" | "cache" | "unavailable" }>
-    >(`/projects/${projectId}/changes/${sha}/explain`);
+  ): Promise<ExplainChangeResult> => {
+    const response = await apiClient.post<ApiResponse<ExplainChangeResult>>(
+      `/projects/${projectId}/changes/${sha}/explain`,
+    );
     assertSuccess(response, "Failed to explain change");
     return response.data.data!;
   },

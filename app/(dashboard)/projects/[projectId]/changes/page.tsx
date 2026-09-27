@@ -29,6 +29,7 @@ import type {
   ChangeCommit,
   ChangeDeployment,
   ChangeFeedItem,
+  ExplainChangeResult,
 } from "@/services/changes.service";
 import { cn } from "@/lib/utils";
 
@@ -57,8 +58,10 @@ function CommitCard({
   projectId: string;
 }) {
   const [expanded, setExpanded] = useState(false);
-  const [explanation, setExplanation] = useState<string | null>(
-    commit.aiExplanation || null,
+  const [explanation, setExplanation] = useState<ExplainChangeResult | null>(
+    commit.aiExplanation
+      ? { explanation: commit.aiExplanation, source: "cache" }
+      : null,
   );
   const explain = useExplainChange(projectId);
   const retry = useRetrySummaries(projectId);
@@ -74,7 +77,7 @@ function CommitCard({
     }
     setExpanded(true);
     explain.mutate(commit.sha, {
-      onSuccess: (result) => setExplanation(result.explanation),
+      onSuccess: (result) => setExplanation(result),
     });
   };
 
@@ -119,6 +122,12 @@ function CommitCard({
             <p className="text-xs text-text-muted flex items-center gap-1.5">
               <Loader2 className="w-3 h-3 animate-spin" />
               Writing summary…
+            </p>
+          )}
+
+          {commit.aiSummaryStatus === "budget_exceeded" && (
+            <p className="text-xs text-text-muted">
+              Summary unavailable: monthly AI limit reached
             </p>
           )}
 
@@ -181,8 +190,16 @@ function CommitCard({
               Reading the code changes…
             </p>
           ) : (
-            <p className="text-sm text-text-secondary whitespace-pre-line leading-relaxed">
-              {explanation || "No explanation available."}
+            <p
+              className={`text-sm whitespace-pre-line leading-relaxed ${
+                explanation?.source === "unavailable"
+                  ? "text-text-muted"
+                  : "text-text-secondary"
+              }`}
+            >
+              {explanation?.explanation ||
+                explain.error?.message ||
+                "No explanation available."}
             </p>
           )}
         </div>
@@ -322,6 +339,17 @@ export default function ChangesPage() {
   const meta = feedQuery.data?.meta;
   const totalPages = meta ? Math.max(1, Math.ceil(meta.total / meta.limit)) : 1;
 
+  // Monthly AI cap: summaries resume on the 1st of next month (UTC)
+  const aiUsage = meta?.aiSummaryUsage;
+  const aiCapReached = !!aiUsage && aiUsage.used >= aiUsage.limit;
+  const aiResumesOn = aiUsage
+    ? (() => {
+        const [year, month] = aiUsage.month.split("-").map(Number);
+        // month is 1-based, so this is the 1st of the following month
+        return new Date(Date.UTC(year, month, 1));
+      })()
+    : null;
+
   // Group feed items by calendar day for the timeline
   const dayGroups = useMemo(() => {
     const groups: Array<{ day: Date; items: ChangeFeedItem[] }> = [];
@@ -378,6 +406,23 @@ export default function ChangesPage() {
             </button>
           ))}
         </div>
+
+        {aiCapReached && aiResumesOn && (
+          <div className="flex items-start gap-3 rounded-lg border border-border-subtle bg-bg-surface p-4">
+            <Sparkles className="w-4 h-4 text-text-muted shrink-0 mt-0.5" />
+            <p className="text-sm text-text-muted">
+              This project has used all {aiUsage!.limit} AI summaries for this
+              month. New commits still appear with their commit messages, and
+              summaries resume on{" "}
+              {aiResumesOn.toLocaleDateString(undefined, {
+                month: "long",
+                day: "numeric",
+                timeZone: "UTC",
+              })}
+              .
+            </p>
+          </div>
+        )}
 
         {/* Feed */}
         {feedQuery.isLoading ? (
