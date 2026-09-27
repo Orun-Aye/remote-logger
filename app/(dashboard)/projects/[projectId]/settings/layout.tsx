@@ -11,6 +11,7 @@ import {
   BarChart3,
   Clock,
   Link2,
+  Bell,
   ArrowLeft,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -51,6 +52,11 @@ const projectSettingsTabs = [
     name: "Retention",
     href: (pid: string) => `/projects/${pid}/settings/retention`,
     icon: Clock,
+  },
+  {
+    name: "Notifications",
+    href: (pid: string) => `/projects/${pid}/settings/notifications`,
+    icon: Bell,
   },
   {
     name: "Integrations",

@@ -3,6 +3,7 @@ import { apiClient } from "./config";
 import { ApiError, handleApiError } from "./auth.service";
 import {
   BulkDeletePayload,
+  NotificationSettings,
   Project,
   ProjectCreateData,
   ProjectFilters,
@@ -372,6 +373,33 @@ export const projectService = {
       if (response.data.status === "error") {
         throw new ApiError(
           response.data.message || "Failed to update sampling config",
+          response.status,
+          response.data.errors
+        );
+      }
+      return response.data.data;
+    } catch (error) {
+      handleApiError(error);
+    }
+  },
+
+  /**
+   * Update a project's owner notification settings.
+   * @param projectId - The ID of the project.
+   * @param notificationSettings - Error group toggle and environment filter.
+   */
+  updateNotificationSettings: async (
+    projectId: string,
+    notificationSettings: NotificationSettings
+  ) => {
+    try {
+      const response = await apiClient.put<ApiResponse>(
+        `/projects/${projectId}/notification-settings`,
+        notificationSettings
+      );
+      if (response.data.status === "error") {
+        throw new ApiError(
+          response.data.message || "Failed to update notification settings",
           response.status,
           response.data.errors
         );

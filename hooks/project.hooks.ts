@@ -1,6 +1,7 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { projectService } from "@/services/project.service";
 import {
+  NotificationSettings,
   Project,
   ProjectCreateData,
   ProjectFilters,
@@ -253,6 +254,24 @@ export const useUpdateSamplingConfig = () => {
       projectId: string;
       samplingConfig: { enabled: boolean; mode: "rate" | "percentage"; value: number; alwaysKeepLevels?: string[] };
     }) => projectService.updateSamplingConfig(projectId, samplingConfig),
+    onSuccess: (_data, { projectId }) => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.details(projectId) });
+    },
+  });
+};
+
+/**
+ * Hook to update a project's owner notification settings.
+ */
+export const useUpdateNotificationSettings = () => {
+  return useMutation({
+    mutationFn: ({
+      projectId,
+      notificationSettings,
+    }: {
+      projectId: string;
+      notificationSettings: NotificationSettings;
+    }) => projectService.updateNotificationSettings(projectId, notificationSettings),
     onSuccess: (_data, { projectId }) => {
       queryClient.invalidateQueries({ queryKey: queryKeys.details(projectId) });
     },

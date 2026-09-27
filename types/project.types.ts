@@ -34,6 +34,15 @@ export type IntegrationSettings = {
   };
 };
 
+// Owner notification settings for a project.
+export type NotificationSettings = {
+  errorGroups: {
+    enabled: boolean;
+    /** Environments that trigger notifications. Empty = all environments. */
+    environments: string[];
+  };
+};
+
 // The main project data structure.
 export type Project = {
   project: {
@@ -66,6 +75,7 @@ export type Project = {
     };
     tags: string[];
     integrationSettings?: IntegrationSettings;
+    notificationSettings?: Partial<NotificationSettings>;
     createdAt: string;
     updatedAt: string;
   };
