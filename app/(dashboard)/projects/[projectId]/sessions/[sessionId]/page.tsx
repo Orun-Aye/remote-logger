@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useMemo, useRef, useEffect, useCallback } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useParams, useRouter, useSearchParams, usePathname } from "next/navigation";
 import Link from "next/link";
 import { useSessionDetail, useSessionTimeline } from "@/hooks/analytics.hook";
 import { PageHeader } from "@/components/shared/PageHeader";
@@ -12,6 +12,8 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { SessionReplayTab } from "@/components/replay/SessionReplayTab";
 import {
   ArrowLeft,
   Clock,
@@ -24,6 +26,8 @@ import {
   Wifi,
   Eye,
   Users,
+  Video,
+  ListTree,
 } from "lucide-react";
 import { format, formatDistanceToNow } from "date-fns";
 import { cn } from "@/lib/utils";
@@ -251,6 +255,20 @@ export default function SessionDetailPage() {
 
   const [selectedEventId, setSelectedEventId] = useState<string | null>(null);
 
+  // Tab lives in the URL (?tab=replay) so a replay can be linked to directly
+  const searchParams = useSearchParams();
+  const pathname = usePathname();
+  const activeTab = searchParams.get("tab") === "replay" ? "replay" : "timeline";
+  // ?at=<epoch ms>: start the replay at that moment (e.g. an error)
+  const replayAt = Number(searchParams.get("at")) || undefined;
+  const setActiveTab = (tab: string) => {
+    const next = new URLSearchParams(searchParams.toString());
+    if (tab === "replay") next.set("tab", "replay");
+    else next.delete("tab");
+    const query = next.toString();
+    router.replace(query ? `${pathname}?${query}` : pathname, { scroll: false });
+  };
+
   // Data hooks
   const {
     data: detailData,
@@ -386,181 +404,200 @@ export default function SessionDetailPage() {
         />
       </div>
 
-      {/* Timeline */}
-      {events.length > 0 ? (
-        <SessionTimeline
-          events={events}
-          sessionStart={sessionBounds.start}
-          sessionEnd={sessionBounds.end}
-          selectedEventId={selectedEventId}
-          onEventSelect={(id) =>
-            setSelectedEventId((prev) => (prev === id ? null : id))
-          }
-        />
-      ) : (
-        <Card className="border-border-subtle bg-bg-surface">
-          <div className="flex flex-col items-center justify-center py-12 text-center">
-            <Layers className="h-10 w-10 text-text-muted mb-3" />
-            <h3 className="text-sm font-display font-semibold text-text-primary mb-1">
-              No timeline events
-            </h3>
-            <p className="text-xs text-text-secondary">
-              No events were recorded for this session.
-            </p>
-          </div>
-        </Card>
-      )}
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="gap-4">
+        <TabsList>
+          <TabsTrigger value="timeline">
+            <ListTree />
+            Timeline
+          </TabsTrigger>
+          <TabsTrigger value="replay">
+            <Video />
+            Replay
+          </TabsTrigger>
+        </TabsList>
 
-      {/* Selected Event Detail */}
-      {selectedEvent && (
-        <Card className="border-border-subtle bg-bg-surface overflow-hidden">
-          <div className="px-5 py-4 border-b border-border-faint bg-bg-base/50 flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <span
-                className={cn(
-                  "flex items-center gap-1.5 text-sm font-medium",
-                  EVENT_TEXT_COLORS[categorizeEvent(selectedEvent)]
-                )}
-              >
-                <EventIcon category={categorizeEvent(selectedEvent)} />
-                <span className="capitalize">{getEventTypeLabel(selectedEvent)}</span>
-              </span>
-              <span className="text-xs text-text-muted font-mono">
-                {format(new Date(selectedEvent.timestamp), "HH:mm:ss.SSS")}
-              </span>
-            </div>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => setSelectedEventId(null)}
-              className="text-text-muted hover:text-text-primary text-xs"
-            >
-              Close
-            </Button>
-          </div>
+        <TabsContent value="replay">
+          <SessionReplayTab projectId={projectId} sessionId={sessionId} startAt={replayAt} />
+        </TabsContent>
 
-          <div className="p-5 space-y-4">
-            {/* Event Info */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div>
-                <span className="text-xs text-text-muted block mb-1">Type</span>
-                <Badge
-                  variant="outline"
-                  className={cn(
-                    "text-xs capitalize",
-                    `${EVENT_TEXT_COLORS[categorizeEvent(selectedEvent)]}`,
-                    `border ${EVENT_BORDER_COLORS[categorizeEvent(selectedEvent)]}`
-                  )}
-                >
-                  {getEventTypeLabel(selectedEvent)}
-                </Badge>
+        <TabsContent value="timeline" className="space-y-6">
+          {/* Timeline */}
+          {events.length > 0 ? (
+            <SessionTimeline
+              events={events}
+              sessionStart={sessionBounds.start}
+              sessionEnd={sessionBounds.end}
+              selectedEventId={selectedEventId}
+              onEventSelect={(id) =>
+                setSelectedEventId((prev) => (prev === id ? null : id))
+              }
+            />
+          ) : (
+            <Card className="border-border-subtle bg-bg-surface">
+              <div className="flex flex-col items-center justify-center py-12 text-center">
+                <Layers className="h-10 w-10 text-text-muted mb-3" />
+                <h3 className="text-sm font-display font-semibold text-text-primary mb-1">
+                  No timeline events
+                </h3>
+                <p className="text-xs text-text-secondary">
+                  No events were recorded for this session.
+                </p>
               </div>
-              <div>
-                <span className="text-xs text-text-muted block mb-1">Timestamp</span>
-                <span className="text-sm text-text-primary font-mono">
-                  {format(new Date(selectedEvent.timestamp), "yyyy-MM-dd HH:mm:ss.SSS")}
-                </span>
-              </div>
-              {selectedEvent.url && (
-                <div className="sm:col-span-2">
-                  <span className="text-xs text-text-muted block mb-1">URL</span>
-                  <span className="text-sm text-text-primary font-mono break-all">
-                    {selectedEvent.url}
-                  </span>
-                </div>
-              )}
-              {selectedEvent.message && (
-                <div className="sm:col-span-2">
-                  <span className="text-xs text-text-muted block mb-1">Message</span>
-                  <span className="text-sm text-text-primary">
-                    {selectedEvent.message}
-                  </span>
-                </div>
-              )}
-            </div>
+            </Card>
+          )}
 
-            {/* Error details */}
-            {selectedEvent.error && (
-              <div>
-                <span className="text-xs text-text-muted block mb-2">Error</span>
-                <div className="rounded-md border border-status-danger/20 bg-status-danger/5 p-3 space-y-1">
-                  <p className="text-sm font-medium text-status-danger">
-                    {selectedEvent.error.name}: {selectedEvent.error.message}
-                  </p>
-                  {selectedEvent.error.stack && (
-                    <pre className="text-xs text-text-muted font-mono whitespace-pre-wrap mt-2 max-h-40 overflow-y-auto">
-                      {selectedEvent.error.stack}
-                    </pre>
-                  )}
-                </div>
-              </div>
-            )}
-
-            {/* Data / Metadata */}
-            {(selectedEvent.data || selectedEvent.metadata || selectedEvent.context) && (
-              <div>
-                <span className="text-xs text-text-muted block mb-2">Data</span>
-                <JsonTreeViewer
-                  data={selectedEvent.data || selectedEvent.metadata || selectedEvent.context}
-                  initialExpanded={true}
-                  maxDepth={5}
-                />
-              </div>
-            )}
-          </div>
-        </Card>
-      )}
-
-      {/* Event List (vertical) */}
-      {events.length > 0 && (
-        <Card className="border-border-subtle bg-bg-surface overflow-hidden">
-          <div className="px-5 py-3 border-b border-border-faint bg-bg-base/50">
-            <h3 className="text-sm font-display font-semibold text-text-primary">
-              All Events ({events.length})
-            </h3>
-          </div>
-          <div className="divide-y divide-border-faint max-h-[400px] overflow-y-auto">
-            {events.map((event, idx) => {
-              const eventId = event._id || event.id || String(idx);
-              const category = categorizeEvent(event);
-              const isSelected = selectedEventId === eventId;
-
-              return (
-                <button
-                  key={eventId}
-                  onClick={() =>
-                    setSelectedEventId((prev) => (prev === eventId ? null : eventId))
-                  }
-                  className={cn(
-                    "w-full flex items-center gap-3 px-5 py-2.5 text-left hover:bg-bg-elevated/50 transition-colors",
-                    isSelected && "bg-signal/5 border-l-2 border-l-signal"
-                  )}
-                >
-                  <span className="text-xs text-text-muted font-mono w-20 shrink-0">
-                    {format(new Date(event.timestamp), "HH:mm:ss")}
-                  </span>
-                  <span className={cn("shrink-0", EVENT_TEXT_COLORS[category])}>
-                    <EventIcon category={category} />
-                  </span>
-                  <span className="text-sm text-text-primary truncate flex-1">
-                    {event.message || getEventTypeLabel(event)}
-                  </span>
-                  <Badge
-                    variant="outline"
+          {/* Selected Event Detail */}
+          {selectedEvent && (
+            <Card className="border-border-subtle bg-bg-surface overflow-hidden">
+              <div className="px-5 py-4 border-b border-border-faint bg-bg-base/50 flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <span
                     className={cn(
-                      "text-[10px] capitalize shrink-0",
-                      EVENT_TEXT_COLORS[category],
-                      EVENT_BORDER_COLORS[category]
+                      "flex items-center gap-1.5 text-sm font-medium",
+                      EVENT_TEXT_COLORS[categorizeEvent(selectedEvent)]
                     )}
                   >
-                    {category}
-                  </Badge>
-                </button>
-              );
-            })}
-          </div>
-        </Card>
-      )}
+                    <EventIcon category={categorizeEvent(selectedEvent)} />
+                    <span className="capitalize">{getEventTypeLabel(selectedEvent)}</span>
+                  </span>
+                  <span className="text-xs text-text-muted font-mono">
+                    {format(new Date(selectedEvent.timestamp), "HH:mm:ss.SSS")}
+                  </span>
+                </div>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setSelectedEventId(null)}
+                  className="text-text-muted hover:text-text-primary text-xs"
+                >
+                  Close
+                </Button>
+              </div>
+
+              <div className="p-5 space-y-4">
+                {/* Event Info */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <span className="text-xs text-text-muted block mb-1">Type</span>
+                    <Badge
+                      variant="outline"
+                      className={cn(
+                        "text-xs capitalize",
+                        `${EVENT_TEXT_COLORS[categorizeEvent(selectedEvent)]}`,
+                        `border ${EVENT_BORDER_COLORS[categorizeEvent(selectedEvent)]}`
+                      )}
+                    >
+                      {getEventTypeLabel(selectedEvent)}
+                    </Badge>
+                  </div>
+                  <div>
+                    <span className="text-xs text-text-muted block mb-1">Timestamp</span>
+                    <span className="text-sm text-text-primary font-mono">
+                      {format(new Date(selectedEvent.timestamp), "yyyy-MM-dd HH:mm:ss.SSS")}
+                    </span>
+                  </div>
+                  {selectedEvent.url && (
+                    <div className="sm:col-span-2">
+                      <span className="text-xs text-text-muted block mb-1">URL</span>
+                      <span className="text-sm text-text-primary font-mono break-all">
+                        {selectedEvent.url}
+                      </span>
+                    </div>
+                  )}
+                  {selectedEvent.message && (
+                    <div className="sm:col-span-2">
+                      <span className="text-xs text-text-muted block mb-1">Message</span>
+                      <span className="text-sm text-text-primary">
+                        {selectedEvent.message}
+                      </span>
+                    </div>
+                  )}
+                </div>
+
+                {/* Error details */}
+                {selectedEvent.error && (
+                  <div>
+                    <span className="text-xs text-text-muted block mb-2">Error</span>
+                    <div className="rounded-md border border-status-danger/20 bg-status-danger/5 p-3 space-y-1">
+                      <p className="text-sm font-medium text-status-danger">
+                        {selectedEvent.error.name}: {selectedEvent.error.message}
+                      </p>
+                      {selectedEvent.error.stack && (
+                        <pre className="text-xs text-text-muted font-mono whitespace-pre-wrap mt-2 max-h-40 overflow-y-auto">
+                          {selectedEvent.error.stack}
+                        </pre>
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                {/* Data / Metadata */}
+                {(selectedEvent.data || selectedEvent.metadata || selectedEvent.context) && (
+                  <div>
+                    <span className="text-xs text-text-muted block mb-2">Data</span>
+                    <JsonTreeViewer
+                      data={selectedEvent.data || selectedEvent.metadata || selectedEvent.context}
+                      initialExpanded={true}
+                      maxDepth={5}
+                    />
+                  </div>
+                )}
+              </div>
+            </Card>
+          )}
+
+          {/* Event List (vertical) */}
+          {events.length > 0 && (
+            <Card className="border-border-subtle bg-bg-surface overflow-hidden">
+              <div className="px-5 py-3 border-b border-border-faint bg-bg-base/50">
+                <h3 className="text-sm font-display font-semibold text-text-primary">
+                  All Events ({events.length})
+                </h3>
+              </div>
+              <div className="divide-y divide-border-faint max-h-[400px] overflow-y-auto">
+                {events.map((event, idx) => {
+                  const eventId = event._id || event.id || String(idx);
+                  const category = categorizeEvent(event);
+                  const isSelected = selectedEventId === eventId;
+
+                  return (
+                    <button
+                      key={eventId}
+                      onClick={() =>
+                        setSelectedEventId((prev) => (prev === eventId ? null : eventId))
+                      }
+                      className={cn(
+                        "w-full flex items-center gap-3 px-5 py-2.5 text-left hover:bg-bg-elevated/50 transition-colors",
+                        isSelected && "bg-signal/5 border-l-2 border-l-signal"
+                      )}
+                    >
+                      <span className="text-xs text-text-muted font-mono w-20 shrink-0">
+                        {format(new Date(event.timestamp), "HH:mm:ss")}
+                      </span>
+                      <span className={cn("shrink-0", EVENT_TEXT_COLORS[category])}>
+                        <EventIcon category={category} />
+                      </span>
+                      <span className="text-sm text-text-primary truncate flex-1">
+                        {event.message || getEventTypeLabel(event)}
+                      </span>
+                      <Badge
+                        variant="outline"
+                        className={cn(
+                          "text-[10px] capitalize shrink-0",
+                          EVENT_TEXT_COLORS[category],
+                          EVENT_BORDER_COLORS[category]
+                        )}
+                      >
+                        {category}
+                      </Badge>
+                    </button>
+                  );
+                })}
+              </div>
+            </Card>
+          )}
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }

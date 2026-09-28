@@ -14,6 +14,7 @@ import {
   GitCommitHorizontal,
   Users,
   Hash,
+  Video,
 } from "lucide-react";
 import { PageHeader } from "@/components/shared/PageHeader";
 import { SignalDot } from "@/components/shared/SignalDot";
@@ -39,6 +40,7 @@ import type { ErrorGroup } from "@/services/changes.service";
 import { formatCompact } from "@/lib/format-utils";
 import { cn } from "@/lib/utils";
 import { useDebounce } from "@/hooks/useDebounce";
+import { useAvailableReplays } from "@/hooks/replay.hook";
 
 // ---------------------------------------------------------------------------
 // Status presentation
@@ -265,6 +267,23 @@ function GroupDetailDialog({
 
   const group = detailQuery.data?.group;
 
+  // "Watch replay": the newest occurrence whose session was recorded
+  const recentEvents: { sessionId?: string; timestamp?: string }[] =
+    detailQuery.data?.recentEvents ?? [];
+  const replays = useAvailableReplays(
+    projectId,
+    recentEvents.map((e) => e.sessionId ?? "")
+  );
+  const replayOccurrence = recentEvents.find(
+    (e) => e.sessionId && replays.data?.has(e.sessionId)
+  );
+  const replayHref = replayOccurrence
+    ? `/projects/${projectId}/sessions/${encodeURIComponent(replayOccurrence.sessionId!)}?tab=replay` +
+      (replayOccurrence.timestamp
+        ? `&at=${new Date(replayOccurrence.timestamp).getTime()}`
+        : "")
+    : null;
+
   return (
     <>
       <Dialog open={!!groupId && !issueDialogOpen} onOpenChange={(v) => !v && onClose()}>
@@ -376,6 +395,17 @@ function GroupDetailDialog({
               )}
 
               <DialogFooter className="flex-wrap gap-2">
+                {replayHref && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => router.push(replayHref)}
+                    title="Opens the recording of the most recent occurrence, a few seconds before the error"
+                  >
+                    <Video className="w-4 h-4 mr-1.5" />
+                    Watch replay
+                  </Button>
+                )}
                 <Button
                   variant="ghost"
                   size="sm"

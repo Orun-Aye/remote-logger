@@ -13,6 +13,7 @@ import {
   Link2,
   Bell,
   ArrowLeft,
+  Video,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -47,6 +48,11 @@ const projectSettingsTabs = [
     name: "Sampling",
     href: (pid: string) => `/projects/${pid}/settings/sampling`,
     icon: BarChart3,
+  },
+  {
+    name: "Session Replay",
+    href: (pid: string) => `/projects/${pid}/settings/replay`,
+    icon: Video,
   },
   {
     name: "Retention",

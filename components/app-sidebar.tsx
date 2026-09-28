@@ -90,7 +90,7 @@ const projectSubNavItems = [
   { title: "Interactions", path: "/interactions", icon: MousePointerClick, advanced: true },
   { title: "Pageviews", path: "/pageviews", icon: Eye, advanced: true },
   { title: "Console", path: "/console", icon: Terminal, advanced: false },
-  { title: "Sessions", path: "/sessions", icon: Users, advanced: true },
+  { title: "Sessions", path: "/sessions", icon: Users, advanced: false },
   { title: "Activity Feed", path: "/activity", icon: Radio, advanced: false },
   { title: "Traces", path: "/traces", icon: GitBranch, advanced: true },
   { title: "Funnels", path: "/funnels", icon: Filter, advanced: true },

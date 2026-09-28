@@ -21,7 +21,7 @@ export const ADVANCED_PROJECT_SUBROUTES = new Set([
   "network",
   "interactions",
   "pageviews",
-  "sessions",
+  // "sessions" is open to every beta user: session replay ships at launch
   "traces",
   "environments",
   "source-maps",

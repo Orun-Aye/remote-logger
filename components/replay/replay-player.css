@@ -1,0 +1,128 @@
+/*
+ * Observatory skin for rrweb-player.
+ *
+ * rrweb-player ships Svelte-scoped styles (.rr-controller.svelte-xxxx.svelte-xxxx),
+ * which outrank a plain descendant selector. Every rule here is scoped to
+ * .apperio-replay and repeats a class to win without !important. The one
+ * exception is the "skip inactive" switch, whose Svelte selectors chain up to
+ * six classes and pseudo-classes.
+ */
+
+.apperio-replay .rr-player.rr-player {
+  background: var(--bg-void);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius);
+  box-shadow: none;
+  overflow: hidden;
+  float: none;
+}
+
+/* The recorded page itself stays as the visitor saw it */
+.apperio-replay .rr-player__frame.rr-player__frame {
+  background: var(--bg-void);
+}
+
+.apperio-replay .replayer-wrapper iframe {
+  background: #ffffff;
+}
+
+/* ---------- Controller ---------- */
+
+.apperio-replay .rr-controller.rr-controller.rr-controller {
+  background: var(--bg-surface);
+  border-top: 1px solid var(--border-faint);
+  border-radius: 0 0 var(--radius) var(--radius);
+  font-family: var(--font-sans);
+}
+
+.apperio-replay .rr-timeline.rr-timeline.rr-timeline {
+  width: 92%;
+}
+
+.apperio-replay .rr-timeline__time.rr-timeline__time.rr-timeline__time {
+  color: var(--text-secondary);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+}
+
+.apperio-replay .rr-progress.rr-progress.rr-progress {
+  background: var(--bg-elevated);
+  border-top-color: var(--bg-surface);
+  border-bottom-color: var(--bg-surface);
+}
+
+.apperio-replay .rr-progress__step.rr-progress__step.rr-progress__step {
+  background: var(--signal-muted);
+  box-shadow: inset 0 0 0 1px var(--signal-glow);
+}
+
+.apperio-replay .rr-progress__handler.rr-progress__handler.rr-progress__handler {
+  width: 14px;
+  height: 14px;
+  background: var(--signal);
+  box-shadow: 0 0 0 4px var(--signal-glow);
+}
+
+.apperio-replay .rr-controller__btns.rr-controller__btns.rr-controller__btns {
+  color: var(--text-secondary);
+  gap: 2px;
+}
+
+.apperio-replay .rr-controller__btns.rr-controller__btns button {
+  color: var(--text-secondary);
+  border-radius: 6px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.apperio-replay .rr-controller__btns.rr-controller__btns button:hover {
+  background: var(--bg-elevated);
+  color: var(--text-primary);
+}
+
+.apperio-replay .rr-controller__btns.rr-controller__btns button:active {
+  background: var(--signal-muted);
+}
+
+.apperio-replay .rr-controller__btns.rr-controller__btns button.active.active {
+  background: var(--signal);
+  color: var(--bg-void);
+}
+
+.apperio-replay .rr-controller__btns.rr-controller__btns button:focus-visible {
+  outline: 2px solid var(--signal);
+  outline-offset: 1px;
+}
+
+/* Icons are inline SVGs filled black by default */
+.apperio-replay .rr-controller__btns svg {
+  fill: currentColor;
+}
+
+/* "Skip inactive" switch */
+.apperio-replay .switch {
+  color: var(--text-secondary) !important;
+  font-size: 12px;
+}
+
+.apperio-replay .switch label::before {
+  background: var(--bg-elevated) !important;
+  box-shadow: inset 0 0 0 1px var(--border-subtle);
+}
+
+.apperio-replay .switch input[type="checkbox"]:checked + label::before {
+  background: var(--signal) !important;
+  box-shadow: none;
+}
+
+/* ---------- Cursor ---------- */
+
+.apperio-replay .replayer-mouse::after {
+  background: var(--signal);
+}
+
+.apperio-replay .replayer-mouse.touch-device.touch-active {
+  border-color: var(--signal);
+}
