@@ -4,7 +4,7 @@
 
 import { queryClient } from "@/lib/query/client";
 import { logService } from "@/services/log.service";
-import { LogEntry, LogFilters } from "@/types/analytics";
+import { LogEntry, LogFilters, LogTrendsGroupBy } from "@/types/analytics";
 import { useMutation, useQuery } from "@tanstack/react-query";
 
 // Centralized query keys for logs (mirrors projects hook architecture)
@@ -16,8 +16,8 @@ export const logQueryKeys = {
     [...logQueryKeys.all, "detail", projectId, logId] as const,
   summary: (projectId: string, timeRange?: string) =>
     [...logQueryKeys.all, "summary", projectId, timeRange] as const,
-  trends: (projectId: string, timeRange: string, interval: string) =>
-    [...logQueryKeys.all, "trends", projectId, timeRange, interval] as const,
+  trends: (projectId: string, startDate: string, endDate: string, groupBy: string) =>
+    [...logQueryKeys.all, "trends", projectId, startDate, endDate, groupBy] as const,
   distinct: (projectId: string, field: string) =>
     [...logQueryKeys.all, "distinct", projectId, field] as const,
   uniqueErrors: (projectId: string, timeRange?: string) =>
@@ -59,15 +59,19 @@ export const useLogSummary = (projectId: string, timeRange?: string) => {
   });
 };
 
-// Hook to get log trends
+// Hook to get log trends (volume over time, bucketed server-side in UTC)
 export const useLogTrends = (
   projectId: string,
-  timeRange: string = "24h",
-  interval: string = "1h"
+  opts: { startDate: Date; endDate: Date; groupBy: LogTrendsGroupBy }
 ) => {
   return useQuery({
-    queryKey: logQueryKeys.trends(projectId, timeRange, interval),
-    queryFn: () => logService.getLogTrends(projectId, timeRange, interval),
+    queryKey: logQueryKeys.trends(
+      projectId,
+      opts.startDate.toISOString(),
+      opts.endDate.toISOString(),
+      opts.groupBy
+    ),
+    queryFn: () => logService.getLogTrends(projectId, opts),
     enabled: !!projectId,
     staleTime: 2 * 60 * 1000, // 2 minutes
     refetchInterval: 5 * 60 * 1000, // Refetch every 5 minutes

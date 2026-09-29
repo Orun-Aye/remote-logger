@@ -1,12 +1,16 @@
+import { useMemo } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { changesService } from "@/services/changes.service";
+import type { DeployMarkerLine } from "@/components/shared/TimeSeriesChart";
 
 const changesKeys = {
-  feed: (projectId: string, page: number, type?: string) =>
-    ["changes", "feed", projectId, page, type ?? "all"] as const,
-  deployments: (projectId: string, page: number, kind?: string) =>
-    ["changes", "deployments", projectId, page, kind ?? "all"] as const,
+  // limit is part of the key: the overview widgets and the full pages fetch
+  // different page sizes and must not share a cache entry
+  feed: (projectId: string, page: number, limit: number, type?: string) =>
+    ["changes", "feed", projectId, page, limit, type ?? "all"] as const,
+  deployments: (projectId: string, page: number, limit: number, kind?: string) =>
+    ["changes", "deployments", projectId, page, limit, kind ?? "all"] as const,
   markers: (projectId: string, from: string, to: string) =>
     ["changes", "markers", projectId, from, to] as const,
   releaseHealth: (projectId: string, release: string) =>
@@ -29,7 +33,7 @@ export function useChangesFeed(
 ) {
   const page = opts.page ?? 1;
   return useQuery({
-    queryKey: changesKeys.feed(projectId, page, opts.type),
+    queryKey: changesKeys.feed(projectId, page, opts.limit ?? 20, opts.type),
     queryFn: () => changesService.getChanges(projectId, opts),
     enabled: !!projectId,
     // Pending AI summaries resolve within a couple of minutes of a push
@@ -96,20 +100,79 @@ export function useDeployments(
 ) {
   const page = opts.page ?? 1;
   return useQuery({
-    queryKey: changesKeys.deployments(projectId, page, opts.kind),
+    queryKey: changesKeys.deployments(projectId, page, opts.limit ?? 20, opts.kind),
     queryFn: () => changesService.getDeployments(projectId, opts),
     enabled: !!projectId,
     staleTime: 60 * 1000,
   });
 }
 
-export function useDeployMarkers(projectId: string, from: Date, to: Date) {
+export function useDeployMarkers(
+  projectId: string,
+  from: Date,
+  to: Date,
+  enabled = true,
+) {
   return useQuery({
     queryKey: changesKeys.markers(projectId, from.toISOString(), to.toISOString()),
     queryFn: () => changesService.getDeployMarkers(projectId, from, to),
-    enabled: !!projectId,
+    enabled: !!projectId && enabled,
     staleTime: 2 * 60 * 1000,
   });
+}
+
+const HOUR_MS = 60 * 60 * 1000;
+
+/**
+ * Deploy markers snapped onto a TimeSeriesChart's categorical x-axis.
+ *
+ * The fetch window is derived from the chart's own buckets (first bucket to
+ * one bucket past the last), so every chart gets markers for exactly the span
+ * it plots and the query key only changes when the data does.
+ */
+export function useChartDeployMarkers(
+  projectId: string,
+  bucketTimestamps: string[],
+): DeployMarkerLine[] {
+  // Callers often rebuild the array every render; key on its contents
+  const bucketKey = bucketTimestamps.join("|");
+
+  const buckets = useMemo(
+    () =>
+      bucketTimestamps
+        .map((ts) => ({ ts, time: +new Date(ts) }))
+        .filter((b) => Number.isFinite(b.time)),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [bucketKey],
+  );
+
+  const range = useMemo(() => {
+    if (buckets.length === 0) return { from: new Date(0), to: new Date(0) };
+    const first = buckets[0].time;
+    const last = buckets[buckets.length - 1].time;
+    const step = buckets.length > 1 ? last - buckets[buckets.length - 2].time : HOUR_MS;
+    return { from: new Date(first), to: new Date(last + step) };
+  }, [buckets]);
+
+  const { data } = useDeployMarkers(projectId, range.from, range.to, buckets.length > 0);
+
+  return useMemo(() => {
+    if (!data?.length || buckets.length === 0) return [];
+    return data.map((m) => {
+      const target = +new Date(m.date);
+      let nearest = buckets[0];
+      for (const b of buckets) {
+        if (Math.abs(b.time - target) < Math.abs(nearest.time - target)) {
+          nearest = b;
+        }
+      }
+      return {
+        timestamp: nearest.ts,
+        label: m.kind === "release" ? m.release || "Release" : "Deploy",
+        verdict: m.verdict as DeployMarkerLine["verdict"],
+      };
+    });
+  }, [data, buckets]);
 }
 
 export function useReleaseHealth(projectId: string, release: string | undefined) {

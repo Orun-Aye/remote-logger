@@ -8,6 +8,7 @@ import {
   LogFilters,
   LogSummary,
   LogTrends,
+  LogTrendsGroupBy,
   UniqueError,
 } from "@/types/analytics";
 import { queryClient } from "@/lib/query/client";
@@ -121,12 +122,16 @@ export const logService = {
   // Get log trends (volume over time)
   getLogTrends: async (
     projectId: string,
-    timeRange: string = "24h",
-    interval: string = "1h"
+    opts: { startDate?: Date; endDate?: Date; groupBy?: LogTrendsGroupBy } = {}
   ) => {
     try {
+      // The backend reads startDate/endDate/groupBy (not timeRange/interval)
+      const params = new URLSearchParams();
+      if (opts.startDate) params.set("startDate", opts.startDate.toISOString());
+      if (opts.endDate) params.set("endDate", opts.endDate.toISOString());
+      if (opts.groupBy) params.set("groupBy", opts.groupBy);
       const response = await apiClient.get<ApiResponse<LogTrends>>(
-        `/${projectId}/logs/trends?timeRange=${timeRange}&interval=${interval}`
+        `/${projectId}/logs/trends?${params.toString()}`
       );
 
       if (response.data.status === "error") {

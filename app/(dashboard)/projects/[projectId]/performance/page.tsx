@@ -24,6 +24,7 @@ import {
   resolveTimeRangeParams,
 } from "@/lib/format-utils";
 import { useAnomalies } from "@/hooks/anomaly.hook";
+import { useChartDeployMarkers } from "@/hooks/changes.hooks";
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -458,6 +459,14 @@ export default function PerformanceAnalyticsPage() {
     }));
   }, [anomalyData]);
 
+  // Deploy markers for chart overlays (Phase 7 Change Intelligence)
+  const deployMarkerLines = useChartDeployMarkers(
+    projectId,
+    Array.isArray(timelineData)
+      ? timelineData.map((p: { timestamp: string }) => p.timestamp)
+      : []
+  );
+
   // Derive metrics from score data
   const score = scoreData?.score ?? scoreData?.performanceScore ?? null;
   const avgResponseTime = scoreData?.avgResponseTime ?? scoreData?.avg ?? null;
@@ -638,6 +647,7 @@ export default function PerformanceAnalyticsPage() {
                   formatYAxis={(val: number) => formatMs(val)}
                   formatTooltip={(val: number) => formatMs(val)}
                   anomalies={anomalyMarkers}
+                  deployMarkers={deployMarkerLines}
                 />
               </div>
             );

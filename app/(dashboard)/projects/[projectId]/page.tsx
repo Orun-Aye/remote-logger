@@ -5,12 +5,29 @@ import { useParams } from "next/navigation";
 import Link from "next/link";
 import { format, formatDistanceToNow } from "date-fns";
 import type { DateRange } from "react-day-picker";
-import { Calendar } from "lucide-react";
+import {
+  Calendar,
+  GitCommitHorizontal,
+  Rocket,
+  Sparkles,
+  Tag,
+} from "lucide-react";
 import { useProject } from "@/hooks/project.hooks";
 import { useLogs, useLogSummary } from "@/hooks/log.hooks";
 import { useAlertStats } from "@/hooks/alerts.hook";
 import { useNetworkSlowest } from "@/hooks/analytics.hook";
-import { useRecentEvents } from "@/hooks/recentEvents.hook";
+import { useChangesFeed, useDeployments } from "@/hooks/changes.hooks";
+import type {
+  ChangeCommit,
+  ChangeDeployment,
+} from "@/services/changes.service";
+import {
+  ChangePct,
+  DeployStateBadge,
+  deployState,
+  verdictDueAt,
+  type DeployState,
+} from "@/components/changes/deploy-state";
 import { useApperioStore, type TimeRange } from "@/store/apperio-store";
 import { SkeletonDashboard } from "@/components/shared/SkeletonDashboard";
 import { Button } from "@/components/ui/button";
@@ -1034,97 +1051,277 @@ function SlowestEndpoints({
   );
 }
 
-type TimelineEvent = {
-  id: string;
-  type: "deploy" | "alert" | "team" | "config";
-  label: string;
-  meta: string;
-  timestamp: string;
-  href?: string;
-};
+function deployTitle(dep: ChangeDeployment): string {
+  if (dep.kind === "release") return `Release ${dep.release ?? ""}`.trim();
+  return dep.release
+    ? `${dep.release} to ${dep.environment}`
+    : `Deployed to ${dep.environment}`;
+}
 
-function EventTimeline({
-  events,
-  isLoading,
-}: {
-  events: TimelineEvent[];
-  isLoading: boolean;
-}) {
-  const colors: Record<TimelineEvent["type"], string> = {
-    deploy: "var(--signal)",
-    alert: "var(--status-warn)",
-    team: "var(--data-info)",
-    config: "var(--text-secondary)",
-  };
+function verdictSentence(dep: ChangeDeployment, state: DeployState): string {
+  const change = dep.impact?.errorRateChangePct;
+  const size = change === null || change === undefined ? null : Math.abs(change).toFixed(1);
+  switch (state) {
+    case "degraded":
+      return size
+        ? `Error rate rose ${size}% in the hour after this deploy.`
+        : "Errors spiked in the hour after this deploy.";
+    case "improved":
+      return size
+        ? `Error rate fell ${size}% in the hour after this deploy.`
+        : "Errors dropped in the hour after this deploy.";
+    case "healthy":
+      return "No meaningful change in error rate in the hour after this deploy.";
+    case "unknown":
+      return "Too little traffic around this deploy to call it either way.";
+    case "measuring":
+      return `Watching the first hour. Verdict ${formatDistanceToNow(
+        verdictDueAt(dep),
+        { addSuffix: true },
+      )}.`;
+    case "deploying":
+      return "Rollout in progress. The verdict starts once it succeeds.";
+    case "failed":
+      return "The deploy reported a failure, so there is nothing to measure.";
+    default:
+      return "This deploy has been superseded.";
+  }
+}
+
+function formatRate(rate: number): string {
+  return `${(rate * 100).toFixed(2)}%`;
+}
+
+function DeployImpactCard({ projectId }: { projectId: string }) {
+  const { data, isLoading } = useDeployments(projectId, {
+    limit: 5,
+    kind: "deployment",
+  });
+  const items = data?.items ?? [];
+  const last = items[0];
+  const state = last ? deployState(last) : null;
+  const impact = last?.impact;
+  // When the latest deploy has no verdict yet, the one before it still says something
+  const previous =
+    last && !impact ? items.slice(1).find((d) => d.impact?.verdict) : undefined;
+
   return (
-    <div className="overflow-hidden rounded-lg border border-border-subtle bg-bg-surface">
+    <div
+      className="flex flex-col overflow-hidden rounded-lg border border-border-subtle bg-bg-surface"
+      style={{
+        borderLeft:
+          state === "degraded"
+            ? "2px solid var(--status-danger)"
+            : state === "healthy" || state === "improved"
+              ? "2px solid var(--signal)"
+              : undefined,
+      }}
+    >
       <div className="flex items-center justify-between border-b border-border-faint px-4 py-2.5">
-        <span className="font-mono text-[11px] font-medium uppercase tracking-[0.08em] text-text-secondary">
-          Recent Events
-        </span>
+        <div className="flex items-center gap-2">
+          <Rocket className="h-3.5 w-3.5 text-signal" />
+          <span className="font-mono text-[11px] font-medium uppercase tracking-[0.08em] text-text-secondary">
+            Deploy Impact
+          </span>
+        </div>
+        <Link
+          href={`/projects/${projectId}/releases`}
+          className="font-mono text-[11px] text-text-muted hover:text-text-secondary"
+        >
+          All releases →
+        </Link>
       </div>
-      <div className="py-2">
-        {isLoading && events.length === 0 && (
-          <div className="px-4 py-8 text-center font-mono text-[11.5px] text-text-muted">
-            Loading events…
+
+      {isLoading ? (
+        <div className="px-4 py-8 text-center font-mono text-[11.5px] text-text-muted">
+          Loading deploys…
+        </div>
+      ) : !last || !state ? (
+        <div className="flex flex-col gap-2 px-4 py-6">
+          <div className="text-[13px] font-medium text-text-primary">
+            No deploys tracked yet
           </div>
-        )}
-        {!isLoading && events.length === 0 && (
-          <div className="px-4 py-8 text-center font-mono text-[11.5px] text-text-muted">
-            No recent events. Connect a GitHub repo in settings to see deploys.
-          </div>
-        )}
-        {events.map((e, i) => {
-          const node = (
-            <div
-              className="relative px-4 pl-9"
-              style={{ paddingTop: 8, paddingBottom: 8 }}
-            >
-              {i < events.length - 1 && (
-                <div
-                  className="absolute left-[22px]"
-                  style={{
-                    top: 24,
-                    bottom: -8,
-                    width: 1,
-                    background: "var(--border-faint)",
-                  }}
-                />
-              )}
-              <div
-                className="absolute"
-                style={{
-                  left: 18,
-                  top: 11,
-                  width: 9,
-                  height: 9,
-                  borderRadius: "50%",
-                  background: "var(--bg-base)",
-                  border: `2px solid ${colors[e.type]}`,
-                  boxShadow: i === 0 ? `0 0 6px ${colors[e.type]}` : "none",
-                }}
-              />
-              <div className="mb-[1px] flex items-center gap-1.5">
-                <span className="text-[12.5px] font-medium text-text-primary truncate">
-                  {e.label}
-                </span>
+          <p className="text-[12.5px] leading-[1.5] text-text-muted">
+            Once Apperio sees a deploy, this card shows whether it made your
+            error rate better or worse. GitHub Deployments are picked up from a
+            linked repo, and other CI systems can post to the deployments API.
+          </p>
+          <Link
+            href={`/projects/${projectId}/settings/integrations`}
+            className="font-mono text-[11.5px] uppercase tracking-[0.05em] text-signal"
+          >
+            Connect GitHub →
+          </Link>
+        </div>
+      ) : (
+        <div className="flex flex-1 flex-col gap-3 px-4 py-4">
+          <div className="flex items-start justify-between gap-3">
+            <div className="min-w-0">
+              <div className="truncate text-[14px] font-medium text-text-primary">
+                {deployTitle(last)}
               </div>
-              <div className="flex items-center gap-2 font-mono text-[10.5px] text-text-muted">
-                <span>{relativeTime(e.timestamp)}</span>
-                <span>·</span>
-                <span className="truncate">{e.meta}</span>
+              <div className="mt-0.5 flex flex-wrap items-center gap-x-3 font-mono text-[10.5px] text-text-muted">
+                <span>{relativeTime(last.startedAt)}</span>
+                {last.sha && <span>{last.sha.slice(0, 7)}</span>}
+                {last.deployedBy && <span>{last.deployedBy}</span>}
               </div>
             </div>
-          );
-          return e.href ? (
-            <Link key={e.id} href={e.href} className="block hover:bg-bg-elevated">
-              {node}
+            <DeployStateBadge state={state} />
+          </div>
+
+          <p className="text-[13px] leading-[1.5] text-text-secondary">
+            {verdictSentence(last, state)}
+          </p>
+
+          {impact && (
+            <div className="grid grid-cols-2 gap-2.5">
+              <div className="rounded-md border border-border-faint bg-bg-base px-3 py-2">
+                <div className="mb-1 font-mono text-[10px] uppercase tracking-[0.07em] text-text-muted">
+                  Error rate
+                </div>
+                <div className="tabular-nums font-mono text-[12.5px] text-text-secondary">
+                  {formatRate(impact.before.errorRate)} →{" "}
+                  <span className="text-text-primary">
+                    {formatRate(impact.after.errorRate)}
+                  </span>
+                </div>
+                <div className="font-mono text-[10.5px]">
+                  <ChangePct value={impact.errorRateChangePct} />
+                </div>
+              </div>
+              <div className="rounded-md border border-border-faint bg-bg-base px-3 py-2">
+                <div className="mb-1 font-mono text-[10px] uppercase tracking-[0.07em] text-text-muted">
+                  Avg response
+                </div>
+                <div className="tabular-nums font-mono text-[12.5px] text-text-secondary">
+                  {impact.before.avgResponseTime ?? "n/a"} →{" "}
+                  <span className="text-text-primary">
+                    {impact.after.avgResponseTime ?? "n/a"}
+                  </span>
+                  {impact.after.avgResponseTime !== null && " ms"}
+                </div>
+                <div className="font-mono text-[10.5px]">
+                  <ChangePct value={impact.responseTimeChangePct} />
+                </div>
+              </div>
+            </div>
+          )}
+
+          {previous && (
+            <div className="flex items-center justify-between gap-3 border-t border-border-faint pt-3">
+              <span className="truncate font-mono text-[11px] text-text-muted">
+                Previous: {deployTitle(previous)} · {relativeTime(previous.startedAt)}
+              </span>
+              <DeployStateBadge state={deployState(previous)} />
+            </div>
+          )}
+
+          {last.release && (
+            <Link
+              href={`/projects/${projectId}/releases?release=${encodeURIComponent(last.release)}`}
+              className="mt-auto font-mono text-[11px] text-text-muted hover:text-signal"
+            >
+              Release health for {last.release} →
             </Link>
-          ) : (
-            <div key={e.id}>{node}</div>
-          );
-        })}
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function LatestChanges({ projectId }: { projectId: string }) {
+  const { data, isLoading } = useChangesFeed(projectId, { limit: 3 });
+  const items = data?.items ?? [];
+  const feedHref = `/projects/${projectId}/changes`;
+
+  return (
+    <div className="flex flex-col overflow-hidden rounded-lg border border-border-subtle bg-bg-surface">
+      <div className="flex items-center justify-between border-b border-border-faint px-4 py-2.5">
+        <div className="flex items-center gap-2">
+          <GitCommitHorizontal className="h-3.5 w-3.5 text-data-info" />
+          <span className="font-mono text-[11px] font-medium uppercase tracking-[0.08em] text-text-secondary">
+            Latest Changes
+          </span>
+        </div>
+        <Link
+          href={feedHref}
+          className="font-mono text-[11px] text-text-muted hover:text-text-secondary"
+        >
+          Change feed →
+        </Link>
       </div>
+
+      {isLoading ? (
+        <div className="px-4 py-8 text-center font-mono text-[11.5px] text-text-muted">
+          Loading changes…
+        </div>
+      ) : items.length === 0 ? (
+        <div className="flex flex-col gap-2 px-4 py-6">
+          <div className="text-[13px] font-medium text-text-primary">
+            No changes tracked yet
+          </div>
+          <p className="text-[12.5px] leading-[1.5] text-text-muted">
+            Link a GitHub repo and every push lands here in plain English, next
+            to the errors it may have caused.
+          </p>
+          <Link
+            href={`/projects/${projectId}/settings/integrations`}
+            className="font-mono text-[11.5px] uppercase tracking-[0.05em] text-signal"
+          >
+            Connect GitHub →
+          </Link>
+        </div>
+      ) : (
+        <div>
+          {items.map((item, i) => {
+            const isCommit = item.itemType === "commit";
+            const commit = isCommit ? (item as ChangeCommit) : null;
+            const dep = isCommit ? null : (item as ChangeDeployment);
+            const Icon = commit ? GitCommitHorizontal : dep?.kind === "release" ? Tag : Rocket;
+            return (
+              <Link
+                key={item._id}
+                href={feedHref}
+                className="flex items-start gap-3 px-4 py-3 transition-colors hover:bg-bg-elevated"
+                style={{
+                  borderBottom:
+                    i < items.length - 1 ? "1px solid var(--border-faint)" : "none",
+                }}
+              >
+                <Icon
+                  className={`mt-0.5 h-4 w-4 flex-shrink-0 ${
+                    commit ? "text-text-muted" : "text-signal"
+                  }`}
+                />
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-start justify-between gap-3">
+                    <span className="line-clamp-2 text-[13px] leading-snug text-text-primary">
+                      {commit?.aiSummary && (
+                        <Sparkles className="-mt-0.5 mr-1 inline h-3 w-3 text-signal" />
+                      )}
+                      {commit
+                        ? commit.aiSummary || commit.message.split("\n")[0]
+                        : deployTitle(dep!)}
+                    </span>
+                    {dep && <DeployStateBadge state={deployState(dep)} />}
+                  </div>
+                  <div className="mt-1 flex flex-wrap items-center gap-x-3 font-mono text-[10.5px] text-text-muted">
+                    <span>{relativeTime(item.date)}</span>
+                    {commit && (
+                      <>
+                        <span>{commit.authorLogin || commit.authorName}</span>
+                        <span>{commit.sha.slice(0, 7)}</span>
+                      </>
+                    )}
+                    {dep?.deployedBy && <span>{dep.deployedBy}</span>}
+                  </div>
+                </div>
+              </Link>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 }
@@ -1285,8 +1482,6 @@ export default function ProjectDashboard() {
       timeRange: slowestRangePreset,
       limit: 5,
     });
-  const { events: recentEvents, isLoading: recentEventsLoading } =
-    useRecentEvents(projectId, 8);
 
   const pData = projectData as Project | undefined;
   const project = pData?.project;
@@ -1527,6 +1722,14 @@ export default function ProjectDashboard() {
 
         <div
           className="grid gap-3.5"
+          style={{ gridTemplateColumns: "1fr 1.2fr" }}
+        >
+          <DeployImpactCard projectId={projectId} />
+          <LatestChanges projectId={projectId} />
+        </div>
+
+        <div
+          className="grid gap-3.5"
           style={{ gridTemplateColumns: "1.2fr 1fr" }}
         >
           <div style={{ minHeight: 380, display: "flex" }}>
@@ -1544,21 +1747,15 @@ export default function ProjectDashboard() {
           </div>
         </div>
 
-        <div
-          className="grid gap-3.5"
-          style={{ gridTemplateColumns: "1fr 2fr" }}
-        >
-          <EventTimeline events={recentEvents} isLoading={recentEventsLoading} />
-          <div className="flex flex-col gap-3.5">
-            <div className="px-1 font-mono text-[11px] font-medium uppercase tracking-[0.08em] text-text-muted">
-              Quick Navigation
-            </div>
-            <QuickLinksBar projectId={projectId} />
-            <SdkStatusCard
-              isActive={!!project.isActive}
-              logCount={project.logCount ?? 0}
-            />
+        <div className="flex flex-col gap-3.5">
+          <div className="px-1 font-mono text-[11px] font-medium uppercase tracking-[0.08em] text-text-muted">
+            Quick Navigation
           </div>
+          <QuickLinksBar projectId={projectId} />
+          <SdkStatusCard
+            isActive={!!project.isActive}
+            logCount={project.logCount ?? 0}
+          />
         </div>
       </div>
     </div>

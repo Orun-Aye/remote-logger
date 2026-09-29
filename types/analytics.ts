@@ -90,17 +90,19 @@ export interface LogSummary {
   };
 }
 
-export interface LogTrends {
-  timeRange: string;
-  data: Array<{
-    timestamp: string;
-    total: number;
-    error: number;
-    warn: number;
-    info: number;
-    debug: number;
-  }>;
+/** One bucket from GET /:projectId/logs/trends (LogService.getLogTrends). */
+export interface LogTrendBucket {
+  /** UTC bucket key: "YYYY-MM-DDTHH" for hour, "YYYY-MM-DD" for day. */
+  _id: string;
+  count: number;
+  /** Level "error" only; fatal is not included. */
+  errorCount?: number;
+  warnCount?: number;
 }
+
+export type LogTrends = LogTrendBucket[];
+
+export type LogTrendsGroupBy = "hour" | "day" | "week" | "month";
 
 export interface UniqueError {
   message: string;

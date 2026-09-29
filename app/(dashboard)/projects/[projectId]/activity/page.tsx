@@ -8,7 +8,11 @@ import {
   useActivityStats,
 } from "@/hooks/analytics.hook";
 import { useProjectWebSocket } from "@/hooks/useWebsocket";
+import { useLogTrends } from "@/hooks/log.hooks";
+import { useChartDeployMarkers } from "@/hooks/changes.hooks";
 import { PageHeader } from "@/components/shared/PageHeader";
+import { TimeSeriesChart } from "@/components/shared/TimeSeriesChart";
+import { CHART_COLORS } from "@/lib/charts/observatory-theme";
 import { MetricCard } from "@/components/shared/MetricCard";
 import { SignalDot } from "@/components/shared/SignalDot";
 import { SkeletonDashboard } from "@/components/shared/SkeletonDashboard";
@@ -97,6 +101,118 @@ const LEVEL_FILTER_OPTIONS: { key: LevelFilter; label: string }[] = [
   { key: "info", label: "Info" },
   { key: "debug", label: "Debug" },
 ];
+
+// ============================================
+// Event volume chart
+// ============================================
+
+const HOUR_MS = 60 * 60 * 1000;
+const DAY_MS = 24 * HOUR_MS;
+
+const PRESET_HOURS: Record<string, number> = {
+  "1h": 1,
+  "6h": 6,
+  "24h": 24,
+  "7d": 24 * 7,
+  "30d": 24 * 30,
+};
+
+function EventVolumeChart({
+  projectId,
+  selectedTimeRange,
+  customTimeRange,
+}: {
+  projectId: string;
+  selectedTimeRange: string;
+  customTimeRange: { start: Date; end: Date } | null;
+}) {
+  const range = useMemo(() => {
+    if (selectedTimeRange === "custom" && customTimeRange) {
+      const hours = (customTimeRange.end.getTime() - customTimeRange.start.getTime()) / HOUR_MS;
+      return {
+        startDate: customTimeRange.start,
+        endDate: customTimeRange.end,
+        groupBy: hours <= 24 * 7 ? ("hour" as const) : ("day" as const),
+      };
+    }
+    const hours = PRESET_HOURS[selectedTimeRange] ?? 24;
+    // End on the next hour boundary: the current hour keeps filling in on
+    // refetch, and the query key stays stable within the hour
+    const endDate = new Date(Math.ceil(Date.now() / HOUR_MS) * HOUR_MS);
+    return {
+      startDate: new Date(endDate.getTime() - hours * HOUR_MS),
+      endDate,
+      groupBy: hours <= 24 * 7 ? ("hour" as const) : ("day" as const),
+    };
+  }, [selectedTimeRange, customTimeRange]);
+
+  const { data, isLoading } = useLogTrends(projectId, range);
+
+  // The backend only returns buckets that have logs; zero-fill the rest so the
+  // categorical x-axis is evenly spaced and deploy lines land in the right place
+  const series = useMemo(() => {
+    const step = range.groupBy === "hour" ? HOUR_MS : DAY_MS;
+    const keyLength = range.groupBy === "hour" ? 13 : 10;
+    const byKey = new Map((Array.isArray(data) ? data : []).map((b) => [b._id, b]));
+    const points: Array<{ timestamp: string; count: number; errorCount: number }> = [];
+    const endMs = range.endDate.getTime();
+    for (
+      let t = Math.floor(range.startDate.getTime() / step) * step;
+      t < endMs;
+      t += step
+    ) {
+      const iso = new Date(t).toISOString();
+      const bucket = byKey.get(iso.slice(0, keyLength));
+      points.push({
+        timestamp: iso,
+        count: bucket?.count ?? 0,
+        errorCount: bucket?.errorCount ?? 0,
+      });
+    }
+    return points;
+  }, [data, range]);
+
+  const deployMarkerLines = useChartDeployMarkers(
+    projectId,
+    series.map((p) => p.timestamp)
+  );
+
+  return (
+    <div className="rounded-lg border border-border-subtle bg-bg-surface p-6">
+      <h3 className="text-sm font-display font-semibold text-text-primary mb-4">
+        Event Volume
+      </h3>
+      {isLoading ? (
+        <div className="h-[220px] w-full bg-bg-elevated rounded animate-pulse" />
+      ) : (
+        <TimeSeriesChart
+          data={series}
+          series={[
+            {
+              key: "count",
+              label: "Events",
+              color: CHART_COLORS.signal,
+              type: "area",
+            },
+            {
+              key: "errorCount",
+              label: "Errors",
+              color: CHART_COLORS.danger,
+              type: "line",
+              strokeDasharray: "4 3",
+            },
+          ]}
+          height={220}
+          showLegend
+          formatXAxis={(value: string) =>
+            format(new Date(value), range.groupBy === "hour" ? "MMM d HH:mm" : "MMM d")
+          }
+          deployMarkers={deployMarkerLines}
+        />
+      )}
+    </div>
+  );
+}
 
 // ============================================
 // Main Page
@@ -303,6 +419,12 @@ export default function ActivityPage() {
             }
           />
         </div>
+
+        <EventVolumeChart
+          projectId={projectId}
+          selectedTimeRange={selectedTimeRange}
+          customTimeRange={customTimeRange}
+        />
 
         {/* Level Filter */}
         <div className="flex items-center gap-2">
