@@ -170,6 +170,14 @@ export type Project = {
         errorLogs: number;
         avgResponseTime: number | null;
       }>;
+      /**
+       * Zero-filled, fixed-width buckets across the requested range (5 min
+       * for 1h up to 1 day for 30d). Absent on backends older than this field.
+       */
+      volume?: {
+        bucketMinutes: number;
+        buckets: Array<{ start: string; totalLogs: number; errorLogs: number }>;
+      };
       errors: Array<{
         _id: { date: string };
         errorCount: number;

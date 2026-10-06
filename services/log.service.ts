@@ -76,6 +76,45 @@ export const logService = {
     }
   },
 
+  // Get logs from every project the user can access, newest first.
+  // Pass projectIds to narrow to a subset.
+  getLogsAcrossProjects: async (
+    filters: LogFilters & { projectIds?: string[] } = {}
+  ) => {
+    try {
+      const params = new URLSearchParams();
+
+      Object.entries(filters).forEach(([key, value]) => {
+        if (value !== undefined && value !== null && value !== "") {
+          if (Array.isArray(value)) {
+            value.forEach((v) => params.append(key, v.toString()));
+          } else {
+            params.append(key, value.toString());
+          }
+        }
+      });
+
+      const response = await apiClient.get<ApiResponse>(
+        `/logs?${params.toString()}`
+      );
+
+      if (response.data.status === "error") {
+        throw new ApiError(
+          response.data.message || "Failed to fetch logs",
+          response.status,
+          response.data.errors
+        );
+      }
+
+      return {
+        logs: response.data.data || [],
+        meta: response.data.meta,
+      };
+    } catch (error) {
+      handleApiError(error);
+    }
+  },
+
   // Get a specific log by ID
   getLogById: async (projectId: string, logId: string) => {
     try {

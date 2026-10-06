@@ -1,8 +1,13 @@
 "use client";
 
 import { useState, useEffect, useCallback, useMemo, useRef } from "react";
+import { useQueries } from "@tanstack/react-query";
 import { useProjects } from "@/hooks/project.hooks";
-import { useLogs, useDistinctValues } from "@/hooks/log.hooks";
+import {
+  logQueryKeys,
+  useLogs,
+  useLogsAcrossProjects,
+} from "@/hooks/log.hooks";
 import { LogEntry } from "@/types/analytics";
 import { LogExplorerSplitPane } from "./LogExplorerSplitPane";
 import { EnhancedLogListItem } from "./EnhancedLogListItem";
@@ -22,10 +27,24 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { toast } from "sonner";
+
+// Radix Select cannot use "" as an item value
+const ALL_PROJECTS = "all";
 
 interface ToolbarProps {
   logCount: number;
+  shownCount: number;
+  projects: Array<{ _id: string; name: string }>;
+  selectedProjectId: string;
+  onProjectChange: (projectId: string) => void;
   isLoading: boolean;
   isLiveTail: boolean;
   search: string;
@@ -35,6 +54,10 @@ interface ToolbarProps {
 
 function Toolbar({
   logCount,
+  shownCount,
+  projects,
+  selectedProjectId,
+  onProjectChange,
   isLoading,
   isLiveTail,
   search,
@@ -58,6 +81,28 @@ function Toolbar({
         Log Explorer
       </span>
 
+      {/* Project scope */}
+      <Select
+        value={selectedProjectId || ALL_PROJECTS}
+        onValueChange={(v) => onProjectChange(v === ALL_PROJECTS ? "" : v)}
+      >
+        <SelectTrigger
+          size="sm"
+          className="h-7 w-[180px] bg-bg-surface border-border-subtle text-xs"
+          aria-label="Project"
+        >
+          <SelectValue />
+        </SelectTrigger>
+        <SelectContent className="bg-bg-elevated border-border-subtle">
+          <SelectItem value={ALL_PROJECTS}>All projects</SelectItem>
+          {projects.map((project) => (
+            <SelectItem key={project._id} value={project._id}>
+              {project.name}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+
       {/* Divider */}
       <span className="w-px h-4 bg-border-subtle" />
 
@@ -77,6 +122,9 @@ function Toolbar({
               {logCount.toLocaleString()}
             </span>{" "}
             log{logCount === 1 ? "" : "s"}
+            {shownCount < logCount && (
+              <span className="ml-1.5">· newest {shownCount.toLocaleString()} shown</span>
+            )}
           </>
         )}
         {search && (
@@ -179,16 +227,19 @@ export function EnhancedLogExplorer() {
   const { data: projectsResponse } = useProjects();
   const projects = useMemo(() => projectsResponse?.data ?? [], [projectsResponse?.data]);
 
+  // "" means every project the user can access. A ?projectId= link narrows to one.
   const paramProjectId = searchParams.get("projectId") || "";
-  const [selectedProjectId, setSelectedProjectId] = useState<string>("");
+  const [selectedProjectId, setSelectedProjectId] = useState<string>(paramProjectId);
+  const isAllProjects = !selectedProjectId;
 
   useEffect(() => {
-    if (paramProjectId) {
-      setSelectedProjectId(paramProjectId);
-    } else if (projects.length > 0 && !selectedProjectId) {
-      setSelectedProjectId(projects[0]._id);
-    }
-  }, [paramProjectId, projects, selectedProjectId]);
+    if (paramProjectId) setSelectedProjectId(paramProjectId);
+  }, [paramProjectId]);
+
+  const projectNames = useMemo(
+    () => new Map<string, string>(projects.map((p: any) => [p._id, p.name])),
+    [projects]
+  );
 
   // Filters
   const [filters, setFilters] = useState<FilterBarFilters>({
@@ -207,12 +258,32 @@ export function EnhancedLogExplorer() {
   // Selected log for detail panel
   const [selectedLogIndex, setSelectedLogIndex] = useState<number>(-1);
 
-  // Fetch available filter values
-  const { data: distinctServices } = useDistinctValues(selectedProjectId, "service");
-  const { data: distinctEnvironments } = useDistinctValues(selectedProjectId, "environment");
-
-  const availableServices = useMemo(() => distinctServices ?? [], [distinctServices]);
-  const availableEnvironments = useMemo(() => distinctEnvironments ?? [], [distinctEnvironments]);
+  // Filter options: the union of distinct values across the projects in scope
+  const scopeProjectIds: string[] = useMemo(
+    () => (selectedProjectId ? [selectedProjectId] : projects.map((p: any) => p._id)),
+    [selectedProjectId, projects]
+  );
+  const { availableServices, availableEnvironments } = useQueries({
+    queries: scopeProjectIds.flatMap((id) =>
+      (["service", "environment"] as const).map((field) => ({
+        queryKey: logQueryKeys.distinct(id, field),
+        queryFn: () => logService.getDistinctValues(id, field),
+        staleTime: 10 * 60 * 1000,
+      }))
+    ),
+    combine: (results) => {
+      // Results alternate service, environment for each project
+      const union = (offset: number) =>
+        Array.from(
+          new Set(
+            results
+              .filter((_, i) => i % 2 === offset)
+              .flatMap((r) => (r.data as string[] | undefined) ?? [])
+          )
+        ).sort();
+      return { availableServices: union(0), availableEnvironments: union(1) };
+    },
+  });
 
   // Build API filters
   const apiFilters = useMemo(() => {
@@ -240,14 +311,18 @@ export function EnhancedLogExplorer() {
     };
   }, [filters]);
 
-  // Fetch logs
+  // Fetch logs. useLogs is disabled while selectedProjectId is "".
+  const projectLogs = useLogs(selectedProjectId, apiFilters);
+  const allProjectLogs = useLogsAcrossProjects(apiFilters, { enabled: isAllProjects });
   const {
     data: logsData,
     isLoading,
     refetch,
-  } = useLogs(selectedProjectId, apiFilters);
+  } = isAllProjects ? allProjectLogs : projectLogs;
 
-  const logs = useMemo(() => logsData?.logs ?? [], [logsData]);
+  const logs: LogEntry[] = useMemo(() => logsData?.logs ?? [], [logsData]);
+  const totalLogCount: number =
+    logsData?.meta?.pagination?.totalRecords ?? logs.length;
 
   // Auto-refresh for live tail
   useEffect(() => {
@@ -322,7 +397,7 @@ export function EnhancedLogExplorer() {
   const handleExport = useCallback(
     async (format: "csv" | "json") => {
       if (!selectedProjectId) {
-        toast.error("No project selected");
+        toast.info("Choose a project to export its logs");
         return;
       }
 
@@ -356,7 +431,14 @@ export function EnhancedLogExplorer() {
     <div className="h-[calc(100vh-4rem)] flex flex-col bg-bg-base overflow-hidden">
       {/* Single-row toolbar replaces previous header + results strip */}
       <Toolbar
-        logCount={logs.length}
+        logCount={totalLogCount}
+        shownCount={logs.length}
+        projects={projects}
+        selectedProjectId={selectedProjectId}
+        onProjectChange={(projectId) => {
+          setSelectedProjectId(projectId);
+          setSelectedLogIndex(-1);
+        }}
         isLoading={isLoading}
         isLiveTail={isLiveTail}
         search={filters.search}
@@ -410,6 +492,9 @@ export function EnhancedLogExplorer() {
                       isSelected={index === selectedLogIndex}
                       onSelect={handleLogSelect}
                       density="comfortable"
+                      projectName={
+                        isAllProjects ? projectNames.get(log.projectId) : undefined
+                      }
                     />
                   </div>
                 ))

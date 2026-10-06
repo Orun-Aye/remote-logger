@@ -392,7 +392,7 @@ export default function DashboardPage() {
                             {project.name}
                           </p>
                           <p className="text-xs text-text-muted">
-                            {formatCompact(project.logCount ?? project.metrics?.recentActivity?.logsLast24h ?? 0)} logs
+                            {formatCompact(project.metrics?.totalLogs ?? project.logCount ?? 0)} logs
                           </p>
                         </div>
                       </Link>
@@ -420,7 +420,7 @@ export default function DashboardPage() {
                               </Link>
                             </td>
                             <td className="px-4 py-2.5 text-right font-mono text-xs tabular-nums text-text-secondary">
-                              {formatCompact(project.logCount ?? project.metrics?.recentActivity?.logsLast24h ?? 0)}
+                              {formatCompact(project.metrics?.totalLogs ?? project.logCount ?? 0)}
                             </td>
                             <td className="px-4 py-2.5 text-center">
                               <SignalDot status={health} size="sm" />

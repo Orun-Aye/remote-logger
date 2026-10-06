@@ -18,6 +18,8 @@ interface EnhancedLogListItemProps {
   isSelected: boolean;
   onSelect: (log: LogEntry) => void;
   density?: "compact" | "comfortable";
+  /** Shown in the footer when the list mixes logs from several projects. */
+  projectName?: string;
 }
 
 const LEVEL_META: Record<
@@ -52,6 +54,7 @@ export function EnhancedLogListItem({
   isSelected,
   onSelect,
   density = "comfortable",
+  projectName,
 }: EnhancedLogListItemProps) {
   const [jsonDialogOpen, setJsonDialogOpen] = useState(false);
   const [copied, setCopied] = useState(false);
@@ -241,11 +244,14 @@ export function EnhancedLogListItem({
 
           {/* Footer metadata — single muted row */}
           {!compactRow &&
-            (log.environment || log.release || log.correlationId) && (
+            (projectName || log.environment || log.release || log.correlationId) && (
               <div
                 className="mt-1 flex items-center gap-2.5 font-mono text-text-muted"
                 style={{ fontSize: 10.5 }}
               >
+                {projectName && (
+                  <span className="text-text-secondary">{projectName}</span>
+                )}
                 {log.environment && (
                   <span
                     className="rounded"

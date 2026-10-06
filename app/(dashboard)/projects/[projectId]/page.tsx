@@ -1493,8 +1493,9 @@ export default function ProjectDashboard() {
   const logsTotal = analytics?.overview?.totalLogs ?? 0;
   const avgResponseTime =
     analytics?.responseTime?.current?.avgResponseTime ?? 0;
-  const totalRequests = analytics?.performance?.metrics?.totalRequests ?? 0;
-  const perfHealth = analytics?.performance?.health ?? "unknown";
+  // Requests that carried a timing, not every log in the range
+  const responseCount = analytics?.responseTime?.current?.responseTimeCount ?? 0;
+  const responseHealth = analytics?.responseTime?.health ?? "unknown";
   const healthScore = recommendations?.healthScore ?? 0;
   const activeAlertCount = alertStats?.active ?? 0;
   const criticalAlerts = alertStats?.bySeverity?.critical ?? 0;
@@ -1530,13 +1531,21 @@ export default function ProjectDashboard() {
     timeRangeHours,
   ]);
 
+  // Fixed-width, zero-filled buckets sized to the range. Daily trends are the
+  // fallback for backends that predate `trends.volume`; they left a 24h range
+  // with a single point, so the chart never rendered.
+  const volumeBuckets = useMemo(
+    () => analytics?.trends?.volume?.buckets ?? logsTrendInRange,
+    [analytics?.trends?.volume?.buckets, logsTrendInRange],
+  );
+
   const logsInRange = useMemo(
-    () => logsTrendInRange.reduce((sum, t) => sum + (t.totalLogs ?? 0), 0),
-    [logsTrendInRange],
+    () => volumeBuckets.reduce((sum, t) => sum + (t.totalLogs ?? 0), 0),
+    [volumeBuckets],
   );
   const errorsInRange = useMemo(
-    () => logsTrendInRange.reduce((sum, t) => sum + (t.errorLogs ?? 0), 0),
-    [logsTrendInRange],
+    () => volumeBuckets.reduce((sum, t) => sum + (t.errorLogs ?? 0), 0),
+    [volumeBuckets],
   );
   const errorRate = logsInRange > 0 ? (errorsInRange / logsInRange) * 100 : 0;
 
@@ -1550,12 +1559,12 @@ export default function ProjectDashboard() {
   );
 
   const logVolumeSeries = useMemo(
-    () => logsTrendInRange.map((t) => t.totalLogs ?? 0),
-    [logsTrendInRange],
+    () => volumeBuckets.map((t) => t.totalLogs ?? 0),
+    [volumeBuckets],
   );
   const errorVolumeSeries = useMemo(
-    () => logsTrendInRange.map((t) => t.errorLogs ?? 0),
-    [logsTrendInRange],
+    () => volumeBuckets.map((t) => t.errorLogs ?? 0),
+    [volumeBuckets],
   );
 
   const errorTrend = useMemo(() => {
@@ -1694,7 +1703,11 @@ export default function ProjectDashboard() {
             label="Response · avg"
             value={avgResponseTime > 0 ? Math.round(avgResponseTime) : "—"}
             unit={avgResponseTime > 0 ? "ms" : undefined}
-            subtitle={`${perfHealth} · ${formatN(totalRequests)} requests`}
+            subtitle={
+              responseCount > 0
+                ? `${responseHealth} · ${formatN(responseCount)} request${responseCount === 1 ? "" : "s"}`
+                : "no API requests captured"
+            }
             sparkData={responseSpark.length > 1 ? responseSpark : undefined}
             color="var(--data-info)"
           />
@@ -1754,7 +1767,7 @@ export default function ProjectDashboard() {
           <QuickLinksBar projectId={projectId} />
           <SdkStatusCard
             isActive={!!project.isActive}
-            logCount={project.logCount ?? 0}
+            logCount={logsTotal}
           />
         </div>
       </div>

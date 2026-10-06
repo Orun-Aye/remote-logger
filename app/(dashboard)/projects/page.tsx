@@ -42,7 +42,7 @@ function deriveHealth(project: any): "ok" | "warn" | "danger" {
 }
 
 function timeAgo(dateStr: string | undefined): string {
-  if (!dateStr) return "N/A";
+  if (!dateStr) return "never";
   const diff = Date.now() - new Date(dateStr).getTime();
   const minutes = Math.floor(diff / 60_000);
   if (minutes < 1) return "just now";
@@ -200,7 +200,8 @@ export default function ProjectsPage() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {filteredProjects.map((project: any) => {
             const health = deriveHealth(project);
-            const logs24h = project.metrics?.recentActivity?.logsLast24h ?? project.logCount ?? 0;
+            const totalLogs = project.metrics?.totalLogs ?? project.logCount ?? 0;
+            const logs24h = project.metrics?.recentActivity?.logsLast24h ?? 0;
             const errors24h = project.metrics?.recentActivity?.errorsLast24h ?? 0;
             const errorRate =
               logs24h > 0 ? ((errors24h / logs24h) * 100).toFixed(1) : "0.0";
@@ -247,13 +248,13 @@ export default function ProjectsPage() {
                           <span className="text-xs text-text-muted">Logs</span>
                         </div>
                         <p className="text-sm font-semibold text-text-primary font-mono">
-                          {formatNumber(logs24h)}
+                          {formatNumber(totalLogs)}
                         </p>
                       </div>
                       <div className="space-y-1">
                         <div className="flex items-center gap-1.5">
                           <AlertTriangle className="w-3 h-3 text-text-muted" />
-                          <span className="text-xs text-text-muted">Error Rate</span>
+                          <span className="text-xs text-text-muted">Error Rate 24h</span>
                         </div>
                         <p className="text-sm font-semibold text-text-primary font-mono">
                           {errorRate}%
@@ -277,18 +278,19 @@ export default function ProjectsPage() {
       {projects.length > 0 && viewMode === "list" && (
         <div className="rounded-lg border border-border-subtle bg-bg-surface overflow-hidden">
           {/* Header */}
-          <div className="grid grid-cols-[1fr_100px_100px_100px_120px_40px] gap-4 px-4 py-3 border-b border-border-subtle text-xs text-text-muted uppercase tracking-wider font-body">
+          <div className="grid grid-cols-[1fr_100px_100px_120px_120px_40px] gap-4 px-4 py-3 border-b border-border-subtle text-xs text-text-muted uppercase tracking-wider font-body">
             <span>Name</span>
             <span className="text-right">Environment</span>
             <span className="text-right">Logs</span>
-            <span className="text-right">Error Rate</span>
+            <span className="text-right">Error Rate 24h</span>
             <span className="text-right">Last Activity</span>
             <span />
           </div>
           {/* Rows */}
           {filteredProjects.map((project: any) => {
             const health = deriveHealth(project);
-            const logs24h = project.metrics?.recentActivity?.logsLast24h ?? project.logCount ?? 0;
+            const totalLogs = project.metrics?.totalLogs ?? project.logCount ?? 0;
+            const logs24h = project.metrics?.recentActivity?.logsLast24h ?? 0;
             const errors24h = project.metrics?.recentActivity?.errorsLast24h ?? 0;
             const errorRate =
               logs24h > 0 ? ((errors24h / logs24h) * 100).toFixed(1) : "0.0";
@@ -297,7 +299,7 @@ export default function ProjectsPage() {
               <Link
                 key={project._id}
                 href={`/projects/${project._id}`}
-                className="grid grid-cols-[1fr_100px_100px_100px_120px_40px] gap-4 px-4 py-3 border-b border-border-subtle last:border-b-0 hover:bg-bg-elevated transition-colors items-center group"
+                className="grid grid-cols-[1fr_100px_100px_120px_120px_40px] gap-4 px-4 py-3 border-b border-border-subtle last:border-b-0 hover:bg-bg-elevated transition-colors items-center group"
               >
                 <div className="flex items-center gap-2 min-w-0">
                   <SignalDot status={health} size="sm" />
@@ -309,14 +311,14 @@ export default function ProjectsPage() {
                   {project.environment ?? "production"}
                 </span>
                 <span className="text-sm text-text-primary font-mono text-right">
-                  {formatNumber(logs24h)}
+                  {formatNumber(totalLogs)}
                 </span>
                 <span className="text-sm text-text-primary font-mono text-right">
                   {errorRate}%
                 </span>
                 <span className="text-xs text-text-muted text-right flex items-center justify-end gap-1">
                   <Clock className="w-3 h-3" />
-                  {timeAgo(project.updatedAt)}
+                  {timeAgo(project.metrics?.lastActivity ?? project.lastIngestedAt)}
                 </span>
                 <button
                   onClick={(e) => toggleFavorite(project._id, e)}

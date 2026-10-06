@@ -38,8 +38,22 @@ export const useLogs = (projectId: string, filters: LogFilters = {}) => {
   });
 };
 
+// Hook to get logs from every project the user can access
+export const useLogsAcrossProjects = (
+  filters: LogFilters = {},
+  options: { enabled?: boolean } = {}
+) => {
+  return useQuery({
+    queryKey: logQueryKeys.list("all", filters),
+    queryFn: () => logService.getLogsAcrossProjects(filters),
+    enabled: options.enabled ?? true,
+    staleTime: 30 * 1000, // 30 seconds
+    refetchInterval: 60 * 1000, // Refetch every minute
+  });
+};
+
 // Hook to get a specific log by ID
-export const useLog = (projectId: string, logId: string) => {
+export const useLog =(projectId: string, logId: string) => {
   return useQuery({
     queryKey: logQueryKeys.byId(projectId, logId),
     queryFn: () => logService.getLogById(projectId, logId),
