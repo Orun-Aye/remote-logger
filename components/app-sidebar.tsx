@@ -49,7 +49,6 @@ import {
   Plug,
   Mail,
   GitCommitHorizontal,
-  Rocket,
   CircleDot,
 } from "lucide-react";
 import Link from "next/link";
@@ -82,7 +81,6 @@ const getProjectStatus = (project: any): "ok" | "warn" | "danger" | "info" => {
 const projectSubNavItems = [
   { title: "Overview", path: "", icon: LayoutDashboard, advanced: false },
   { title: "Changes", path: "/changes", icon: GitCommitHorizontal, advanced: false },
-  { title: "Releases", path: "/releases", icon: Rocket, advanced: false },
   { title: "Issues", path: "/issues", icon: CircleDot, advanced: false },
   { title: "Logs", path: "/logs", icon: ScrollText, advanced: false },
   { title: "Errors", path: "/errors", icon: Bug, advanced: false },

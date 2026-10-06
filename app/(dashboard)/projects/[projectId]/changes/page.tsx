@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { format, formatDistanceToNow, isSameDay } from "date-fns";
 import {
@@ -41,10 +41,12 @@ const TYPE_TABS = [
   { id: "all", label: "All activity" },
   { id: "commit", label: "Commits" },
   { id: "deployment", label: "Deploys" },
-  { id: "release", label: "Releases" },
 ] as const;
 
 type TypeTab = (typeof TYPE_TABS)[number]["id"];
+
+const isTypeTab = (value: string | null): value is TypeTab =>
+  TYPE_TABS.some((tab) => tab.id === value);
 
 // ---------------------------------------------------------------------------
 // Commit card
@@ -324,8 +326,12 @@ function DeploymentCard({ deployment }: { deployment: ChangeDeployment }) {
 export default function ChangesPage() {
   const params = useParams<{ projectId: string }>();
   const projectId = params.projectId;
+  // ?tab=deployment lets other pages link straight to a tab
+  const tabParam = useSearchParams().get("tab");
 
-  const [typeTab, setTypeTab] = useState<TypeTab>("all");
+  const [typeTab, setTypeTab] = useState<TypeTab>(
+    isTypeTab(tabParam) ? tabParam : "all",
+  );
   const [page, setPage] = useState(1);
 
   const feedQuery = useChangesFeed(projectId, {
@@ -369,7 +375,7 @@ export default function ChangesPage() {
     <div className="space-y-6">
       <PageHeader
         title="Changes"
-        description="Every commit, deploy, and release — explained in plain English."
+        description="Every commit and deploy, explained in plain English."
         actions={
           <Button
             variant="outline"

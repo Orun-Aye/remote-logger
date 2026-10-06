@@ -1125,10 +1125,10 @@ function DeployImpactCard({ projectId }: { projectId: string }) {
           </span>
         </div>
         <Link
-          href={`/projects/${projectId}/releases`}
+          href={`/projects/${projectId}/changes?tab=deployment`}
           className="font-mono text-[11px] text-text-muted hover:text-text-secondary"
         >
-          All releases →
+          All deploys →
         </Link>
       </div>
 
@@ -1214,15 +1214,6 @@ function DeployImpactCard({ projectId }: { projectId: string }) {
               </span>
               <DeployStateBadge state={deployState(previous)} />
             </div>
-          )}
-
-          {last.release && (
-            <Link
-              href={`/projects/${projectId}/releases?release=${encodeURIComponent(last.release)}`}
-              className="mt-auto font-mono text-[11px] text-text-muted hover:text-signal"
-            >
-              Release health for {last.release} →
-            </Link>
           )}
         </div>
       )}

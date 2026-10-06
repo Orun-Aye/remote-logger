@@ -43,6 +43,7 @@ import { AnomalyInsightCarousel } from "@/components/shared/AnomalyInsightCarous
 import { MetricCard } from "@/components/shared/MetricCard";
 import { NLQueryBar } from "@/components/shared/NLQueryBar";
 import { AnomalyType } from "@/types/anomaly.types";
+import type { PeriodComparison } from "@/types/insights.types";
 
 // Map anomaly type to icon
 const typeIcons: Record<AnomalyType, React.ReactNode> = {
@@ -52,6 +53,27 @@ const typeIcons: Record<AnomalyType, React.ReactNode> = {
   error_spike: <Zap className="w-5 h-5" />,
 };
 
+/** Within ±10% of the previous period counts as stable. */
+function trendOf(
+  comparison?: PeriodComparison,
+): "increasing" | "decreasing" | "stable" {
+  if (!comparison) return "stable";
+  if (comparison.previousPeriod === 0) {
+    return comparison.currentPeriod > 0 ? "increasing" : "stable";
+  }
+  if (comparison.percentageChange > 10) return "increasing";
+  if (comparison.percentageChange < -10) return "decreasing";
+  return "stable";
+}
+
+/** An error's share of the top errors' occurrences. */
+function impactOf(count: number, total: number): "high" | "medium" | "low" {
+  const share = total > 0 ? count / total : 0;
+  if (share >= 0.5) return "high";
+  if (share >= 0.2) return "medium";
+  return "low";
+}
+
 export default function ProjectInsightsPage() {
   const params = useParams<{ projectId: string }>();
   const projectId =
@@ -59,8 +81,7 @@ export default function ProjectInsightsPage() {
 
   // Statistical insights
   const { data: insights, isLoading } = useProjectInsights(projectId, {
-    timeRange: 24,
-    includeRecommendations: true,
+    range: "24h",
   });
   const invalidateMutation = useInvalidateInsightsCache();
 
@@ -121,6 +142,11 @@ export default function ProjectInsightsPage() {
       </div>
     );
   }
+
+  const totalFrequentErrors = insights.errorAnalysis.frequentErrorMessages.reduce(
+    (sum, issue) => sum + issue.count,
+    0,
+  );
 
   return (
     <div className="p-6 space-y-8">
@@ -211,7 +237,7 @@ export default function ProjectInsightsPage() {
         />
         <MetricCard
           label="Avg Logs/Hour"
-          value={insights.summary.averageLogsPerHour.toFixed(0)}
+          value={(insights.summary.totalLogs / 24).toFixed(0)}
           icon={<Clock className="w-4 h-4" />}
         />
       </div>
@@ -248,7 +274,6 @@ export default function ProjectInsightsPage() {
               </Badge>
             )}
           </TabsTrigger>
-          <TabsTrigger value="recommendations">Recommendations</TabsTrigger>
           <TabsTrigger value="trends">Trends</TabsTrigger>
           <TabsTrigger value="issues">Top Issues</TabsTrigger>
         </TabsList>
@@ -454,137 +479,97 @@ export default function ProjectInsightsPage() {
           )}
         </TabsContent>
 
-        <TabsContent value="recommendations" className="space-y-4">
-          {insights.recommendations.length === 0 ? (
-            <Card>
-              <CardContent className="p-8 text-center">
-                <p className="text-text-secondary">
-                  No recommendations at this time
-                </p>
-              </CardContent>
-            </Card>
-          ) : (
-            insights.recommendations.map((rec, index) => (
-              <Card key={index} className="border-l-[3px] border-l-signal">
-                <CardHeader>
-                  <div className="flex items-start justify-between">
-                    <div className="flex-1">
-                      <CardTitle className="text-base text-text-primary">
-                        {rec.title}
-                      </CardTitle>
-                      <CardDescription className="mt-2 text-text-secondary">
-                        {rec.description}
-                      </CardDescription>
-                    </div>
-                    <Badge
-                      variant={
-                        rec.priority === "high"
-                          ? "status-danger"
-                          : rec.priority === "medium"
-                          ? "status-warn"
-                          : "signal"
-                      }
-                      className="capitalize"
-                    >
-                      {rec.priority}
-                    </Badge>
-                  </div>
-                </CardHeader>
-                {rec.actionable && (
-                  <CardContent>
-                    <Badge variant="status-ok">Actionable</Badge>
-                  </CardContent>
-                )}
-              </Card>
-            ))
-          )}
-        </TabsContent>
-
         <TabsContent value="trends" className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-text-primary">
-                  <TrendingUp className="w-5 h-5 text-signal" />
-                  Log Volume Trend
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <Badge
-                  variant={
-                    insights.trends.logVolume === "increasing"
-                      ? "status-warn"
-                      : insights.trends.logVolume === "decreasing"
-                      ? "signal"
-                      : "outline"
-                  }
-                  className="capitalize text-lg"
-                >
-                  {insights.trends.logVolume}
-                </Badge>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-text-primary">
-                  <AlertTriangle className="w-5 h-5 text-status-danger" />
-                  Error Rate Trend
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <Badge
-                  variant={
-                    insights.trends.errorRate === "increasing"
-                      ? "status-danger"
-                      : insights.trends.errorRate === "decreasing"
-                      ? "status-ok"
-                      : "outline"
-                  }
-                  className="capitalize text-lg"
-                >
-                  {insights.trends.errorRate}
-                </Badge>
-              </CardContent>
-            </Card>
+            {[
+              {
+                title: "Log Volume Trend",
+                icon: <TrendingUp className="w-5 h-5 text-signal" />,
+                comparison: insights.volumeTrends,
+                risingIsBad: false,
+              },
+              {
+                title: "Error Trend",
+                icon: <AlertTriangle className="w-5 h-5 text-status-danger" />,
+                comparison: insights.errorAnalysis.errorTrends,
+                risingIsBad: true,
+              },
+            ].map(({ title, icon, comparison, risingIsBad }) => {
+              const trend = trendOf(comparison);
+              return (
+                <Card key={title}>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2 text-text-primary">
+                      {icon}
+                      {title}
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-2">
+                    <Badge
+                      variant={
+                        trend === "stable"
+                          ? "outline"
+                          : (trend === "increasing") === risingIsBad
+                          ? "status-danger"
+                          : "status-ok"
+                      }
+                      className="capitalize text-lg"
+                    >
+                      {trend}
+                    </Badge>
+                    {comparison && (
+                      <p className="text-xs text-text-muted">
+                        {comparison.currentPeriod.toLocaleString()} in the last 24h vs{" "}
+                        {comparison.previousPeriod.toLocaleString()} the 24h before
+                      </p>
+                    )}
+                  </CardContent>
+                </Card>
+              );
+            })}
           </div>
         </TabsContent>
 
         <TabsContent value="issues" className="space-y-4">
-          {insights.topIssues.length === 0 ? (
+          {insights.errorAnalysis.frequentErrorMessages.length === 0 ? (
             <Card>
               <CardContent className="p-8 text-center">
-                <p className="text-text-secondary">No issues identified</p>
+                <p className="text-text-secondary">No errors in the last 24h</p>
               </CardContent>
             </Card>
           ) : (
-            insights.topIssues.map((issue, index) => (
-              <Card key={index}>
-                <CardHeader>
-                  <div className="flex items-start justify-between">
-                    <div className="flex-1">
-                      <CardTitle className="text-base text-text-primary">
-                        {issue.issue}
-                      </CardTitle>
-                      <CardDescription className="mt-2 text-text-secondary">
-                        Occurred {issue.count} times
-                      </CardDescription>
+            insights.errorAnalysis.frequentErrorMessages.map((issue) => {
+              const impact = impactOf(issue.count, totalFrequentErrors);
+              return (
+                <Card key={issue.message}>
+                  <CardHeader>
+                    <div className="flex items-start justify-between gap-4">
+                      <div className="min-w-0 flex-1">
+                        <CardTitle className="text-base text-text-primary break-words">
+                          {issue.message}
+                        </CardTitle>
+                        <CardDescription className="mt-2 text-text-secondary">
+                          Occurred {issue.count} {issue.count === 1 ? "time" : "times"} · last
+                          seen {new Date(issue.lastSeen).toLocaleString()}
+                        </CardDescription>
+                      </div>
+                      <Badge
+                        variant={
+                          impact === "high"
+                            ? "status-danger"
+                            : impact === "medium"
+                            ? "status-warn"
+                            : "signal"
+                        }
+                        className="capitalize shrink-0"
+                      >
+                        {impact} impact
+                      </Badge>
                     </div>
-                    <Badge
-                      variant={
-                        issue.impact === "high"
-                          ? "status-danger"
-                          : issue.impact === "medium"
-                          ? "status-warn"
-                          : "signal"
-                      }
-                      className="capitalize"
-                    >
-                      {issue.impact} impact
-                    </Badge>
-                  </div>
-                </CardHeader>
-              </Card>
-            ))
+                  </CardHeader>
+                </Card>
+              );
+            })
           )}
         </TabsContent>
       </Tabs>

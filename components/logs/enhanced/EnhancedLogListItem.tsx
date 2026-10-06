@@ -83,7 +83,8 @@ export function EnhancedLogListItem({
               Raw Log Entry
             </DialogTitle>
           </DialogHeader>
-          <div className="relative">
+          {/* min-w-0: as a grid child this would otherwise grow to the longest line */}
+          <div className="relative min-w-0">
             <button
               onClick={handleCopyJson}
               className={cn(
@@ -96,7 +97,8 @@ export function EnhancedLogListItem({
               {copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
             </button>
             <pre className="overflow-auto max-h-[60vh] rounded-lg bg-bg-base border border-border-subtle p-4 text-sm">
-              <code className="text-text-primary font-mono whitespace-pre">
+              {/* Wrap long values (user agents, URLs, stacks) instead of overflowing */}
+              <code className="text-text-primary font-mono whitespace-pre-wrap [overflow-wrap:anywhere]">
                 {jsonString}
               </code>
             </pre>

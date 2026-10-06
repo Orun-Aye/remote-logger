@@ -13,8 +13,6 @@ const changesKeys = {
     ["changes", "deployments", projectId, page, limit, kind ?? "all"] as const,
   markers: (projectId: string, from: string, to: string) =>
     ["changes", "markers", projectId, from, to] as const,
-  releaseHealth: (projectId: string, release: string) =>
-    ["changes", "release-health", projectId, release] as const,
   errorGroups: (projectId: string, page: number, status?: string, search?: string, sort?: string) =>
     ["error-groups", projectId, page, status ?? "all", search ?? "", sort ?? "lastSeen"] as const,
   errorGroupDetail: (projectId: string, groupId: string) =>
@@ -173,15 +171,6 @@ export function useChartDeployMarkers(
       };
     });
   }, [data, buckets]);
-}
-
-export function useReleaseHealth(projectId: string, release: string | undefined) {
-  return useQuery({
-    queryKey: changesKeys.releaseHealth(projectId, release ?? ""),
-    queryFn: () => changesService.getReleaseHealth(projectId, release!),
-    enabled: !!projectId && !!release,
-    staleTime: 2 * 60 * 1000,
-  });
 }
 
 // ---------------------------------------------------------------------------

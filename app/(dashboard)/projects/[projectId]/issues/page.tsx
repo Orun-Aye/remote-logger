@@ -123,16 +123,17 @@ function CreateIssueDialog({
   const [draftSource, setDraftSource] = useState<"ai" | "template" | null>(null);
   const [created, setCreated] = useState<{ number: number; url: string } | null>(null);
 
+  const requestDraft = () =>
+    draftMutation.mutate(group._id, {
+      onSuccess: (draft) => {
+        setTitle(draft.title);
+        setBody(draft.body);
+        setDraftSource(draft.source);
+      },
+    });
+
   useEffect(() => {
-    if (open && !title && !draftMutation.isPending) {
-      draftMutation.mutate(group._id, {
-        onSuccess: (draft) => {
-          setTitle(draft.title);
-          setBody(draft.body);
-          setDraftSource(draft.source);
-        },
-      });
-    }
+    if (open && !title && !draftMutation.isPending) requestDraft();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open]);
 
@@ -195,6 +196,18 @@ function CreateIssueDialog({
                 <Sparkles className="w-3.5 h-3.5 text-signal" />
                 Drafted by AI from the stack trace, impact data, and suspect commits.
               </p>
+            )}
+            {draftMutation.isError && (
+              <div className="flex items-center justify-between gap-3 rounded-md border border-status-danger/30 bg-status-danger/5 px-3 py-2">
+                <p className="text-xs text-status-danger">
+                  Couldn&apos;t draft the issue:{" "}
+                  {(draftMutation.error as Error)?.message || "request failed"}.
+                  You can write it yourself or try again.
+                </p>
+                <Button variant="outline" size="sm" onClick={requestDraft}>
+                  Try again
+                </Button>
+              </div>
             )}
             <div className="space-y-1.5">
               <label className="text-xs text-text-muted uppercase tracking-wider">Title</label>

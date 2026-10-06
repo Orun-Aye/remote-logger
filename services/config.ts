@@ -40,6 +40,12 @@ export function getAuthToken(): string {
   return getCookie("authToken");
 }
 
+/**
+ * Per-request timeout for endpoints that call the AI model. A model response
+ * routinely takes 10s or more, which the client default would cut off.
+ */
+export const AI_REQUEST_TIMEOUT_MS = 60_000;
+
 export const apiClient = axios.create({
   baseURL: BASE_URL,
   timeout: 10000,

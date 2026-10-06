@@ -1,5 +1,5 @@
 import { ApiResponse } from "@/types/api";
-import { apiClient } from "./config";
+import { AI_REQUEST_TIMEOUT_MS, apiClient } from "./config";
 import { ApiError, handleApiError } from "./auth.service";
 import {
   ProjectInsights,
@@ -16,7 +16,7 @@ import {
 
 export const insightsService = {
   /**
-   * Get insights and recommendations for a project
+   * Get statistical insights for a project
    */
   getProjectInsights: async (
     projectId: string,
@@ -24,14 +24,8 @@ export const insightsService = {
   ) => {
     try {
       const params = new URLSearchParams();
-      if (filters.timeRange) {
-        params.append("timeRange", filters.timeRange.toString());
-      }
-      if (filters.includeRecommendations !== undefined) {
-        params.append(
-          "includeRecommendations",
-          filters.includeRecommendations.toString()
-        );
+      if (filters.range) {
+        params.append("range", filters.range);
       }
 
       const response = await apiClient.get<ApiResponse<ProjectInsights>>(
@@ -84,7 +78,8 @@ export const insightsService = {
   ): Promise<RootCauseAnalysis | undefined> => {
     try {
       const response = await apiClient.get<ApiResponse<RootCauseAnalysis>>(
-        `/insights/${projectId}/root-cause/${errorId}`
+        `/insights/${projectId}/root-cause/${errorId}`,
+        { timeout: AI_REQUEST_TIMEOUT_MS }
       );
       if (response.data.status === "error") {
         throw new ApiError(
@@ -109,7 +104,8 @@ export const insightsService = {
     try {
       const response = await apiClient.post<ApiResponse<AskQuestionResponse>>(
         `/insights/${projectId}/ask`,
-        { question }
+        { question },
+        { timeout: AI_REQUEST_TIMEOUT_MS }
       );
       if (response.data.status === "error") {
         throw new ApiError(
@@ -132,8 +128,8 @@ export const insightsService = {
   ): Promise<{ suggestions: OptimizationSuggestion[] } | undefined> => {
     try {
       const response = await apiClient.get<
-        ApiResponse<{ suggestions: OptimizationSuggestion[] }>
-      >(`/insights/${projectId}/suggestions`);
+        ApiResponse<OptimizationSuggestion[] | { suggestions: OptimizationSuggestion[] }>
+      >(`/insights/${projectId}/suggestions`, { timeout: AI_REQUEST_TIMEOUT_MS });
       if (response.data.status === "error") {
         throw new ApiError(
           response.data.message || "Failed to fetch suggestions",
@@ -141,7 +137,9 @@ export const insightsService = {
           response.data.errors
         );
       }
-      return response.data.data;
+      // The backend sends the array itself as `data`
+      const data = response.data.data;
+      return { suggestions: Array.isArray(data) ? data : data?.suggestions ?? [] };
     } catch (error) {
       handleApiError(error);
     }
@@ -160,7 +158,8 @@ export const insightsService = {
         params.append("timeRange", options.timeRange.toString());
       }
       const response = await apiClient.get<ApiResponse<EnrichedInsights>>(
-        `/insights/${projectId}/enriched?${params.toString()}`
+        `/insights/${projectId}/enriched?${params.toString()}`,
+        { timeout: AI_REQUEST_TIMEOUT_MS }
       );
       if (response.data.status === "error") {
         throw new ApiError(

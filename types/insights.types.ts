@@ -1,46 +1,45 @@
-// Insights and Recommendations Types
+// Insights Types (mirror logger_backend DashboardInsights)
 
+/** A count in the selected period vs the same-length period before it. */
+export interface PeriodComparison {
+  currentPeriod: number;
+  previousPeriod: number;
+  /** 0 when the previous period had none. */
+  percentageChange: number;
+}
+
+export interface FrequentErrorMessage {
+  message: string;
+  count: number;
+  firstSeen: string;
+  lastSeen: string;
+  affectedEndpoints: string[];
+}
+
+/** GET /insights/:projectId */
 export interface ProjectInsights {
   projectId: string;
-  timeRange: number;
+  timeRange: { from: string; to: string; range: InsightsRange };
   summary: {
     totalLogs: number;
+    totalUniqueEndpoints: number;
+    averageLogsPerDay: number;
+    /** Percentage, 0 to 100. */
     errorRate: number;
-    warningRate: number;
-    averageLogsPerHour: number;
   };
-  trends: {
-    logVolume: "increasing" | "decreasing" | "stable";
-    errorRate: "increasing" | "decreasing" | "stable";
+  logCountBySeverity: Record<string, number>;
+  errorAnalysis: {
+    frequentErrorMessages: FrequentErrorMessage[];
+    errorTrends: PeriodComparison;
   };
-  anomalies: Anomaly[];
-  recommendations: Recommendation[];
-  topIssues: TopIssue[];
+  /** Absent on responses cached before the field existed. */
+  volumeTrends?: PeriodComparison;
 }
 
-export interface Anomaly {
-  type: string;
-  description: string;
-  severity: "low" | "medium" | "high";
-  detectedAt: string;
-}
-
-export interface Recommendation {
-  title: string;
-  description: string;
-  priority: "low" | "medium" | "high";
-  actionable: boolean;
-}
-
-export interface TopIssue {
-  issue: string;
-  count: number;
-  impact: "low" | "medium" | "high";
-}
+export type InsightsRange = "1h" | "24h" | "7d" | "30d";
 
 export interface InsightsFilters {
-  timeRange?: number;
-  includeRecommendations?: boolean;
+  range?: InsightsRange;
 }
 
 // ============================================

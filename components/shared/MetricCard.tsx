@@ -17,6 +17,10 @@ interface MetricCardProps {
   variant?: MetricCardVariant;
   sparkline?: React.ReactNode;
   className?: string;
+  /** Overrides the value text style, e.g. a smaller font for long strings. */
+  valueClassName?: string;
+  /** Tooltip for the value, e.g. the full text behind a truncated one. */
+  valueTitle?: string;
 }
 
 const variantStyles: Record<MetricCardVariant, string> = {
@@ -47,6 +51,8 @@ export function MetricCard({
   variant = 'default',
   sparkline,
   className,
+  valueClassName,
+  valueTitle,
 }: MetricCardProps) {
   return (
     <div
@@ -71,7 +77,13 @@ export function MetricCard({
             </div>
           )}
         </div>
-        <div className="text-[28px] font-display font-bold text-text-primary leading-none">
+        <div
+          className={cn(
+            "text-[28px] font-display font-bold text-text-primary leading-none",
+            valueClassName
+          )}
+          title={valueTitle}
+        >
           {value}
         </div>
         {subtitle && (

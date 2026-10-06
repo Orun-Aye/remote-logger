@@ -1,4 +1,4 @@
-import { apiClient } from "./config";
+import { AI_REQUEST_TIMEOUT_MS, apiClient } from "./config";
 import { ApiError, handleApiError } from "./auth.service";
 
 export interface ApiResponse<T = any> {
@@ -103,16 +103,6 @@ export interface DeployMarker {
   release?: string;
   status: string;
   verdict?: string;
-}
-
-export interface ReleaseHealth {
-  release: string;
-  logCount: number;
-  errorCount: number;
-  errorRate: number;
-  sessionCount: number;
-  newErrorGroups: number;
-  deployments: Array<{ startedAt: string; environment: string; status: string }>;
 }
 
 export interface LinkedIssue {
@@ -318,21 +308,6 @@ export const changesService = {
     }
   },
 
-  getReleaseHealth: async (
-    projectId: string,
-    release: string,
-  ): Promise<ReleaseHealth | null> => {
-    try {
-      const response = await apiClient.get<ApiResponse<ReleaseHealth>>(
-        `/projects/${projectId}/releases/${encodeURIComponent(release)}/health`,
-      );
-      assertSuccess(response, "Failed to load release health");
-      return response.data.data || null;
-    } catch (error) {
-      handleApiError(error);
-      return null;
-    }
-  },
 
   // --- Error groups ---
 
@@ -411,6 +386,9 @@ export const changesService = {
   ): Promise<IssueDraft> => {
     const response = await apiClient.get<ApiResponse<IssueDraft>>(
       `/projects/${projectId}/error-groups/${groupId}/issue-draft`,
+      // AI drafting outlasts the 10s default; the server falls back to a
+      // template after 25s, so this only trips on a cold or stalled server
+      { timeout: AI_REQUEST_TIMEOUT_MS },
     );
     assertSuccess(response, "Failed to build issue draft");
     return response.data.data!;
@@ -423,7 +401,12 @@ export const changesService = {
   ): Promise<{ issue: { number: number; url: string }; alreadyLinked: boolean }> => {
     const response = await apiClient.post<
       ApiResponse<{ issue: { number: number; url: string }; alreadyLinked: boolean }>
-    >(`/projects/${projectId}/error-groups/${groupId}/create-issue`, body);
+    >(
+      `/projects/${projectId}/error-groups/${groupId}/create-issue`,
+      body,
+      // An empty title or body makes the server draft one with AI first
+      { timeout: AI_REQUEST_TIMEOUT_MS },
+    );
     assertSuccess(response, "Failed to create GitHub issue");
     return response.data.data!;
   },

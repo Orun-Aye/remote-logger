@@ -87,9 +87,18 @@ export default function PageviewAnalyticsPage() {
   }
 
   const topPageObj = ov?.topPage && typeof ov.topPage === "object" ? ov.topPage : null;
-  const topPageName = topPageObj
-    ? truncateUrl(topPageObj.url || "", 24)
-    : (typeof ov?.topPage === "string" ? truncateUrl(ov.topPage, 24) : "None");
+  const topPageUrl: string =
+    topPageObj?.url || (typeof ov?.topPage === "string" ? ov.topPage : "");
+  // Every page shares the site's host, so the path is the useful part
+  const topPagePath = (() => {
+    if (!topPageUrl) return "None";
+    try {
+      const { pathname, search } = new URL(topPageUrl);
+      return `${pathname}${search}`;
+    } catch {
+      return topPageUrl;
+    }
+  })();
 
   return (
     <div className="p-6 bg-bg-base min-h-full space-y-6">
@@ -98,7 +107,14 @@ export default function PageviewAnalyticsPage() {
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <MetricCard label="Total Pageviews" value={formatCompact(ov?.totalPageviews)} icon={<Eye className="w-4 h-4" />} />
         <MetricCard label="Unique Pages" value={formatCompact(ov?.uniquePages)} />
-        <MetricCard label="Top Page" value={topPageName} subtitle={topPageObj?.count ? `${formatCompact(topPageObj.count)} views` : undefined} />
+        <MetricCard
+          label="Top Page"
+          className="min-w-0"
+          value={topPagePath}
+          valueClassName="text-lg font-mono font-semibold leading-tight truncate"
+          valueTitle={topPageUrl || undefined}
+          subtitle={topPageObj?.count ? `${formatCompact(topPageObj.count)} views` : undefined}
+        />
       </div>
 
       <TabLayout tabs={TABS} defaultTab="overview">
