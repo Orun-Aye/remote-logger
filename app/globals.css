@@ -13,7 +13,7 @@
      Graphite    #343434  — dark backgrounds, primary text (light)
      Taupe       #97716a  — warm tertiary accent
      Apricot Cream #fcca87 — warm highlight, warnings
-     Steel Blue  #AEF78E  — primary accent, signal, info
+     Signal      #AEF78E  — primary accent (dark); #1f7a3d on light
    ============================================================================ */
 
 /* Light mode — Mint Cream base */
@@ -24,7 +24,7 @@
   --card-foreground: #343434;
   --popover: #ffffff;
   --popover-foreground: #343434;
-  --primary: #5a8fa8;
+  --primary: #1f7a3d;
   --primary-foreground: #ffffff;
   --secondary: #f0f5f0;
   --secondary-foreground: #343434;
@@ -36,24 +36,24 @@
   --destructive-foreground: #ffffff;
   --border: #d4d8d4;
   --input: #d4d8d4;
-  --ring: #5a8fa8;
-  --chart-1: #5a8fa8;
+  --ring: #1f7a3d;
+  --chart-1: #1f7a3d;
   --chart-2: #d4a55c;
   --chart-3: #97716a;
   --chart-4: #d94f4f;
   --chart-5: #AEF78E;
   --sidebar: #eef4ee;
   --sidebar-foreground: #343434;
-  --sidebar-primary: #5a8fa8;
+  --sidebar-primary: #1f7a3d;
   --sidebar-primary-foreground: #ffffff;
   --sidebar-accent: #e2e8e2;
   --sidebar-accent-foreground: #343434;
   --sidebar-border: #c4c8c4;
-  --sidebar-ring: #5a8fa8;
+  --sidebar-ring: #1f7a3d;
 
   --font-sans: var(--font-body), "DM Sans", sans-serif;
   --font-serif: Georgia, serif;
-  --font-mono: var(--font-code), "Geist Mono", "Fira Code", monospace;
+  --font-mono: var(--font-geist-mono), "Geist Mono", "Fira Code", monospace;
 
   --radius: 0.5rem;
 
@@ -84,11 +84,11 @@
   --border-subtle: #c4c8c4;
   --border-accent: #969a96;
 
-  /* Signal — Steel Blue (darker for light bg contrast) */
-  --signal: #5a8fa8;
-  --signal-glow: #5a8fa820;
-  --signal-muted: #5a8fa810;
-  --signal-bright: #AEF78E;
+  /* Signal — deep green on light (AA on mint), lime on dark */
+  --signal: #1f7a3d;
+  --signal-glow: #1f7a3d20;
+  --signal-muted: #1f7a3d10;
+  --signal-bright: #186a33;
 
   /* Data — Apricot Cream (darker for light bg) */
   --data: #d4a55c;
@@ -99,17 +99,17 @@
   --status-warn: #d4a55c;
   --status-danger: #d94f4f;
   --status-fatal: #b93a3a;
-  --status-ok: #5a8fa8;
+  --status-ok: #1f7a3d;
 
   /* Web Vital rating colors */
-  --rating-good: #5a8fa8;
+  --rating-good: #1f7a3d;
   --rating-needs-improvement: #d4a55c;
   --rating-poor: #d94f4f;
 
   /* Log level palette — readable on light bg */
   --level-trace: #969a96;
   --level-debug: #7a7e7a;
-  --level-info: #5a8fa8;
+  --level-info: #1f7a3d;
   --level-warn: #d4a55c;
   --level-error: #d94f4f;
   --level-fatal: #993333;
@@ -121,8 +121,8 @@
   --text-code: #4a7f96;
 
   /* Glow effects — very subtle on light */
-  --glow-signal: 0 0 20px #5a8fa812, 0 0 40px #5a8fa808;
-  --glow-signal-sm: 0 0 8px #5a8fa818;
+  --glow-signal: 0 0 20px #1f7a3d12, 0 0 40px #1f7a3d08;
+  --glow-signal-sm: 0 0 8px #1f7a3d18;
   --glow-data: 0 0 20px #d4a55c12, 0 0 40px #d4a55c08;
   --glow-danger: 0 0 20px #d94f4f12, 0 0 40px #d94f4f08;
 
@@ -139,7 +139,7 @@
   --syntax-string: #4a7f96;
   --syntax-number: #c27a3c;
   --syntax-comment: #969a96;
-  --syntax-function: #5a8fa8;
+  --syntax-function: #1f7a3d;
   --syntax-type: #97716a;
   --syntax-property: #343434;
   --syntax-operator: #5c605c;
@@ -205,7 +205,7 @@
   /* Font stacks */
   --font-sans: var(--font-body), "DM Sans", sans-serif;
   --font-serif: Georgia, serif;
-  --font-mono: var(--font-code), "Geist Mono", "Fira Code", monospace;
+  --font-mono: var(--font-geist-mono), "Geist Mono", "Fira Code", monospace;
 
   --radius: 0.5rem;
 
@@ -445,7 +445,7 @@
 }
 
 .font-code {
-  font-family: var(--font-code), "Geist Mono", "Fira Code", monospace;
+  font-family: var(--font-geist-mono), "Geist Mono", "Fira Code", monospace;
 }
 
 .font-mono {

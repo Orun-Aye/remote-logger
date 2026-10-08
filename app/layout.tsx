@@ -32,10 +32,15 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body
-        className={`${syne.variable} ${dmSans.variable} ${GeistMono.variable} font-body antialiased scrollbar-hide`}
-      >
+    // Font variables sit on <html> so the :root tokens that reference them
+    // (--font-sans, --font-mono) resolve. next-themes adds the theme class
+    // here before hydration, hence suppressHydrationWarning.
+    <html
+      lang="en"
+      className={`${syne.variable} ${dmSans.variable} ${GeistMono.variable}`}
+      suppressHydrationWarning
+    >
+      <body className="font-body antialiased scrollbar-hide">
         <ThemeProvider
           attribute={"class"}
           defaultTheme="dark"
