@@ -66,7 +66,9 @@ export default function NewProjectPage() {
       toast.success("Project created successfully!");
 
       // Navigate to the new project
-      const newProjectId = result?._id ?? result?.project?._id;
+      // The API answers with `id` (ProjectService.createProject); keep the
+      // older shapes as fallbacks
+      const newProjectId = result?.id ?? result?._id ?? result?.project?._id;
       if (newProjectId) {
         router.push(`/projects/${newProjectId}`);
       } else {
