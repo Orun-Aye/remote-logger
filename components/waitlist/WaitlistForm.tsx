@@ -4,6 +4,7 @@ import {
   createContext,
   useCallback,
   useContext,
+  useId,
   useMemo,
   useState,
   type ReactNode,
@@ -138,6 +139,10 @@ export function WaitlistForm({
   const { loading, submitted, position, referralCode, error, submit } =
     useWaitlistSignup();
   const [email, setEmail] = useState("");
+  // Three forms share the page, so ids must be unique per instance.
+  const uid = useId();
+  const inputId = `waitlist-email-${uid}`;
+  const errorId = `waitlist-error-${uid}`;
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -199,11 +204,11 @@ export function WaitlistForm({
         className="flex flex-col sm:flex-row gap-3 w-full max-w-md"
         noValidate
       >
-        <label htmlFor={`waitlist-email-${align}`} className="sr-only">
+        <label htmlFor={inputId} className="sr-only">
           Work email
         </label>
         <Input
-          id={`waitlist-email-${align}`}
+          id={inputId}
           type="email"
           inputMode="email"
           autoComplete="email"
@@ -212,15 +217,15 @@ export function WaitlistForm({
           onChange={(e) => setEmail(e.target.value)}
           required
           aria-invalid={!!error}
-          aria-describedby={error ? `waitlist-error-${align}` : undefined}
-          className="h-11 bg-bg-void/80 border-border-subtle text-text-primary placeholder:text-text-muted"
+          aria-describedby={error ? errorId : undefined}
+          className="h-11 bg-bg-surface border-border-accent text-text-primary placeholder:text-text-muted"
         />
         <Button
           type="submit"
           variant="signal"
           size="lg"
           disabled={loading}
-          className="font-display font-bold text-sm px-6 h-11 shrink-0"
+          className="signal-fill h-11 shrink-0 px-5 font-display text-sm font-semibold shadow-none hover:translate-y-0"
         >
           {loading ? "Joining..." : cta}
           {!loading && <ArrowRight className="ml-1 w-4 h-4" />}
@@ -229,7 +234,7 @@ export function WaitlistForm({
 
       {error && (
         <p
-          id={`waitlist-error-${align}`}
+          id={errorId}
           role="alert"
           className="flex items-center gap-1.5 mt-2.5 text-xs text-status-danger animate-fade-in"
         >

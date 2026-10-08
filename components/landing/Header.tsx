@@ -5,110 +5,122 @@ import { ThemeToggle } from "@/components/theme-toggle";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { Menu, X } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 const navItems = [
-  { href: "#how-it-works", label: "How It Works" },
-  { href: "#features", label: "Features" },
-  { href: "#comparison", label: "Compare" },
+  { href: "#how-it-works", label: "How it works" },
+  { href: "#product", label: "Product" },
+  { href: "#build-log", label: "Build log" },
   { href: "#faq", label: "FAQ" },
   { href: "/docs", label: "Docs" },
 ];
+
+function Logo() {
+  return (
+    <Link href="/" className="flex items-center gap-2.5" aria-label="Apperio home">
+      <svg
+        width="26"
+        height="26"
+        viewBox="0 0 28 28"
+        fill="none"
+        className="text-signal"
+        aria-hidden="true"
+      >
+        <path
+          d="M4 20L4 16L8 12L12 18L18 8L22 14L24 10"
+          stroke="currentColor"
+          strokeWidth="2.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+        <circle cx="4" cy="20" r="2" fill="currentColor" />
+        <circle cx="24" cy="10" r="2" fill="currentColor" />
+      </svg>
+      <span className="font-display text-[17px] font-semibold tracking-[-0.02em] text-text-primary">
+        apperio
+      </span>
+    </Link>
+  );
+}
 
 export function Header() {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 60);
+    const onScroll = () => setScrolled(window.scrollY > 24);
+    onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
   return (
     <header
-      className={`fixed top-0 left-0 right-0 z-[1000] transition-all duration-300 ${
+      className={cn(
+        "fixed inset-x-0 top-0 z-[1000] border-b transition-[background-color,border-color] duration-200",
         scrolled || mobileOpen
-          ? "backdrop-blur-md backdrop-saturate-150 border-b border-border-faint"
-          : "bg-transparent border-b border-transparent"
-      }`}
+          ? "border-border-subtle bg-bg-void/90 backdrop-blur-md"
+          : "border-transparent bg-transparent"
+      )}
     >
-      <div className="max-w-[1280px] mx-auto px-6 h-16 flex items-center justify-between">
-        {/* Logo */}
-        <Link href="/" className="flex items-center gap-2.5">
-          <svg
-            width="28"
-            height="28"
-            viewBox="0 0 28 28"
-            fill="none"
-            className="text-signal"
-          >
-            <path
-              d="M4 20L4 16L8 12L12 18L18 8L22 14L24 10"
-              stroke="currentColor"
-              strokeWidth="2.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-            <circle cx="4" cy="20" r="2" fill="currentColor" />
-            <circle cx="24" cy="10" r="2" fill="currentColor" />
-          </svg>
-          <span className="font-display font-semibold text-lg text-text-primary tracking-[-0.02em]">
-            apperio
-          </span>
-        </Link>
+      <div className="mx-auto flex h-16 max-w-[1200px] items-center justify-between px-4 sm:px-6">
+        <Logo />
 
-        {/* Nav Links — Desktop */}
-        <nav className="hidden md:flex items-center gap-8">
+        <nav className="hidden items-center gap-7 md:flex" aria-label="Main">
           {navItems.map((item) => (
             <a
               key={item.href}
               href={item.href}
-              className="text-sm text-text-secondary hover:text-text-primary transition-colors duration-150"
+              className="text-sm text-text-secondary transition-colors duration-150 hover:text-text-primary"
             >
               {item.label}
             </a>
           ))}
         </nav>
 
-        {/* CTA Group — Desktop */}
-        <div className="hidden md:flex items-center gap-3">
+        <div className="hidden items-center gap-3 md:flex">
           <ThemeToggle />
-          <Button variant="signal" size="sm" asChild>
-            <a href="#waitlist">Join Waitlist</a>
+          <Button variant="signal" size="sm" className="signal-fill shadow-none hover:translate-y-0" asChild>
+            <a href="#waitlist">Join waitlist</a>
           </Button>
         </div>
 
-        {/* Mobile menu toggle */}
         <button
-          className="md:hidden p-2 text-text-secondary hover:text-text-primary"
+          className="p-2 text-text-secondary hover:text-text-primary md:hidden"
           onClick={() => setMobileOpen(!mobileOpen)}
-          aria-label="Toggle menu"
+          aria-label={mobileOpen ? "Close menu" : "Open menu"}
+          aria-expanded={mobileOpen}
         >
-          {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+          {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
         </button>
       </div>
 
-      {/* Mobile menu */}
       {mobileOpen && (
-        <div className="md:hidden border-t border-border-faint">
-          <div className="px-6 py-4 space-y-3">
+        <div className="border-t border-border-subtle md:hidden">
+          <div className="space-y-1 px-4 py-4">
             {navItems.map((item) => (
               <a
                 key={item.href}
                 href={item.href}
-                className="block text-sm text-text-secondary hover:text-text-primary py-2"
+                className="block py-2 text-sm text-text-secondary hover:text-text-primary"
                 onClick={() => setMobileOpen(false)}
               >
                 {item.label}
               </a>
             ))}
-            <div className="pt-3 space-y-2 border-t border-border-faint">
-              <div className="flex items-center justify-between py-1">
+            <div className="mt-2 space-y-3 border-t border-border-subtle pt-4">
+              <div className="flex items-center justify-between">
                 <span className="text-sm text-text-secondary">Theme</span>
                 <ThemeToggle />
               </div>
-              <Button variant="signal" className="w-full justify-center" asChild>
-                <a href="#waitlist" onClick={() => setMobileOpen(false)}>Join Waitlist</a>
+              <Button
+                variant="signal"
+                className="signal-fill w-full justify-center shadow-none hover:translate-y-0"
+                asChild
+              >
+                <a href="#waitlist" onClick={() => setMobileOpen(false)}>
+                  Join waitlist
+                </a>
               </Button>
             </div>
           </div>

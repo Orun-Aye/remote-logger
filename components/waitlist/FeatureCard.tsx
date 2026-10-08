@@ -2,29 +2,29 @@
 
 import { cn } from "@/lib/utils";
 import { type ReactNode } from "react";
+import { StatusTag } from "@/components/landing/primitives";
 
 interface FeatureCardProps {
   pain: string;
   title: string;
   description: string;
-  icon: ReactNode;
+  /** A ProductShot, a code block, or nothing for a text-only card. */
   visual?: ReactNode;
-  span?: 1 | 2;
+  span?: 1 | 2 | 3;
   /** Honest build state. Omit for anything already running. */
   status?: "beta" | "next";
   className?: string;
 }
 
 const STATUS_LABEL: Record<"beta" | "next", string> = {
-  beta: "In the beta",
-  next: "Next up",
+  beta: "Beta",
+  next: "Next",
 };
 
 export function FeatureCard({
   pain,
   title,
   description,
-  icon,
   visual,
   span = 1,
   status,
@@ -33,57 +33,31 @@ export function FeatureCard({
   return (
     <div
       data-stagger
-      data-spotlight
       className={cn(
-        "spotlight-card group relative rounded-xl border border-border-subtle bg-bg-surface/60 backdrop-blur-sm p-6 overflow-hidden transition-all duration-300",
-        "hover:border-signal/30 hover:shadow-[0_0_40px_var(--signal-glow)]",
+        "flex flex-col rounded-[14px] border border-border-subtle bg-bg-surface p-5 sm:p-6",
         span === 2 && "md:col-span-2",
+        span === 3 && "md:col-span-2 lg:col-span-3",
         className
       )}
     >
-      {/* Hover glow effect */}
-      <div className="absolute inset-0 bg-gradient-to-br from-signal/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-
-      <div className="relative z-10">
-        {/* Pain point */}
-        <p className="text-[11px] font-mono uppercase tracking-widest text-text-muted mb-3">
-          {pain}
-        </p>
-
-        {/* Icon + Title */}
-        <div className="flex items-center gap-3 mb-3">
-          <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-signal/10 text-signal shrink-0">
-            {icon}
-          </div>
-          <h3 className="font-display font-bold text-base text-text-primary">
-            {title}
-          </h3>
-          {status && (
-            <span
-              className={cn(
-                "ml-auto shrink-0 rounded-full border px-2 py-0.5 text-[9px] font-display font-semibold uppercase tracking-[0.1em]",
-                status === "beta"
-                  ? "border-data/30 bg-data/10 text-data"
-                  : "border-border-subtle bg-bg-elevated/60 text-text-muted"
-              )}
-            >
-              {STATUS_LABEL[status]}
-            </span>
-          )}
-        </div>
-
-        {/* Description */}
-        <p className="text-sm text-text-secondary leading-relaxed mb-4">
-          {description}
-        </p>
-
-        {/* Visual element */}
-        {visual && (
-          <div className="mt-2">
-            {visual}
-          </div>
+      <p className="mb-3 font-mono text-[11px] uppercase tracking-[0.12em] text-text-muted">
+        {pain}
+      </p>
+      <div className="mb-2 flex items-center gap-3">
+        <h3 className="font-display text-lg font-semibold tracking-[-0.01em] text-text-primary">
+          {title}
+        </h3>
+        {status && (
+          <StatusTag tone={status} className="ml-auto shrink-0">
+            {STATUS_LABEL[status]}
+          </StatusTag>
         )}
       </div>
+      {/* Capped so a wide card with no capture keeps a readable line length. */}
+      <p className="max-w-2xl text-sm leading-relaxed text-text-secondary">
+        {description}
+      </p>
+      {visual && <div className="mt-5 flex-1">{visual}</div>}
     </div>
   );
 }

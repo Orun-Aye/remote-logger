@@ -367,9 +367,9 @@ export function useParallax() {
  * brings each `[data-scrub-step]` from dimmed to full as the reader scrolls
  * through the section, so the story advances at the pace they read it.
  */
-export function useScrubSequence(options?: { dim?: number }) {
+export function useScrubSequence(options?: { dim?: number; x?: number }) {
   const containerRef = useRef<HTMLDivElement>(null);
-  const { dim = 0.22 } = options || {};
+  const { dim = 0.22, x = 18 } = options || {};
 
   useGSAP(
     () => {
@@ -388,7 +388,7 @@ export function useScrubSequence(options?: { dim?: number }) {
         return;
       }
 
-      gsap.set(steps, { opacity: dim, x: 18 });
+      gsap.set(steps, { opacity: dim, x });
       if (line) gsap.set(line, { scaleY: 0, transformOrigin: "top center" });
 
       ScrollTrigger.create({
@@ -405,7 +405,7 @@ export function useScrubSequence(options?: { dim?: number }) {
             const local = gsap.utils.clamp(0, 1, playhead - i);
             gsap.set(step, {
               opacity: dim + (1 - dim) * local,
-              x: 18 * (1 - local),
+              x: x * (1 - local),
             });
           });
         },

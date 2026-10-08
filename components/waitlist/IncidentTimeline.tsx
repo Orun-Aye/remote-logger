@@ -1,192 +1,151 @@
 "use client";
 
-import { SectionHeading } from "@/components/shared/SectionHeading";
-import { SignalDot } from "@/components/shared/SignalDot";
-import { useScrubSequence } from "@/hooks/useGsapAnimations";
+import { useScrubSequence, useScrollReveal } from "@/hooks/useGsapAnimations";
 import { cn } from "@/lib/utils";
+import { LandingHeading } from "@/components/landing/primitives";
+import { ProductShot } from "@/components/landing/ProductShot";
+import { shotRenders } from "@/lib/screenshots";
 import {
-  BellRing,
-  CircleCheck,
-  GitPullRequestArrow,
-  Layers,
-  Rocket,
-  Search,
-  TriangleAlert,
-  Upload,
-} from "lucide-react";
-import type { LucideIcon } from "lucide-react";
+  RUN,
+  capitalise,
+  inWords,
+  minutesBetween,
+} from "@/components/landing/run-facts";
 
 type Tone = "neutral" | "danger" | "signal";
 
 interface Step {
   time: string;
-  icon: LucideIcon;
   tone: Tone;
   actor: string;
   title: string;
   body: string;
-  /** Monospace detail card under the copy. */
-  detail?: { label: string; lines: { text: string; tone?: Tone }[] };
+  /** Real captures of this moment, from the Demo Shop run. */
+  shots: { name: string; caption: string }[];
 }
+
+const sinceCommit = minutesBetween(RUN.commitTime, RUN.errorTime);
+const totalMinutes = minutesBetween(RUN.commitTime, RUN.resolvedTime);
 
 const STEPS: Step[] = [
   {
-    time: "14:02",
-    icon: Upload,
+    time: RUN.commitTime,
     tone: "neutral",
     actor: "You",
-    title: "You push three files and go make coffee.",
-    body: "The webhook reaches Apperio before your terminal has finished printing. The commit is stored, the diff is read, and a summary is written in the register a non-engineer can follow.",
-    detail: {
-      label: "a7f3c21 on main",
-      lines: [
-        { text: "fix: use cached user profile on checkout" },
-        { text: "3 files changed  +41  -12" },
-        {
-          text: "Summary: speeds up checkout by reusing the profile the page already loaded instead of fetching it a second time.",
-          tone: "signal",
-        },
-      ],
-    },
+    title: "You push to main and go make coffee.",
+    body: "The GitHub App's push webhook delivers the commit to Apperio. The diff is read and the commit gets a plain-English summary, with the technical one underneath.",
+    shots: [{ name: "commit-card", caption: "Change feed" }],
   },
   {
-    time: "14:09",
-    icon: Rocket,
+    time: RUN.deployTime,
     tone: "neutral",
     actor: "Your host",
     title: "The deploy lands, and every chart gets a marker.",
-    body: "Vercel, GitHub Deployments, your CI, or one API call from a shell script. However the release happens, Apperio draws the line on your error, performance and activity charts so every number after it is attributable.",
-    detail: {
-      label: "Deployment",
-      lines: [
-        { text: "v2.4.1 -> production  (github)" },
-        { text: "Baseline captured. Watching for 60 minutes." },
-      ],
-    },
+    body: "Vercel, GitHub Deployments, your CI, or one API call from a shell script. However the release happens, Apperio draws the line on your error, performance and activity charts and starts measuring the hour after it.",
+    shots: [{ name: "chart-deploy-markers", caption: "Errors chart" }],
   },
   {
-    time: "14:11",
-    icon: TriangleAlert,
+    time: RUN.errorTime,
     tone: "danger",
-    actor: "A real user",
-    title: "Someone in Manchester cannot pay you.",
-    body: "The SDK catches the throw with the breadcrumbs that led to it: the route, the clicks, the network calls, the release tag, the session. No try/catch of yours involved.",
-    detail: {
-      label: "Captured",
-      lines: [
-        {
-          text: "TypeError: Cannot read properties of undefined (reading 'email')",
-          tone: "danger",
-        },
-        { text: "at renderCheckoutSummary (checkout.ts:142)" },
-        { text: "release v2.4.1  ·  session 8f2k4n  ·  Chrome 122" },
-      ],
-    },
+    actor: "A customer",
+    title: "Someone cannot pay you.",
+    body: "The SDK catches the throw with its stack, the page, the release tag and the session it happened in. No try/catch of yours involved.",
+    shots: [{ name: "captured-error", caption: "Captured error" }],
   },
   {
-    time: "14:11",
-    icon: Layers,
+    time: RUN.errorTime,
     tone: "danger",
     actor: "Apperio",
     title: "It is fingerprinted, grouped and counted.",
-    body: "Not a wall of 14 identical rows. One group, deduplicated by the shape of the failure, with how many people it has reached, when it first appeared, and which release it appeared on.",
-    detail: {
-      label: "Error group",
-      lines: [
-        { text: "14 users affected  ·  first seen 2 min ago" },
-        { text: "100% on v2.4.1  ·  0% on v2.4.0", tone: "danger" },
-      ],
-    },
+    body: `Not a wall of identical rows. One group, deduplicated by the shape of the failure, showing how many sessions it has reached, when it was first seen, and that it was first seen on ${RUN.badRelease}.`,
+    shots: [{ name: "error-group-header", caption: "Error group" }],
   },
   {
-    time: "14:11",
-    icon: BellRing,
+    time: RUN.errorTime,
     tone: "danger",
     actor: "Apperio",
+    // TODO(run): confirm the owner email arrived in production (needs Resend
+    // configured). If it did not, drop "and by email" from the body.
     title: "You are told, without having written an alert rule.",
     body: "In-app and by email. Nobody configures a threshold for an error that has never existed before. A new kind of failure is worth interrupting you for, and that is the default.",
+    shots: [{ name: "alert-in-app", caption: "Notifications" }],
   },
   {
-    time: "14:12",
-    icon: Search,
+    time: RUN.suspectTime,
     tone: "signal",
     actor: "Apperio",
-    title: "Likely caused by: the commit from nine minutes ago.",
-    body: "The failing stack points at checkout.ts. One commit in this release touched checkout.ts. Apperio ranks the candidates, puts that one at the top, and shows you the exact lines it changed.",
-    detail: {
-      label: "Suspect",
-      lines: [
-        { text: "a7f3c21  fix: use cached user profile  ·  92%", tone: "signal" },
-        { text: "- const profile = await fetchProfile(userId)", tone: "danger" },
-        { text: "+ const profile = cache.get(userId)", tone: "signal" },
-      ],
-    },
+    title: `Likely caused by: the commit pushed ${inWords(sinceCommit)} minutes before it broke.`,
+    body: `The failing stack points at ${RUN.stackFile}. One commit in this release touched ${RUN.stackFile}. Apperio ranks the candidates, puts that one at the top, and says why in one sentence, with a link to the commit.`,
+    shots: [{ name: "suspect-commit", caption: "Likely caused by" }],
   },
   {
-    time: "14:13",
-    icon: GitPullRequestArrow,
+    time: RUN.issueTime,
     tone: "signal",
     actor: "You",
     title: "The issue is already written. You press the button.",
-    body: "Title, plain-English summary, stack trace, breadcrumbs, affected users, suspect commit and a link back. Edit anything you like in the preview, then open it on your repo.",
-    detail: {
-      label: "github.com/you/shop",
-      lines: [
-        { text: "#142  Checkout fails for accounts with no email set" },
-        { text: "opened by apperio[bot]  ·  labels: bug", tone: "signal" },
-      ],
-    },
+    body: "A title, a summary, the sessions affected, the release it first appeared on, the stack trace, the suspect commit and a link back. Edit anything in the preview, then open it on your repo.",
+    shots: [
+      { name: "issue-draft", caption: "Drafted issue" },
+      { name: "github-issue", caption: "The issue on GitHub" },
+    ],
   },
   {
-    time: "14:33",
-    icon: CircleCheck,
+    time: RUN.resolvedTime,
     tone: "signal",
     actor: "Both",
     title: "You close it on GitHub. Apperio marks it resolved.",
-    body: "The status flows back on the webhook. The group goes quiet, the release health verdict updates, and if the same fingerprint ever returns, it reopens itself and tells you.",
-    detail: {
-      label: "Resolved",
-      lines: [
-        { text: "v2.4.2 deployed  ·  error rate -100% vs v2.4.1", tone: "signal" },
-        { text: "Verdict: this deploy made things better.", tone: "signal" },
-      ],
-    },
+    body: `The status flows back on the webhook and the group shows Resolved via GitHub. An hour after ${RUN.fixRelease} deploys, it gets its verdict. If the same fingerprint ever returns, the group reopens and tells you.`,
+    shots: [
+      { name: "resolved-via-github", caption: "Resolved issues" },
+      { name: "deploy-verdicts", caption: "Deploy verdicts" },
+    ],
   },
 ];
 
+// A production build without captures reads as text only, so the line about
+// the captures appears only when there is one to point at.
+const anyShot = STEPS.some((step) =>
+  step.shots.some((shot) => shotRenders(shot.name))
+);
+
 const toneText: Record<Tone, string> = {
-  neutral: "text-text-secondary",
+  neutral: "text-text-muted",
   danger: "text-status-danger",
   signal: "text-signal",
 };
 
-const toneRing: Record<Tone, string> = {
-  neutral: "border-border-subtle bg-bg-surface text-text-muted",
-  danger: "border-status-danger/40 bg-status-danger/10 text-status-danger",
-  signal: "border-signal/40 bg-signal/10 text-signal",
+const toneDot: Record<Tone, string> = {
+  neutral: "border-border-accent bg-bg-void",
+  danger: "border-status-danger bg-bg-void",
+  signal: "border-signal bg-signal",
 };
 
 export function IncidentTimeline() {
-  const containerRef = useScrubSequence();
+  const headingRef = useScrollReveal();
+  // Only the rail animates. Steps stay at full opacity and in place, so the
+  // text keeps its contrast and the captures never slide sideways.
+  const containerRef = useScrubSequence({ dim: 1, x: 0 });
 
   return (
     <section
       id="how-it-works"
-      className="relative border-t border-border-faint py-24 sm:py-32"
+      className="relative scroll-mt-16 border-t border-border-subtle py-24 sm:py-32"
     >
-      <div className="mx-auto max-w-[1280px] px-4 sm:px-6">
-        <SectionHeading
-          eyebrow="Anatomy of an incident"
-          headline="Thirty-one minutes, start to finish."
-          headlineAccent="You opened one page."
-          sub="This is not a highlight reel of separate features. It is one Tuesday afternoon, in order, with nothing configured in advance."
-        />
+      <div className="mx-auto max-w-[1200px] px-4 sm:px-6">
+        <div ref={headingRef}>
+          <LandingHeading
+            eyebrow="Anatomy of an incident"
+            headline={`${capitalise(inWords(totalMinutes))} minutes, start to finish.`}
+            headlineAccent="You opened one page."
+            sub={`Not a highlight reel of separate features. One ${RUN.weekday} afternoon on a demo shop, in order, with nothing configured in advance.${anyShot ? " Every capture below comes from that run." : ""}`}
+          />
+        </div>
 
-        <div ref={containerRef} className="relative mx-auto mt-16 max-w-3xl">
-          {/* Rail: a faint full-height track with a signal line drawn over it
-              as the reader scrolls. */}
+        <div ref={containerRef} className="relative mt-16 max-w-[1000px]">
+          {/* Rail: a faint track with a line drawn over it as the reader
+              scrolls. Sits between the time column and the content. */}
           <div
-            className="absolute bottom-6 left-[19px] top-6 w-px bg-border-faint sm:left-[27px]"
+            className="absolute bottom-3 left-[5px] top-3 w-px bg-border-subtle sm:left-[93px]"
             aria-hidden="true"
           >
             <div
@@ -195,93 +154,61 @@ export function IncidentTimeline() {
             />
           </div>
 
-          <ol className="space-y-4">
-            {STEPS.map((step, i) => {
-              const Icon = step.icon;
-              return (
-                <li
-                  key={`${step.time}-${i}`}
-                  data-scrub-step
-                  className="relative flex gap-4 sm:gap-6"
-                >
-                  {/* Node */}
-                  <span
-                    className={cn(
-                      "relative z-10 mt-1 flex h-10 w-10 shrink-0 items-center justify-center rounded-full border backdrop-blur-sm sm:h-[54px] sm:w-[54px]",
-                      toneRing[step.tone]
-                    )}
-                  >
-                    <Icon className="h-4 w-4 sm:h-5 sm:w-5" />
-                  </span>
+          <ol className="space-y-14 sm:space-y-16">
+            {STEPS.map((step, i) => (
+              <li
+                key={`${step.time}-${i}`}
+                data-scrub-step
+                className="relative grid grid-cols-[11px_minmax(0,1fr)] gap-x-5 sm:grid-cols-[64px_11px_minmax(0,1fr)] sm:gap-x-6"
+              >
+                <time className="hidden pt-[3px] text-right font-mono text-sm tabular-nums text-text-primary sm:block">
+                  {step.time}
+                </time>
 
-                  {/* Card */}
-                  <div className="min-w-0 flex-1 rounded-xl border border-border-subtle bg-bg-surface/50 p-5 backdrop-blur-sm transition-colors duration-300 hover:border-signal/25">
-                    <div className="mb-2 flex flex-wrap items-center gap-2.5">
-                      <span className="font-mono text-xs font-semibold tabular-nums text-text-primary">
-                        {step.time}
-                      </span>
-                      <span className="h-3 w-px bg-border-subtle" />
-                      <span
-                        className={cn(
-                          "font-display text-[10px] font-semibold uppercase tracking-[0.12em]",
-                          toneText[step.tone]
-                        )}
-                      >
-                        {step.actor}
-                      </span>
+                <span
+                  className={cn(
+                    "relative z-10 mt-[7px] h-[11px] w-[11px] rounded-full border-2",
+                    toneDot[step.tone],
+                  )}
+                  aria-hidden="true"
+                />
+
+                <div className="min-w-0">
+                  <p className="mb-2 font-mono text-[11px] uppercase tracking-[0.12em]">
+                    <time className="mr-2 tabular-nums text-text-primary sm:hidden">
+                      {step.time}
+                    </time>
+                    <span className={toneText[step.tone]}>{step.actor}</span>
+                  </p>
+                  <h3 className="text-balance font-display text-lg font-semibold leading-snug tracking-[-0.01em] text-text-primary sm:text-xl">
+                    {step.title}
+                  </h3>
+                  <p className="mt-2 max-w-2xl text-[15px] leading-relaxed text-text-secondary">
+                    {step.body}
+                  </p>
+
+                  {step.shots.some((shot) => shotRenders(shot.name)) && (
+                    <div className="mt-6 space-y-6">
+                      {step.shots.map((shot) => (
+                        <ProductShot
+                          key={shot.name}
+                          name={shot.name}
+                          caption={shot.caption}
+                          className="mx-0"
+                        />
+                      ))}
                     </div>
-
-                    <h3 className="font-display text-base font-bold leading-snug text-text-primary sm:text-lg">
-                      {step.title}
-                    </h3>
-                    <p className="mt-2 text-sm leading-relaxed text-text-secondary">
-                      {step.body}
-                    </p>
-
-                    {step.detail && (
-                      <div className="mt-4 overflow-hidden rounded-lg border border-border-faint bg-bg-void/70">
-                        <div className="flex items-center gap-2 border-b border-border-faint px-3 py-1.5">
-                          <SignalDot
-                            status={
-                              step.tone === "danger"
-                                ? "danger"
-                                : step.tone === "signal"
-                                  ? "ok"
-                                  : "info"
-                            }
-                            size="sm"
-                            pulse={false}
-                          />
-                          <span className="truncate font-mono text-[10px] uppercase tracking-[0.1em] text-text-muted">
-                            {step.detail.label}
-                          </span>
-                        </div>
-                        <div className="space-y-1 overflow-x-auto p-3">
-                          {step.detail.lines.map((line, j) => (
-                            <p
-                              key={j}
-                              className={cn(
-                                "font-mono text-[11px] leading-relaxed",
-                                toneText[line.tone ?? "neutral"]
-                              )}
-                            >
-                              {line.text}
-                            </p>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                </li>
-              );
-            })}
+                  )}
+                </div>
+              </li>
+            ))}
           </ol>
         </div>
 
-        <p className="mx-auto mt-12 max-w-xl text-center text-sm text-text-secondary">
-          The only thing you did in those thirty-one minutes was read, click
-          once, and ship the fix. Everything above it happened because the SDK
-          was installed and the repo was connected.
+        <p className="mt-16 max-w-xl text-[15px] leading-relaxed text-text-secondary sm:ml-[123px]">
+          The only thing you did in those {inWords(totalMinutes)} minutes was
+          read, click once, and ship the fix. Everything else happened because
+          the SDK was installed and the repo was connected.
         </p>
       </div>
     </section>

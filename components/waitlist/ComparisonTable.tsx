@@ -1,6 +1,6 @@
 "use client";
 
-import { SectionHeading } from "@/components/shared/SectionHeading";
+import { LandingHeading } from "@/components/landing/primitives";
 import { useScrollReveal } from "@/hooks/useGsapAnimations";
 import { cn } from "@/lib/utils";
 import { Check, Minus, X } from "lucide-react";
@@ -69,7 +69,7 @@ const ROWS: Row[] = [
   },
   {
     capability: "PII stripped before it leaves the browser",
-    apperio: { state: "yes", note: "10+ patterns, audited" },
+    apperio: { state: "yes", note: "11 patterns, in the browser" },
     tracker: { state: "partial", note: "Server-side scrubbing" },
     apm: { state: "partial" },
     platform: { state: "no" },
@@ -83,7 +83,9 @@ const ROWS: Row[] = [
   },
   {
     capability: "Time from install to first insight",
-    apperio: { state: "yes", note: "Under 5 minutes" },
+    // Not a stopwatch claim: data arrives from the first page view once the
+    // snippet is deployed (the SDK flushes its first batch within 5 seconds).
+    apperio: { state: "yes", note: "From the first visit" },
     tracker: { state: "partial", note: "An afternoon" },
     apm: { state: "no", note: "Days" },
     platform: { state: "na", note: "Already on" },
@@ -140,10 +142,10 @@ export function ComparisonTable() {
     <section
       id="comparison"
       ref={containerRef}
-      className="border-t border-border-faint py-24 sm:py-32"
+      className="border-t border-border-subtle py-24 sm:py-32"
     >
-      <div className="mx-auto max-w-[1280px] px-4 sm:px-6">
-        <SectionHeading
+      <div className="mx-auto max-w-[1200px] px-4 sm:px-6">
+        <LandingHeading
           eyebrow="Where it sits"
           headline="Not a better log viewer."
           headlineAccent="A different question."
@@ -152,7 +154,10 @@ export function ComparisonTable() {
 
         <div
           data-reveal
-          className="mt-16 overflow-x-auto rounded-xl border border-border-subtle bg-bg-surface/40 backdrop-blur-sm"
+          role="region"
+          aria-label="Capability comparison"
+          tabIndex={0}
+          className="mt-14 overflow-x-auto rounded-[14px] border border-border-subtle bg-bg-surface focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-signal"
         >
           <table className="w-full min-w-[720px] border-collapse text-sm">
             <caption className="sr-only">
@@ -172,7 +177,7 @@ export function ComparisonTable() {
                     key={col.key}
                     scope="col"
                     className={cn(
-                      "px-4 py-4 text-center font-display text-xs font-bold",
+                      "px-4 py-4 text-center font-display text-sm font-semibold",
                       col.accent
                         ? "bg-signal/5 text-signal"
                         : "text-text-secondary"
@@ -217,7 +222,7 @@ export function ComparisonTable() {
 
         <p
           data-reveal
-          className="mx-auto mt-6 max-w-2xl text-center text-xs leading-relaxed text-text-muted"
+          className="mt-6 max-w-2xl text-xs leading-relaxed text-text-muted"
         >
           Compared by category rather than by brand, because the answer varies
           within each one. If your current tool does something on this list, keep

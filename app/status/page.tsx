@@ -128,38 +128,6 @@ function ComponentRow({
   );
 }
 
-function UptimeBar({
-  label,
-  percentage,
-}: {
-  label: string;
-  percentage: number;
-}) {
-  const barColor =
-    percentage >= 99.9
-      ? "bg-status-ok"
-      : percentage >= 99.0
-        ? "bg-status-warn"
-        : "bg-status-danger";
-
-  return (
-    <div className="space-y-1.5">
-      <div className="flex justify-between text-xs">
-        <span className="text-text-muted">{label}</span>
-        <span className="text-text-primary font-mono font-medium">
-          {percentage.toFixed(1)}%
-        </span>
-      </div>
-      <div className="h-2 bg-white/5 rounded-full overflow-hidden">
-        <div
-          className={`h-full rounded-full transition-all duration-500 ${barColor}`}
-          style={{ width: `${Math.min(100, percentage)}%` }}
-        />
-      </div>
-    </div>
-  );
-}
-
 function IncidentTimeline({
   incidents,
 }: {
@@ -280,18 +248,9 @@ export default function StatusPage() {
         </div>
       </section>
 
-      {/* Uptime section */}
-      <section>
-        <h3 className="text-sm font-medium text-text-secondary mb-3 uppercase tracking-wider">
-          Uptime
-        </h3>
-        <div className="rounded-xl border border-border-subtle bg-bg-surface p-5 grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <UptimeBar label="Last 24 hours" percentage={data.uptime.last24h} />
-          <UptimeBar label="Last 7 days" percentage={data.uptime.last7d} />
-          <UptimeBar label="Last 30 days" percentage={data.uptime.last30d} />
-          <UptimeBar label="Last 90 days" percentage={data.uptime.last90d} />
-        </div>
-      </section>
+      {/* Uptime is not shown: the backend returns hardcoded placeholder
+          values (logger_backend/src/services/status.service.ts). Restore the
+          section once uptime is measured for real. */}
 
       {/* Recent incidents */}
       <section>

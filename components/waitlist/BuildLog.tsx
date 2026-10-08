@@ -1,178 +1,151 @@
 "use client";
 
-import { SectionHeading } from "@/components/shared/SectionHeading";
+import { LandingHeading, StatusTag } from "@/components/landing/primitives";
 import { useScrollReveal } from "@/hooks/useGsapAnimations";
+import { manifest } from "@/lib/screenshots";
 import { cn } from "@/lib/utils";
-import { Check, CircleDashed, Loader } from "lucide-react";
 
-type State = "shipped" | "building" | "next";
+type State = "shipped" | "beta" | "next";
 
-const ENTRIES: { state: State; title: string; body: string }[] = [
+/**
+ * Dates are when each item first ran in production, not when it was
+ * committed. Production served stale code until late September 2026, so the
+ * Change Intelligence items all reached it that month.
+ * TODO(changelog): replace the month-only dates with exact days, and link each
+ * entry to its /changelog page, once the backend serves real changelog entries
+ * instead of the invented seed history.
+ */
+const ENTRIES: { state: State; date?: string; title: string; body: string }[] = [
   {
-    state: "shipped",
-    title: "GitHub App, webhooks and the change feed",
-    body: "Installation tokens, signed webhook receiver with delivery-ID idempotency, and stored commits, deploys and releases per project.",
+    state: "beta",
+    date: "2026-09-29",
+    title: "Session replay",
+    body: "Recorder in the SDK (apperio 1.5.0), player on the session page, Watch replay from an error group. Every input masked by default, off until you turn it on per project, seven-day retention.",
   },
   {
     state: "shipped",
-    title: "AI commit summaries, both registers",
-    body: "Plain English and technical, cached per SHA, with lockfiles and generated files filtered out of the diff.",
+    date: "Sep 2026",
+    title: "Suspect commits",
+    body: "Stack-file overlap plus AI ranking, computed when the error group is first opened and shown as Likely caused by.",
   },
   {
     state: "shipped",
-    title: "Deploy markers and release health",
-    body: "Deployments from GitHub, your CI, or a single API call, drawn onto the charts with an automatic better-or-worse verdict.",
-  },
-  {
-    state: "shipped",
-    title: "Error fingerprinting and zero-config alerts",
-    body: "Errors grouped at ingestion, counted by users affected, and routed to the owner in-app and by email without an alert rule.",
-  },
-  {
-    state: "shipped",
+    date: "Sep 2026",
     title: "AI-drafted issues with two-way sync",
     body: "Editable preview, full context attached, opened on GitHub in one click. Close it there and the error group resolves here.",
   },
   {
     state: "shipped",
-    title: "Suspect commits",
-    body: "Stack-file overlap plus AI ranking, computed on demand and surfaced as Likely caused by on the error group.",
+    date: "Sep 2026",
+    title: "Error fingerprinting and zero-config alerts",
+    body: "Errors grouped at ingestion, counted by sessions affected, and routed to the project owner without an alert rule.",
   },
   {
-    state: "building",
-    title: "Session replay v1",
-    body: "Recorder in the SDK, player on the session page, all text inputs masked by default, opt-in per project, seven-day retention.",
+    state: "shipped",
+    date: "Sep 2026",
+    title: "Deploy markers and release health",
+    body: "Deployments from GitHub, your CI, or a single API call, drawn onto the charts, with a verdict an hour later: Improved, Healthy, Degraded or Not enough traffic.",
+  },
+  {
+    state: "shipped",
+    date: "Sep 2026",
+    title: "AI commit summaries",
+    body: "A plain-English summary and a technical one for every commit, cached per SHA, with lockfiles and generated files filtered out of the diff.",
+  },
+  {
+    state: "shipped",
+    date: "Sep 2026",
+    title: "GitHub App, webhooks and the change feed",
+    body: "Installation tokens, a signed webhook receiver with delivery-ID idempotency, and stored commits, deploys and releases per project.",
   },
   {
     state: "next",
     title: "Pulse feed and digests",
-    body: "One chronological feed per project, and a weekly or daily email that reads like a person wrote it.",
+    body: "One chronological feed per project, and a weekly email that reads like a person wrote it.",
   },
   {
     state: "next",
     title: "Guided onboarding",
-    body: "First-run flow that gets you from signup to first captured error without reading documentation.",
+    body: "A first-run flow that gets you from signup to first captured error without reading documentation.",
   },
 ];
 
-const STATE_META: Record<
-  State,
-  { label: string; icon: typeof Check; ring: string; text: string }
-> = {
-  shipped: {
-    label: "Shipped",
-    icon: Check,
-    ring: "border-signal/40 bg-signal/10 text-signal",
-    text: "text-signal",
-  },
-  building: {
-    label: "Building now",
-    icon: Loader,
-    ring: "border-data/40 bg-data/10 text-data",
-    text: "text-data",
-  },
-  next: {
-    label: "Next",
-    icon: CircleDashed,
-    ring: "border-border-subtle bg-bg-elevated/50 text-text-muted",
-    text: "text-text-muted",
-  },
+const STATE_LABEL: Record<State, string> = {
+  shipped: "Shipped",
+  beta: "Shipped, beta",
+  next: "Next",
 };
 
 export function BuildLog() {
-  const containerRef = useScrollReveal({ stagger: 0.06 });
-  const shipped = ENTRIES.filter((e) => e.state === "shipped").length;
+  const containerRef = useScrollReveal({ stagger: 0.05 });
+  const shipped = ENTRIES.filter((e) => e.state !== "next").length;
+  const next = ENTRIES.length - shipped;
 
   return (
     <section
       id="build-log"
       ref={containerRef}
-      className="border-t border-border-faint py-24 sm:py-32"
+      className="scroll-mt-16 border-t border-border-subtle py-24 sm:py-32"
     >
-      <div className="mx-auto max-w-[1280px] px-4 sm:px-6">
-        <SectionHeading
+      <div className="mx-auto max-w-[1200px] px-4 sm:px-6">
+        <LandingHeading
           eyebrow="Built in the open"
           headline="We are not asking you"
           headlineAccent="to imagine it."
-          sub="Most of what this page describes is already running. Here is the honest state of the build, kept current as things land. No screenshots of features that do not exist."
+          sub={`Most of what this page describes is already running${manifest.shots.length > 0 ? ", and every product image on it is a capture of the real thing" : ""}. Here is the honest state of the build, kept current as things land.`}
         />
 
-        <div className="mx-auto mt-16 max-w-3xl">
-          <div
-            data-reveal
-            className="mb-6 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-xs text-text-muted"
-          >
-            <span>
-              <span className="font-mono font-bold text-signal">{shipped}</span>{" "}
-              shipped
-            </span>
-            <span className="hidden h-3 w-px bg-border-subtle sm:block" />
-            <span>
-              <span className="font-mono font-bold text-data">1</span> in
-              progress
-            </span>
-            <span className="hidden h-3 w-px bg-border-subtle sm:block" />
-            <span>
-              <span className="font-mono font-bold text-text-secondary">2</span>{" "}
-              queued for the beta
-            </span>
-          </div>
-
-          <ol className="space-y-2.5">
-            {ENTRIES.map((entry) => {
-              const meta = STATE_META[entry.state];
-              const Icon = meta.icon;
-              return (
-                <li
-                  key={entry.title}
-                  data-reveal
-                  className={cn(
-                    "flex gap-4 rounded-xl border border-border-subtle bg-bg-surface/40 p-4 backdrop-blur-sm transition-colors duration-300 sm:p-5",
-                    entry.state === "shipped" && "hover:border-signal/25",
-                    entry.state === "building" && "border-data/20"
-                  )}
-                >
-                  <span
-                    className={cn(
-                      "mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full border",
-                      meta.ring
-                    )}
-                  >
-                    <Icon
-                      className={cn(
-                        "h-3.5 w-3.5",
-                        entry.state === "building" && "animate-spin [animation-duration:3s]"
-                      )}
-                    />
-                  </span>
-
-                  <div className="min-w-0 flex-1">
-                    <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
-                      <h3 className="font-display text-sm font-bold text-text-primary">
-                        {entry.title}
-                      </h3>
-                      <span
-                        className={cn(
-                          "font-mono text-[10px] uppercase tracking-[0.1em]",
-                          meta.text
-                        )}
-                      >
-                        {meta.label}
-                      </span>
-                    </div>
-                    <p className="mt-1.5 text-sm leading-relaxed text-text-secondary">
-                      {entry.body}
-                    </p>
-                  </div>
-                </li>
-              );
-            })}
-          </ol>
-
+        <div className="mt-14 max-w-[880px]">
           <p
             data-reveal
-            className="mt-8 text-center text-sm text-text-secondary"
+            className="mb-4 font-mono text-[12px] text-text-muted"
           >
+            <span className="tabular-nums text-text-primary">{shipped}</span> shipped
+            {" · "}
+            <span className="tabular-nums text-text-primary">{next}</span> next
+          </p>
+
+          <ol className="divide-y divide-border-subtle border-y border-border-subtle">
+            {ENTRIES.map((entry) => (
+              <li
+                key={entry.title}
+                data-reveal
+                className="grid gap-x-6 gap-y-1 py-5 sm:grid-cols-[96px_minmax(0,1fr)]"
+              >
+                <span className="pt-[2px] font-mono text-[12px] tabular-nums text-text-muted">
+                  {entry.date ?? "Planned"}
+                </span>
+                <div className="min-w-0">
+                  <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5">
+                    <h3
+                      className={cn(
+                        "font-display text-base font-semibold tracking-[-0.01em]",
+                        entry.state === "next" ? "text-text-secondary" : "text-text-primary"
+                      )}
+                    >
+                      {entry.title}
+                    </h3>
+                    <StatusTag
+                      tone={
+                        entry.state === "shipped"
+                          ? "live"
+                          : entry.state === "beta"
+                            ? "beta"
+                            : "next"
+                      }
+                    >
+                      {STATE_LABEL[entry.state]}
+                    </StatusTag>
+                  </div>
+                  <p className="mt-1.5 text-[15px] leading-relaxed text-text-secondary">
+                    {entry.body}
+                  </p>
+                </div>
+              </li>
+            ))}
+          </ol>
+
+          <p data-reveal className="mt-8 text-sm text-text-secondary">
             The beta is small on purpose. Every account added is one more app
             whose real traffic shapes what ships next.
           </p>

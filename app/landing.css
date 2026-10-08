@@ -1,0 +1,148 @@
+/* ============================================================================
+   LANDING PAGE TOKENS
+   Scoped under .landing so the dashboard keeps the Observatory palette.
+   The landing components use the same Tailwind utilities as the app
+   (text-text-primary, bg-bg-surface, border-border-subtle, text-signal...),
+   so overriding the underlying variables here restyles them in place.
+
+   Neutral surfaces so the product screenshots carry the colour. Lime is the
+   one accent, for live and signal states only. See docs/redesign/PLAN.md §6.
+   ============================================================================ */
+
+.landing {
+  /* Type: Instrument Sans + JetBrains Mono (components/landing/fonts.ts) */
+  --font-display: var(--font-instrument);
+  --font-body: var(--font-instrument);
+  --font-sans: var(--font-instrument), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-jetbrains), ui-monospace, "SFMono-Regular", monospace;
+  --font-geist-mono: var(--font-jetbrains);
+
+  /* Light */
+  --background: #fafaf9;
+  --foreground: #18181b;
+  --card: #ffffff;
+  --card-foreground: #18181b;
+  --popover: #ffffff;
+  --popover-foreground: #18181b;
+  --muted-foreground: #63636b;
+  --border: #e4e4e7;
+  --input: #d4d4d8;
+  --ring: #1f7a3d;
+  --primary: #1f7a3d;
+
+  --bg-void: #fafaf9;
+  --bg-base: #fafaf9;
+  --bg-surface: #ffffff;
+  --bg-elevated: #f4f4f5;
+  --bg-overlay: #f4f4f5;
+
+  --border-faint: #ececee;
+  --border-subtle: #e4e4e7;
+  --border-accent: #d4d4d8;
+
+  --text-primary: #18181b;
+  --text-secondary: #52525b;
+  --text-muted: #63636b;
+
+  /* Accent text on light is deep green (5.4:1 on white); the fill stays lime. */
+  --signal: #1f7a3d;
+  --signal-bright: #166430;
+  --signal-muted: rgba(31, 122, 61, 0.07);
+  --signal-glow: rgba(31, 122, 61, 0.12);
+  --signal-fill: #aef78e;
+  --signal-fill-hover: #9ff07c;
+  --signal-ink: #0a0a0b;
+
+  --data: #3f3f46;
+  --data-muted: rgba(63, 63, 70, 0.08);
+  --data-bright: #18181b;
+
+  --status-ok: #1f7a3d;
+  --status-warn: #a35a00;
+  --status-danger: #c53030;
+  --status-fatal: #9b2c2c;
+  --level-error: #c53030;
+  --level-warn: #a35a00;
+
+  --glow-signal: none;
+  --glow-signal-sm: none;
+  --shadow-card: 0 1px 2px rgba(24, 24, 27, 0.04);
+  --shot-shadow: 0 1px 2px rgba(24, 24, 27, 0.04),
+    0 24px 48px -28px rgba(24, 24, 27, 0.22);
+
+  background-color: var(--background);
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+}
+
+.dark .landing {
+  --background: #0a0a0b;
+  --foreground: #ededef;
+  --card: #121214;
+  --card-foreground: #ededef;
+  --popover: #121214;
+  --popover-foreground: #ededef;
+  --muted-foreground: #8b8b94;
+  --border: #26262b;
+  --input: #34343a;
+  --ring: #aef78e;
+  --primary: #aef78e;
+
+  --bg-void: #0a0a0b;
+  --bg-base: #0a0a0b;
+  --bg-surface: #121214;
+  --bg-elevated: #1a1a1d;
+  --bg-overlay: #1a1a1d;
+
+  --border-faint: #1c1c20;
+  --border-subtle: #26262b;
+  --border-accent: #34343a;
+
+  --text-primary: #ededef;
+  --text-secondary: #a1a1aa;
+  --text-muted: #8b8b94;
+
+  --signal: #aef78e;
+  --signal-bright: #c6fbae;
+  --signal-muted: rgba(174, 247, 142, 0.08);
+  --signal-glow: rgba(174, 247, 142, 0.14);
+  --signal-fill: #aef78e;
+  --signal-fill-hover: #c3fba8;
+  --signal-ink: #0a0a0b;
+
+  --data: #d4d4d8;
+  --data-muted: rgba(212, 212, 216, 0.08);
+  --data-bright: #ededef;
+
+  --status-ok: #aef78e;
+  --status-warn: #fbbf24;
+  --status-danger: #f87171;
+  --status-fatal: #ef4444;
+  --level-error: #f87171;
+  --level-warn: #fbbf24;
+
+  --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --shot-shadow: 0 1px 2px rgba(0, 0, 0, 0.4),
+    0 28px 56px -28px rgba(0, 0, 0, 0.75);
+}
+
+/* Lime fill with near-black text in both themes: buttons, the LIVE pill,
+   step numbers. Set on the element itself so bg-signal / text-bg-void inside
+   the shared Button variant resolve to the fill and ink. */
+.landing .signal-fill {
+  --signal: var(--signal-fill);
+  --signal-bright: var(--signal-fill-hover);
+  --bg-void: var(--signal-ink);
+  --signal-glow: transparent;
+}
+
+/* Times, SHAs and metrics line up in columns. */
+.landing .font-mono,
+.landing .tabular-nums {
+  font-variant-numeric: tabular-nums;
+}
+
+.landing ::selection {
+  background: var(--signal-fill);
+  color: var(--signal-ink);
+}

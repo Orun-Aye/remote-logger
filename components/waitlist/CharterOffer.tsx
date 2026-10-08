@@ -1,6 +1,6 @@
 "use client";
 
-import { SectionHeading } from "@/components/shared/SectionHeading";
+import { LandingHeading } from "@/components/landing/primitives";
 import { useScrollReveal } from "@/hooks/useGsapAnimations";
 import { WaitlistForm } from "./WaitlistForm";
 import { Compass, MessageSquare, Tag, Unlock } from "lucide-react";
@@ -29,23 +29,23 @@ const PERKS = [
 ];
 
 export function CharterOffer() {
-  const containerRef = useScrollReveal({ stagger: 0.09 });
+  const containerRef = useScrollReveal({ stagger: 0.08 });
 
   return (
     <section
       id="charter"
       ref={containerRef}
-      className="border-t border-border-faint py-24 sm:py-32"
+      className="scroll-mt-16 border-t border-border-subtle py-24 sm:py-32"
     >
-      <div className="mx-auto max-w-[1280px] px-4 sm:px-6">
-        <SectionHeading
+      <div className="mx-auto max-w-[1200px] px-4 sm:px-6">
+        <LandingHeading
           eyebrow="Early access"
           headline="What you get"
           headlineAccent="for being early."
           sub="The first accounts through the door are charter members. This is not a launch discount that expires. It is a standing arrangement for the people who show up before it is obvious."
         />
 
-        <div className="mx-auto mt-16 max-w-4xl">
+        <div className="mt-14 max-w-[960px]">
           <div className="grid gap-4 sm:grid-cols-2">
             {PERKS.map((perk) => {
               const Icon = perk.icon;
@@ -53,15 +53,13 @@ export function CharterOffer() {
                 <div
                   key={perk.title}
                   data-reveal
-                  className="rounded-xl border border-border-subtle bg-bg-surface/40 p-6 backdrop-blur-sm transition-colors duration-300 hover:border-signal/30"
+                  className="rounded-[14px] border border-border-subtle bg-bg-surface p-5 sm:p-6"
                 >
-                  <span className="mb-4 flex h-9 w-9 items-center justify-center rounded-lg bg-signal/10 text-signal">
-                    <Icon className="h-4 w-4" />
-                  </span>
-                  <h3 className="font-display text-base font-bold text-text-primary">
+                  <Icon className="mb-4 h-4 w-4 text-text-muted" aria-hidden="true" />
+                  <h3 className="font-display text-lg font-semibold tracking-[-0.01em] text-text-primary">
                     {perk.title}
                   </h3>
-                  <p className="mt-2 text-sm leading-relaxed text-text-secondary">
+                  <p className="mt-2 text-[15px] leading-relaxed text-text-secondary">
                     {perk.body}
                   </p>
                 </div>
@@ -69,41 +67,29 @@ export function CharterOffer() {
             })}
           </div>
 
-          {/* Signup panel with the animated conic border */}
           <div
             data-reveal
-            className="relative mt-6 overflow-hidden rounded-2xl p-px"
+            className="mt-4 rounded-[14px] border border-border-accent bg-bg-elevated p-6 sm:p-8"
           >
-            <span
-              aria-hidden="true"
-              className="animate-border-sweep absolute left-1/2 top-1/2 h-[220%] w-[220%] -translate-x-1/2 -translate-y-1/2"
-              style={{
-                background:
-                  "conic-gradient(from 0deg, transparent 0deg, var(--signal) 40deg, transparent 90deg, transparent 360deg)",
-                opacity: 0.35,
-              }}
-            />
-            <div className="relative rounded-2xl border border-border-subtle bg-bg-surface/80 p-8 backdrop-blur-md sm:p-10">
-              <div className="grid items-center gap-8 lg:grid-cols-[1.1fr_1fr]">
-                <div>
-                  <h3 className="font-display text-xl font-extrabold leading-tight tracking-tight text-text-primary sm:text-2xl">
-                    And when the beta ends, the free tier stays free.
-                  </h3>
-                  <p className="mt-3 text-sm leading-relaxed text-text-secondary">
-                    Not a trial that lapses into a paywall. A real free tier with
-                    a monthly log allowance, live projects and alerts, meant for
-                    the side project that may never make money. Paid tiers start
-                    at nine dollars a month when you outgrow it.
-                  </p>
-                </div>
+            <div className="grid items-center gap-8 lg:grid-cols-[1.1fr_1fr]">
+              <div>
+                <h3 className="font-display text-xl font-semibold leading-tight tracking-[-0.02em] text-text-primary sm:text-2xl">
+                  And when the beta ends, the free tier stays free.
+                </h3>
+                <p className="mt-3 text-[15px] leading-relaxed text-text-secondary">
+                  Not a trial that lapses into a paywall. A real free tier with
+                  a monthly log allowance, live projects and alerts, meant for
+                  the side project that may never make money. Paid tiers start
+                  at nine dollars a month when you outgrow it.
+                </p>
+              </div>
 
-                <div>
-                  <WaitlistForm cta="Claim a charter spot" />
-                  <p className="mt-3 text-xs text-text-muted">
-                    Invites go out in batches, in waitlist order, as capacity
-                    allows. No card, no call, no demo to sit through.
-                  </p>
-                </div>
+              <div>
+                <WaitlistForm cta="Claim a charter spot" />
+                <p className="mt-3 text-xs text-text-muted">
+                  Invites go out in batches, in waitlist order, as capacity
+                  allows. No card, no call, no demo to sit through.
+                </p>
               </div>
             </div>
           </div>

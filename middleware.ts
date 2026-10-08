@@ -84,10 +84,13 @@ export async function middleware(request: NextRequest) {
 
 /**
  * Middleware Matcher Configuration.
- * Matches all paths except static assets and API routes.
+ * Matches all paths except API routes, Next's own assets and anything served
+ * from public/ (landing screenshots and clips, plus any file with a static
+ * extension). Without the public/ exclusions a logged-out visitor asking for
+ * /screenshots/dark/x.webp was redirected to /login.
  */
 export const config = {
   matcher: [
-    "/((?!api|_next/static|_next/image|favicon.ico).*)",
+    "/((?!api|_next/static|_next/image|favicon.ico|screenshots/|videos/|.*\\.(?:webp|avif|png|jpe?g|gif|svg|ico|mp4|webm|txt|xml|woff2?)$).*)",
   ],
 };
