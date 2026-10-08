@@ -325,7 +325,17 @@ export default function ErrorAnalyticsPage() {
     statsData && typeof statsData === "object" && !Array.isArray(statsData)
       ? (statsData as ErrorStatsData)
       : null;
-  const timeline: ErrorTimelinePoint[] = extractArray(timelineData, "timeline", "data");
+  // The timeline API answers { time, errors, warnings, fatal } per bucket; the
+  // chart, the sparkline and the deploy markers read { timestamp, count }
+  const timeline: ErrorTimelinePoint[] = extractArray<ErrorTimelinePoint>(
+    timelineData,
+    "timeline",
+    "data"
+  ).map((point) => ({
+    ...point,
+    timestamp: String(point.timestamp ?? point.time ?? ""),
+    count: Number(point.count ?? (Number(point.errors) || 0) + (Number(point.fatal) || 0)),
+  }));
 
   // Deploy markers for chart overlays (Phase 7 Change Intelligence)
   const deployMarkerLines = useChartDeployMarkers(
