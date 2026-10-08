@@ -37,7 +37,7 @@ interface ErrorTimelinePoint {
 }
 
 interface TopError {
-  _id: string;
+  _id?: string;
   name: string;
   message: string;
   count: number;
@@ -45,6 +45,10 @@ interface TopError {
   lastSeen: string;
   status?: string;
 }
+
+// The top-errors API groups by error message and projects _id out, and the
+// detail page looks errors up by that message
+const errorKey = (error: TopError) => encodeURIComponent(error._id ?? error.message);
 
 interface ErrorDistributionItem {
   name: string;
@@ -138,8 +142,8 @@ function TopErrorsTable({
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
         {errors.map((error) => (
           <button
-            key={error._id}
-            onClick={() => router.push(`/projects/${projectId}/errors/${error._id}`)}
+            key={error._id ?? error.message}
+            onClick={() => router.push(`/projects/${projectId}/errors/${errorKey(error)}`)}
             className="rounded-lg border border-border-subtle bg-bg-surface hover:bg-bg-elevated/50 transition-colors cursor-pointer group p-4 text-left space-y-3"
           >
             {/* Top row: name + count badge */}
@@ -205,8 +209,8 @@ function TopErrorsTable({
       {/* Table rows */}
       {errors.map((error) => (
         <button
-          key={error._id}
-          onClick={() => router.push(`/projects/${projectId}/errors/${error._id}`)}
+          key={error._id ?? error.message}
+          onClick={() => router.push(`/projects/${projectId}/errors/${errorKey(error)}`)}
           className="grid grid-cols-[1fr_80px_140px_140px_90px] gap-4 px-4 py-3 border-b border-border-subtle last:border-b-0 w-full text-left hover:bg-bg-elevated/50 transition-colors group"
         >
           <div className="min-w-0">

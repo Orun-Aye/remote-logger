@@ -129,7 +129,7 @@ export const analyticsService = {
   getErrorDetails: async (projectId: string, errorId: string) => {
     try {
       const response = await apiClient.get<ApiResponse>(
-        `/analytics/${projectId}/errors/${errorId}/details`
+        `/analytics/${projectId}/errors/${encodeURIComponent(errorId)}/details`
       );
       if (response.data.status === "error") {
         throw new ApiError(

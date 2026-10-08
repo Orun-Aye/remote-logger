@@ -52,6 +52,62 @@ interface ErrorDetailData {
   };
 }
 
+/** One log entry, as the details API returns it under `occurrences`. */
+interface RawOccurrence {
+  _id?: string;
+  timestamp?: string;
+  url?: string;
+  userAgent?: string;
+  environment?: string;
+  service?: string;
+  context?: Record<string, unknown>;
+  metadata?: Record<string, unknown>;
+  error?: ErrorDetailData["error"];
+}
+
+interface RawErrorDetails {
+  message?: string;
+  occurrences?: RawOccurrence[];
+  stats?: { count?: number; firstSeen?: string; lastSeen?: string };
+}
+
+type NormalizedErrorDetail = ErrorDetailData & { logId?: string };
+
+/**
+ * The details API answers `{ message, occurrences, stats }`, with the newest
+ * occurrences first, while this page reads flat fields. Map one onto the other.
+ */
+function normalizeErrorDetail(data: unknown): NormalizedErrorDetail | null {
+  if (!data || typeof data !== "object") return null;
+  if (!("stats" in data) && !("occurrences" in data)) return data as NormalizedErrorDetail;
+  const raw = data as RawErrorDetails;
+  const latest = raw.occurrences?.[0];
+  return {
+    name: latest?.error?.name ?? "Error",
+    message: raw.message ?? latest?.error?.message ?? "",
+    count: raw.stats?.count ?? raw.occurrences?.length ?? 0,
+    firstSeen: raw.stats?.firstSeen ?? latest?.timestamp ?? "",
+    lastSeen: raw.stats?.lastSeen ?? latest?.timestamp ?? "",
+    stack: latest?.error?.stack,
+    context: latest?.context,
+    metadata: latest?.metadata,
+    url: latest?.url,
+    userAgent: latest?.userAgent,
+    environment: latest?.environment,
+    service: latest?.service,
+    error: latest?.error,
+    logId: latest?._id,
+  };
+}
+
+function safeDecode(value: string): string {
+  try {
+    return decodeURIComponent(value);
+  } catch {
+    return value;
+  }
+}
+
 // ---------------------------------------------------------------------------
 // Helper: format timestamp for chart axis
 // ---------------------------------------------------------------------------
@@ -117,14 +173,19 @@ export default function ErrorDetailPage() {
   const params = useParams<{ projectId: string; errorId: string }>();
   const router = useRouter();
   const projectId = typeof params?.projectId === "string" ? params.projectId : "";
-  const errorId = typeof params?.errorId === "string" ? params.errorId : "";
+  // The segment is the error message, URL-encoded by the errors list
+  const errorId = typeof params?.errorId === "string" ? safeDecode(params.errorId) : "";
 
   const [rcaExpanded, setRcaExpanded] = useState(false);
 
   const { data: detailData, isLoading, error: fetchError } = useErrorDetails(projectId, errorId);
-  const { data: rootCause, isLoading: rcaLoading } = useRootCause(projectId, errorId, rcaExpanded);
-
-  const errorDetail: ErrorDetailData | null = detailData ?? null;
+  const errorDetail = useMemo(() => normalizeErrorDetail(detailData), [detailData]);
+  // Root cause analysis looks up one log entry by id: use the newest occurrence
+  const { data: rootCause, isLoading: rcaLoading } = useRootCause(
+    projectId,
+    errorDetail?.logId ?? "",
+    rcaExpanded
+  );
 
   // Derive timeline data from the response
   const timelineData: ErrorOccurrence[] = useMemo(() => {
