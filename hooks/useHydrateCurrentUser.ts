@@ -8,13 +8,11 @@ import { useApperioStore } from "@/store/apperio-store";
  * Loads the authenticated user into the store on mount.
  *
  * currentUser is deliberately excluded from the store's partialize list, so it
- * is null after every reload. Beta gating reads betaTier from it and falls back
- * to "core", which would gate a full-tier user on any refresh. Fetching the
- * profile also means a tier change on the server takes effect on reload rather
- * than requiring a fresh login.
+ * is null after every reload. Fetching the profile here repopulates it, and
+ * means a profile change on the server shows up on reload rather than
+ * requiring a fresh login.
  *
- * Returns false until the first attempt settles, so callers can avoid gating on
- * the default "core" value before the real tier is known.
+ * Returns false until the first attempt settles.
  */
 export function useHydrateCurrentUser(): boolean {
   const setCurrentUser = useApperioStore((s) => s.setCurrentUser);

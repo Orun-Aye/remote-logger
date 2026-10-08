@@ -216,8 +216,3 @@ export const useAutoRefresh = () =>
     setInterval: s.setAutoRefreshInterval,
   })));
 export const useTheme = () => useApperioStore((s) => s.theme);
-export const useBetaAccess = () =>
-  useApperioStore(useShallow((s) => ({
-    betaAccess: s.currentUser?.betaAccess ?? false,
-    betaTier: (s.currentUser?.betaTier ?? 'core') as BetaTier,
-  })));

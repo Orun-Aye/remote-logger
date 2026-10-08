@@ -26,10 +26,9 @@ export class ApiError extends Error {
 /**
  * Persists a session: the JWT cookie plus the user payload the dashboard reads.
  *
- * Both halves matter. `useBetaAccess` derives betaTier from the store's
- * currentUser and falls back to "core" when it is null, so setting the cookie
- * alone leaves every user gated out of advanced routes regardless of their
- * actual tier. Call this from every path that receives a token.
+ * Both halves matter: the cookie authenticates API calls, and the dashboard
+ * reads who is signed in from the store's currentUser. Call this from every
+ * path that receives a token.
  */
 export const establishSession = (data: any): void => {
   if (data?.token) {

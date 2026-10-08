@@ -59,10 +59,9 @@ import { SignalDot } from "@/components/shared/SignalDot";
 import { OrgSwitcher } from "@/components/shared/OrgSwitcher";
 import { useProjects } from "@/hooks/project.hooks";
 import { useUserAlertStats } from "@/hooks/alerts.hook";
-import { useApperioStore, useBetaAccess } from "@/store/apperio-store";
+import { useApperioStore } from "@/store/apperio-store";
 import { useOrganizationStore } from "@/store/organization-store";
 import { useProfile } from "@/hooks/user.hook";
-import { Lock } from "lucide-react";
 
 // Helper function to get project status based on health metrics.
 // The list endpoint returns flat project objects (not wrapped in Project type).
@@ -79,27 +78,27 @@ const getProjectStatus = (project: any): "ok" | "warn" | "danger" | "info" => {
 
 // Sub-navigation items for the active project section
 const projectSubNavItems = [
-  { title: "Overview", path: "", icon: LayoutDashboard, advanced: false },
-  { title: "Changes", path: "/changes", icon: GitCommitHorizontal, advanced: false },
-  { title: "Issues", path: "/issues", icon: CircleDot, advanced: false },
-  { title: "Logs", path: "/logs", icon: ScrollText, advanced: false },
-  { title: "Errors", path: "/errors", icon: Bug, advanced: false },
-  { title: "Performance", path: "/performance", icon: Gauge, advanced: false },
-  { title: "Web Vitals", path: "/web-vitals", icon: Activity, advanced: true },
-  { title: "Network", path: "/network", icon: Wifi, advanced: true },
-  { title: "Interactions", path: "/interactions", icon: MousePointerClick, advanced: true },
-  { title: "Pageviews", path: "/pageviews", icon: Eye, advanced: true },
-  { title: "Console", path: "/console", icon: Terminal, advanced: false },
-  { title: "Sessions", path: "/sessions", icon: Users, advanced: false },
-  { title: "Activity Feed", path: "/activity", icon: Radio, advanced: false },
-  { title: "Traces", path: "/traces", icon: GitBranch, advanced: true },
-  { title: "Funnels", path: "/funnels", icon: Filter, advanced: true },
-  { title: "Regressions", path: "/regressions", icon: TrendingDown, advanced: true },
-  { title: "Environments", path: "/environments", icon: Globe, advanced: true },
-  { title: "Insights", path: "/insights", icon: Lightbulb, advanced: true },
-  { title: "Alerts", path: "/alerts", icon: AlertTriangle, advanced: false },
-  { title: "Source Maps", path: "/source-maps", icon: FileCode, advanced: true },
-  { title: "Settings", path: "/settings", icon: Settings, advanced: false },
+  { title: "Overview", path: "", icon: LayoutDashboard },
+  { title: "Changes", path: "/changes", icon: GitCommitHorizontal },
+  { title: "Issues", path: "/issues", icon: CircleDot },
+  { title: "Logs", path: "/logs", icon: ScrollText },
+  { title: "Errors", path: "/errors", icon: Bug },
+  { title: "Performance", path: "/performance", icon: Gauge },
+  { title: "Web Vitals", path: "/web-vitals", icon: Activity },
+  { title: "Network", path: "/network", icon: Wifi },
+  { title: "Interactions", path: "/interactions", icon: MousePointerClick },
+  { title: "Pageviews", path: "/pageviews", icon: Eye },
+  { title: "Console", path: "/console", icon: Terminal },
+  { title: "Sessions", path: "/sessions", icon: Users },
+  { title: "Activity Feed", path: "/activity", icon: Radio },
+  { title: "Traces", path: "/traces", icon: GitBranch },
+  { title: "Funnels", path: "/funnels", icon: Filter },
+  { title: "Regressions", path: "/regressions", icon: TrendingDown },
+  { title: "Environments", path: "/environments", icon: Globe },
+  { title: "Insights", path: "/insights", icon: Lightbulb },
+  { title: "Alerts", path: "/alerts", icon: AlertTriangle },
+  { title: "Source Maps", path: "/source-maps", icon: FileCode },
+  { title: "Settings", path: "/settings", icon: Settings },
 ];
 
 export function AppSidebar() {
@@ -119,8 +118,6 @@ export function AppSidebar() {
   // Fetch user profile to check platform super admin
   const { data: userProfile } = useProfile();
   const isSuperAdmin = userProfile?.email === "femi@apperio.dev";
-  const { betaTier } = useBetaAccess();
-  const isCoreTier = betaTier === "core";
 
   // Calculate active alert count
   const activeAlertCount = alertStats?.data?.active || 0;
@@ -151,7 +148,6 @@ export function AppSidebar() {
       icon: LayoutDashboard,
       badge: undefined as string | undefined,
       badgeVariant: undefined as "destructive" | undefined,
-      advanced: false,
     },
     {
       title: "Projects",
@@ -159,7 +155,6 @@ export function AppSidebar() {
       icon: Folder,
       badge: projectsResponse?.data?.length?.toString() || "0",
       badgeVariant: undefined as "destructive" | undefined,
-      advanced: false,
     },
     {
       title: "Logs",
@@ -167,7 +162,6 @@ export function AppSidebar() {
       icon: ScrollText,
       badge: undefined as string | undefined,
       badgeVariant: undefined as "destructive" | undefined,
-      advanced: false,
     },
     {
       title: "Alerts",
@@ -175,7 +169,6 @@ export function AppSidebar() {
       icon: AlertTriangle,
       badge: activeAlertCount > 0 ? activeAlertCount.toString() : undefined,
       badgeVariant: "destructive" as "destructive" | undefined,
-      advanced: false,
     },
   ];
 
@@ -265,7 +258,6 @@ export function AppSidebar() {
             <SidebarMenu>
               {navigationItems.map((item) => {
                 const active = isNavActive(item.url);
-                const isLocked = item.advanced && isCoreTier;
                 return (
                   <SidebarMenuItem key={item.title}>
                     <SidebarMenuButton
@@ -274,18 +266,13 @@ export function AppSidebar() {
                       className={
                         active
                           ? "bg-signal/10 text-signal font-medium border-l-2 border-signal"
-                          : isLocked
-                          ? "text-text-secondary/50 hover:text-text-secondary hover:bg-bg-elevated/30"
                           : "text-text-secondary hover:text-text-primary hover:bg-bg-elevated/50"
                       }
                     >
                       <Link href={item.url}>
                         <item.icon className="w-4 h-4" />
                         <span>{item.title}</span>
-                        {isLocked && (
-                          <Lock className="ml-auto w-3.5 h-3.5 text-text-muted/40" />
-                        )}
-                        {!isLocked && item.badge && (
+                        {item.badge && (
                           <Badge
                             variant={item.badgeVariant || "secondary"}
                             className="ml-auto text-xs"
@@ -339,7 +326,6 @@ export function AppSidebar() {
                       {projectSubNavItems.map((subItem) => {
                         const subActive = isSubNavActive(subItem.path);
                         const href = `/projects/${urlProjectId}${subItem.path}`;
-                        const isLocked = subItem.advanced && isCoreTier;
                         return (
                           <SidebarMenuSubItem key={subItem.title}>
                             <SidebarMenuSubButton
@@ -348,17 +334,12 @@ export function AppSidebar() {
                               className={
                                 subActive
                                   ? "text-signal font-medium"
-                                  : isLocked
-                                  ? "text-text-muted/50 hover:text-text-muted"
                                   : "text-text-muted hover:text-text-primary"
                               }
                             >
                               <Link href={href}>
                                 <subItem.icon className="w-3.5 h-3.5" />
                                 <span>{subItem.title}</span>
-                                {isLocked && (
-                                  <Lock className="ml-auto w-3 h-3 text-text-muted/40" />
-                                )}
                               </Link>
                             </SidebarMenuSubButton>
                           </SidebarMenuSubItem>
@@ -454,15 +435,12 @@ export function AppSidebar() {
                   className={
                     pathname.startsWith("/billing")
                       ? "bg-signal/10 text-signal font-medium border-l-2 border-signal"
-                      : isCoreTier
-                      ? "text-text-secondary/50 hover:text-text-secondary hover:bg-bg-elevated/30"
                       : "text-text-secondary hover:text-text-primary hover:bg-bg-elevated/50"
                   }
                 >
                   <Link href="/billing">
                     <CreditCard className="w-4 h-4" />
                     <span>Billing</span>
-                    {isCoreTier && <Lock className="ml-auto w-3.5 h-3.5 text-text-muted/40" />}
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
@@ -473,15 +451,12 @@ export function AppSidebar() {
                   className={
                     pathname.startsWith("/integrations")
                       ? "bg-signal/10 text-signal font-medium border-l-2 border-signal"
-                      : isCoreTier
-                      ? "text-text-secondary/50 hover:text-text-secondary hover:bg-bg-elevated/30"
                       : "text-text-secondary hover:text-text-primary hover:bg-bg-elevated/50"
                   }
                 >
                   <Link href="/integrations">
                     <Plug className="w-4 h-4" />
                     <span>Integrations</span>
-                    {isCoreTier && <Lock className="ml-auto w-3.5 h-3.5 text-text-muted/40" />}
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
