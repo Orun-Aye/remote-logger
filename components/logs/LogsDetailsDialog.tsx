@@ -1,5 +1,6 @@
 import { getLevelIcon } from "@/lib/utils";
 import { LogEntry } from "@/types/analytics";
+import { formatRelease } from "@/lib/format-utils";
 import { useMemo } from "react";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "../ui/dialog";
 import { Label } from "../ui/label";
@@ -32,7 +33,7 @@ export const LogDetailsDialog: React.FC<LogDetailsDialogProps> = ({ log, onClose
             <span>Log Details</span>
             {log.release && (
               <Badge variant="outline" className="font-mono text-xs bg-bg-elevated border-border-subtle">
-                v{log.release}
+                {formatRelease(log.release)}
               </Badge>
             )}
           </DialogTitle>

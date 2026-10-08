@@ -1,6 +1,7 @@
 "use client";
 
 import { LogEntry } from "@/types/analytics";
+import { formatRelease } from "@/lib/format-utils";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 import { SignalDot } from "@/components/shared/SignalDot";
@@ -178,7 +179,7 @@ export function EnhancedLogDetailPanel({ log, onClose }: EnhancedLogDetailPanelP
               </span>
               {log.release && (
                 <Badge variant="outline" className="font-mono text-xs bg-bg-elevated border-border-subtle">
-                  v{log.release}
+                  {formatRelease(log.release)}
                 </Badge>
               )}
             </div>

@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 import { Button } from "../ui/button";
 import { LogEntry } from "@/types/analytics";
+import { formatRelease } from "@/lib/format-utils";
 import { useMemo } from "react";
 import { formatTimestamp, getLevelColor, getLevelIcon } from "@/lib/utils";
 import { Badge } from "../ui/badge";
@@ -79,7 +80,7 @@ export const LogListItem: React.FC<LogListItemProps> = ({
             )}
             {log.release && (
               <Badge variant="outline" className="font-mono text-xs">
-                v{log.release}
+                {formatRelease(log.release)}
               </Badge>
             )}
             {(log.data?.offlineQueued || log.metadata?.offlineQueued) && (

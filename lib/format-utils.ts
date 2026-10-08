@@ -227,6 +227,17 @@ export function truncateUrl(url: string, maxLength = 60): string {
 }
 
 // ---------------------------------------------------------------------------
+// Release labels
+// ---------------------------------------------------------------------------
+
+/**
+ * Show a release as `v2.4.1` whether the SDK sent `2.4.1` or `v2.4.1`.
+ */
+export function formatRelease(release: string): string {
+  return /^v\d/i.test(release) ? release : `v${release}`;
+}
+
+// ---------------------------------------------------------------------------
 // Axis tick formatter (for Recharts)
 // ---------------------------------------------------------------------------
 

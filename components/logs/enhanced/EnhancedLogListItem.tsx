@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { LogEntry } from "@/types/analytics";
+import { formatRelease } from "@/lib/format-utils";
 import { cn } from "@/lib/utils";
 import { Code, Copy, Check } from "lucide-react";
 import { SignalDot } from "@/components/shared/SignalDot";
@@ -267,7 +268,7 @@ export function EnhancedLogListItem({
                   </span>
                 )}
                 {log.release && (
-                  <span style={{ opacity: 0.7 }}>v{log.release}</span>
+                  <span style={{ opacity: 0.7 }}>{formatRelease(log.release)}</span>
                 )}
                 {log.correlationId && (
                   <span

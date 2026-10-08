@@ -158,7 +158,7 @@ function CreateIssueDialog({
 
   return (
     <Dialog open={open} onOpenChange={(v) => !v && handleClose()}>
-      <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto">
+      <DialogContent className="sm:max-w-2xl max-h-[85vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Github className="w-4 h-4" />
@@ -190,7 +190,9 @@ function CreateIssueDialog({
             <p className="text-sm text-text-muted">Drafting the issue from error context…</p>
           </div>
         ) : (
-          <div className="space-y-4">
+          // min-w-0: the body textarea sizes to its longest line and would
+          // otherwise widen this grid cell past the dialog edge
+          <div className="space-y-4 min-w-0">
             {draftSource === "ai" && (
               <p className="text-xs text-text-muted flex items-center gap-1.5">
                 <Sparkles className="w-3.5 h-3.5 text-signal" />
@@ -300,7 +302,7 @@ function GroupDetailDialog({
   return (
     <>
       <Dialog open={!!groupId && !issueDialogOpen} onOpenChange={(v) => !v && onClose()}>
-        <DialogContent className="max-w-3xl max-h-[85vh] overflow-y-auto">
+        <DialogContent className="sm:max-w-3xl max-h-[85vh] overflow-y-auto">
           {!group ? (
             <div className="p-10 text-center">
               <Loader2 className="w-6 h-6 text-signal mx-auto animate-spin" />

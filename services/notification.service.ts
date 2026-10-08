@@ -26,19 +26,23 @@ export const notificationService = {
         params.append("read", filters.read.toString());
       }
 
-      const response = await apiClient.get<ApiResponse<NotificationResponse>>(
-        `/notifications?${params.toString()}`
-      );
+      const response = await apiClient.get<
+        ApiResponse<NotificationResponse> | NotificationResponse
+      >(`/notifications?${params.toString()}`);
+      const body = response.data;
 
-      if (response.data.status === "error") {
+      // The notifications API answers with the payload itself, not { status, data }
+      if ("notifications" in body) return body;
+
+      if (body.status === "error") {
         throw new ApiError(
-          response.data.message || "Failed to fetch notifications",
+          body.message || "Failed to fetch notifications",
           response.status,
-          response.data.errors
+          body.errors
         );
       }
 
-      return response.data.data;
+      return body.data;
     } catch (error) {
       handleApiError(error);
     }

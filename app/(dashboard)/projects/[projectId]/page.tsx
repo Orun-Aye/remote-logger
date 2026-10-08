@@ -1100,7 +1100,8 @@ function DeployImpactCard({ projectId }: { projectId: string }) {
   const items = data?.items ?? [];
   const last = items[0];
   const state = last ? deployState(last) : null;
-  const impact = last?.impact;
+  // Until the verdict lands the backend sends a stub impact with no before/after windows
+  const impact = last?.impact?.verdict ? last.impact : undefined;
   // When the latest deploy has no verdict yet, the one before it still says something
   const previous =
     last && !impact ? items.slice(1).find((d) => d.impact?.verdict) : undefined;
