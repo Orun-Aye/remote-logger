@@ -102,6 +102,14 @@ const REFRESH_INTERVALS = [
 
 const isObjectId = (str: string) => /^[a-f\d]{24}$/i.test(str);
 
+const decodeSegment = (segment: string) => {
+  try {
+    return decodeURIComponent(segment);
+  } catch {
+    return segment;
+  }
+};
+
 const getTimeRangeLabel = (
   value: string,
   customRange?: { start: Date; end: Date } | null,
@@ -228,10 +236,13 @@ export function TopBar({ onCommandOpen }: TopBarProps) {
       if (isObjectId(segment)) {
         name = projectNameMap.get(segment) || segment.slice(0, 8) + "...";
       } else {
-        name = segment
+        const label = decodeSegment(segment)
           .split("-")
           .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
           .join(" ");
+        // Dynamic segments (an error message on the error page) are long, and
+        // URL-encoded they are one unbreakable word that widened the whole page
+        name = label.length > 32 ? `${label.slice(0, 31)}…` : label;
       }
 
       items.push({ name, href, isLast });
