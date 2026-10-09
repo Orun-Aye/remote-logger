@@ -9,7 +9,6 @@ import { LAST_SHIPPED, RUN } from "@/components/landing/run-facts";
 import { HERO_SUBTITLE } from "@/components/landing/copy";
 import { shotRenders } from "@/lib/screenshots";
 import { BuildLog } from "./BuildLog";
-import { CharterOffer } from "./CharterOffer";
 import { ComparisonTable } from "./ComparisonTable";
 import { FeatureCard } from "./FeatureCard";
 import { IncidentTimeline } from "./IncidentTimeline";
@@ -38,7 +37,7 @@ function Hero() {
             Live
           </span>
           <span className="font-mono text-[11px] uppercase tracking-[0.14em] text-text-muted">
-            Private beta · charter access open
+            Private beta
           </span>
         </div>
 
@@ -278,8 +277,7 @@ function ClosingCTA() {
         </div>
 
         <p className="text-xs text-text-muted" data-reveal>
-          Free tier forever · No credit card · Charter pricing locked ·
-          One-click unsubscribe
+          Free tier forever · No credit card · One-click unsubscribe
         </p>
       </div>
     </section>
@@ -302,7 +300,6 @@ export function WaitlistPage() {
       <UseCases />
       <ComparisonTable />
       <BuildLog />
-      <CharterOffer />
       <WaitlistFAQ />
       <ClosingCTA />
     </WaitlistSignupProvider>

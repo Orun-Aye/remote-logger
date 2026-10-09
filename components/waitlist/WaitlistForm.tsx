@@ -15,7 +15,7 @@ import { cn } from "@/lib/utils";
 import { ArrowRight, Check, CircleAlert, Copy, PartyPopper } from "lucide-react";
 
 // ─── Shared signup state ─────────────────────────────────────────────────────
-// Several forms appear down the page (hero, charter panel, closing CTA). They
+// Two forms appear on the page (hero and closing CTA). They
 // all read one piece of state so signing up in the hero updates every one.
 
 interface SignupState {

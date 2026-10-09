@@ -43,7 +43,7 @@ export default function RootLayout({
       <body className="font-body antialiased scrollbar-hide">
         <ThemeProvider
           attribute={"class"}
-          defaultTheme="dark"
+          defaultTheme="light"
           enableSystem={false}
           disableTransitionOnChange
         >

@@ -11,7 +11,6 @@ const footerSections = [
       { href: "/logs", label: "Log Explorer" },
       { href: "/alerts", label: "Alerts" },
       { href: "/sdk", label: "SDK" },
-      { href: "/#charter", label: "Pricing" },
     ],
   },
   {

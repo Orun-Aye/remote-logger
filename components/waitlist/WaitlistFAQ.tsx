@@ -28,10 +28,6 @@ const FAQS = [
     a: "Only if you turn it on. Session replay is in beta: it is off by default, switched on per project with a sample rate you choose, masks every input in the browser by default, and keeps recordings for seven days.",
   },
   {
-    q: "How much will it cost me?",
-    a: "There is a free tier and it is not a trial. Paid tiers start at nine dollars a month and scale on log volume rather than seats, so adding a teammate never costs more. Charter members keep whatever price they joined on.",
-  },
-  {
     q: "I already pay for something else. Why switch?",
     a: "Do not switch yet. Apperio installs with one snippet and does not conflict with anything else on the page, so run both for a fortnight on the same app and compare what each one told you the next time something broke. If the answer is the same, keep what you have.",
   },

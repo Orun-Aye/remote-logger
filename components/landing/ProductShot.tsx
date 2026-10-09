@@ -157,13 +157,14 @@ export function ProductShot({
       <ThemedPicture
         desktop={shot.dark}
         mobile={zoomed ? null : (crop?.dark ?? null)}
-        eager={priority && !zoomed}
+        eager={false}
         className="hidden dark:block"
       />
+      {/* Light is the default theme, so its hero image is the one preloaded */}
       <ThemedPicture
         desktop={shot.light}
         mobile={zoomed ? null : (crop?.light ?? null)}
-        eager={false}
+        eager={priority && !zoomed}
         className="block dark:hidden"
       />
     </>
