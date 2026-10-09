@@ -1,5 +1,3 @@
-"use client";
-
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { getAdjacentDocs } from "@/lib/docs/navigation";
@@ -9,6 +7,8 @@ interface DocsContentProps {
   slug: string;
   title: string;
   description?: string;
+  /** Marks a feature that works but is still changing */
+  beta?: boolean;
   children: React.ReactNode;
 }
 
@@ -17,34 +17,35 @@ export function DocsContent({
   slug,
   title,
   description,
+  beta = false,
   children,
 }: DocsContentProps) {
   const { prev, next } = getAdjacentDocs(slug);
 
   return (
-    <article className="flex-1 min-w-0 max-w-3xl mx-auto px-6 py-10 lg:px-8">
+    <article className="mx-auto min-w-0 max-w-3xl flex-1 px-4 py-10 sm:px-6 lg:px-8">
       {/* Page header */}
-      <header className="mb-8 pb-6 border-b border-border-subtle">
-        <h1 className="text-3xl font-display font-bold text-text-primary mb-2">
+      <header className="mb-8 border-b border-border-subtle pb-6">
+        <h1 className="mb-2 flex flex-wrap items-center gap-3 font-display text-3xl font-semibold tracking-[-0.02em] text-text-primary">
           {title}
+          {beta && <BetaBadge />}
         </h1>
         {description && (
-          <p className="text-lg text-text-secondary">{description}</p>
+          <p className="text-lg leading-relaxed text-text-secondary">{description}</p>
         )}
       </header>
 
-      {/* Main content - applies prose-like typography */}
       <div className="docs-prose">{children}</div>
 
       {/* Prev / Next navigation */}
-      <footer className="mt-16 pt-6 border-t border-border-subtle">
+      <footer className="mt-16 border-t border-border-subtle pt-6">
         <div className="flex items-center justify-between gap-4">
           {prev ? (
             <Link
               href={`/docs/${prev.slug}`}
-              className="flex items-center gap-2 text-sm text-text-secondary hover:text-signal transition-colors group"
+              className="group flex items-center gap-2 text-sm text-text-secondary transition-colors hover:text-text-primary"
             >
-              <ArrowLeft className="w-4 h-4 group-hover:-translate-x-0.5 transition-transform" />
+              <ArrowLeft className="h-4 w-4 transition-transform group-hover:-translate-x-0.5" />
               <div className="text-left">
                 <div className="text-xs text-text-muted">Previous</div>
                 <div className="font-medium">{prev.title}</div>
@@ -57,13 +58,13 @@ export function DocsContent({
           {next ? (
             <Link
               href={`/docs/${next.slug}`}
-              className="flex items-center gap-2 text-sm text-text-secondary hover:text-signal transition-colors group text-right"
+              className="group flex items-center gap-2 text-right text-sm text-text-secondary transition-colors hover:text-text-primary"
             >
               <div>
                 <div className="text-xs text-text-muted">Next</div>
                 <div className="font-medium">{next.title}</div>
               </div>
-              <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
+              <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
             </Link>
           ) : (
             <div />
@@ -76,6 +77,14 @@ export function DocsContent({
 
 /* ─── Reusable doc typography primitives ────────────────────────────────── */
 
+export function BetaBadge() {
+  return (
+    <span className="rounded-full border border-border-accent px-2 py-0.5 font-mono text-xs font-medium uppercase tracking-[0.06em] text-text-secondary">
+      Beta
+    </span>
+  );
+}
+
 export function DocH2({
   id,
   children,
@@ -86,7 +95,7 @@ export function DocH2({
   return (
     <h2
       id={id}
-      className="text-xl font-display font-bold text-text-primary mt-12 mb-4 scroll-mt-20"
+      className="mb-4 mt-12 scroll-mt-24 font-display text-xl font-semibold tracking-[-0.01em] text-text-primary"
     >
       {children}
     </h2>
@@ -103,7 +112,7 @@ export function DocH3({
   return (
     <h3
       id={id}
-      className="text-lg font-semibold text-text-primary mt-8 mb-3 scroll-mt-20"
+      className="mb-3 mt-8 scroll-mt-24 text-lg font-semibold text-text-primary"
     >
       {children}
     </h3>
@@ -111,14 +120,12 @@ export function DocH3({
 }
 
 export function DocP({ children }: { children: React.ReactNode }) {
-  return (
-    <p className="text-text-secondary leading-7 mb-4">{children}</p>
-  );
+  return <p className="mb-4 leading-7 text-text-secondary">{children}</p>;
 }
 
 export function DocUl({ children }: { children: React.ReactNode }) {
   return (
-    <ul className="list-disc list-inside text-text-secondary leading-7 mb-4 space-y-1 pl-2">
+    <ul className="mb-4 list-outside list-disc space-y-1.5 pl-5 leading-7 text-text-secondary">
       {children}
     </ul>
   );
@@ -126,20 +133,18 @@ export function DocUl({ children }: { children: React.ReactNode }) {
 
 export function DocOl({ children }: { children: React.ReactNode }) {
   return (
-    <ol className="list-decimal list-inside text-text-secondary leading-7 mb-4 space-y-1 pl-2">
+    <ol className="mb-4 list-outside list-decimal space-y-1.5 pl-5 leading-7 text-text-secondary">
       {children}
     </ol>
   );
 }
 
 export function DocLi({ children }: { children: React.ReactNode }) {
-  return <li>{children}</li>;
+  return <li className="pl-1">{children}</li>;
 }
 
 export function DocStrong({ children }: { children: React.ReactNode }) {
-  return (
-    <strong className="font-semibold text-text-primary">{children}</strong>
-  );
+  return <strong className="font-semibold text-text-primary">{children}</strong>;
 }
 
 export function DocLink({
@@ -153,7 +158,7 @@ export function DocLink({
   return (
     <Link
       href={href}
-      className="text-signal hover:underline"
+      className="text-signal underline decoration-1 underline-offset-[3px] hover:decoration-2"
       {...(isExternal ? { target: "_blank", rel: "noopener noreferrer" } : {})}
     >
       {children}
@@ -175,36 +180,29 @@ export function DocCallout({
     info: "border-l-signal bg-signal-muted",
     warning: "border-l-status-warn bg-status-warn/5",
     danger: "border-l-status-danger bg-status-danger/5",
-    tip: "border-l-data bg-data-muted",
+    tip: "border-l-border-accent bg-bg-elevated",
   };
 
   const labels = {
-    info: "Info",
+    info: "Note",
     warning: "Warning",
-    danger: "Danger",
+    danger: "Important",
     tip: "Tip",
   };
 
   return (
-    <div
-      className={cn(
-        "border-l-4 rounded-r-md p-4 my-4",
-        styles[type]
-      )}
-    >
-      {(title || labels[type]) && (
-        <p className="text-sm font-semibold text-text-primary mb-1">
-          {title || labels[type]}
-        </p>
-      )}
-      <div className="text-sm text-text-secondary leading-relaxed">
-        {children}
-      </div>
+    <div className={cn("my-5 rounded-r-md border-l-4 p-4", styles[type])}>
+      <p className="mb-1 text-sm font-semibold text-text-primary">{title || labels[type]}</p>
+      <div className="text-sm leading-relaxed text-text-secondary [&>p+p]:mt-2">{children}</div>
     </div>
   );
 }
 
-/** Table wrapper for consistent styling */
+/**
+ * Table wrapper for consistent styling. Tables with three or more columns keep
+ * a minimum width and scroll inside their box on phones, rather than squeezing
+ * option names until they break mid-word.
+ */
 export function DocTable({
   headers,
   rows,
@@ -212,15 +210,27 @@ export function DocTable({
   headers: string[];
   rows: (string | React.ReactNode)[][];
 }) {
+  const wide = headers.length > 2;
   return (
-    <div className="overflow-x-auto my-4 rounded-lg border border-border-subtle">
-      <table className="w-full text-sm">
+    <div
+      className="my-5 overflow-x-auto rounded-lg border border-border-subtle focus-visible:outline-2 focus-visible:outline-signal"
+      // A box that can scroll must be reachable from the keyboard
+      tabIndex={wide ? 0 : undefined}
+    >
+      <table
+        className={cn(
+          "docs-table w-full text-sm",
+          wide && "docs-table-wide",
+          wide && (headers.length > 3 ? "min-w-[46rem]" : "min-w-[36rem]")
+        )}
+      >
         <thead>
-          <tr className="bg-bg-elevated border-b border-border-subtle">
+          <tr className="border-b border-border-subtle bg-bg-elevated">
             {headers.map((header, i) => (
               <th
                 key={i}
-                className="px-4 py-2.5 text-left font-semibold text-text-primary"
+                scope="col"
+                className="whitespace-nowrap px-4 py-2.5 text-left font-semibold text-text-primary"
               >
                 {header}
               </th>
@@ -229,15 +239,9 @@ export function DocTable({
         </thead>
         <tbody>
           {rows.map((row, i) => (
-            <tr
-              key={i}
-              className="border-b border-border-faint last:border-b-0"
-            >
+            <tr key={i} className="border-b border-border-faint align-top last:border-b-0">
               {row.map((cell, j) => (
-                <td
-                  key={j}
-                  className="px-4 py-2.5 text-text-secondary"
-                >
+                <td key={j} className="px-4 py-2.5 leading-6 text-text-secondary">
                   {cell}
                 </td>
               ))}
@@ -251,21 +255,8 @@ export function DocTable({
 
 /** HTTP method badge */
 export function MethodBadge({ method }: { method: string }) {
-  const colors: Record<string, string> = {
-    GET: "bg-signal/15 text-signal",
-    POST: "bg-data/15 text-data",
-    PUT: "bg-status-warn/15 text-status-warn",
-    PATCH: "bg-status-warn/15 text-status-warn",
-    DELETE: "bg-status-danger/15 text-status-danger",
-  };
-
   return (
-    <span
-      className={cn(
-        "inline-block px-2 py-0.5 rounded text-xs font-mono font-semibold",
-        colors[method.toUpperCase()] || "bg-bg-elevated text-text-muted"
-      )}
-    >
+    <span className="inline-block rounded border border-border-accent bg-bg-elevated px-2 py-0.5 font-mono text-xs font-semibold text-text-primary">
       {method.toUpperCase()}
     </span>
   );
@@ -282,15 +273,11 @@ export function EndpointBlock({
   description?: string;
 }) {
   return (
-    <div className="flex items-start gap-3 p-3 rounded-lg bg-bg-elevated border border-border-subtle my-3">
+    <div className="my-4 flex items-start gap-3 rounded-lg border border-border-subtle bg-bg-surface p-3">
       <MethodBadge method={method} />
       <div className="min-w-0">
-        <code className="text-sm font-mono text-text-primary break-all">
-          {path}
-        </code>
-        {description && (
-          <p className="text-xs text-text-muted mt-0.5">{description}</p>
-        )}
+        <code className="break-all font-mono text-sm text-text-primary">{path}</code>
+        {description && <p className="mt-0.5 text-xs text-text-muted">{description}</p>}
       </div>
     </div>
   );

@@ -1,172 +1,176 @@
 import {
-  DocsContent,
+  DocPage,
   DocH2,
   DocP,
+  DocOl,
+  DocUl,
+  DocLi,
   DocStrong,
+  DocLink,
   DocCallout,
   CodeBlock,
   InlineCode,
-  DocsTableOfContents,
   type TocItem,
 } from "@/components/docs";
 
 const toc: TocItem[] = [
-  { id: "install-the-sdk", title: "Step 1: Install the SDK", level: 2 },
-  { id: "initialize-apperio", title: "Step 2: Initialize Apperio", level: 2 },
-  { id: "send-your-first-log", title: "Step 3: Send Your First Log", level: 2 },
-  { id: "view-in-dashboard", title: "Step 4: View in Dashboard", level: 2 },
-  { id: "enable-auto-capture", title: "Step 5: Enable Auto-Capture", level: 2 },
-  { id: "whats-next", title: "What's Next", level: 2 },
+  { id: "before-you-start", title: "Before you start", level: 2 },
+  { id: "find-your-keys", title: "1. Find your API key and project ID", level: 2 },
+  { id: "install", title: "2. Install the SDK", level: 2 },
+  { id: "initialise", title: "3. Create the logger", level: 2 },
+  { id: "first-error", title: "4. Send a test error", level: 2 },
+  { id: "see-it", title: "5. See it in Apperio", level: 2 },
+  { id: "next-steps", title: "Next steps", level: 2 },
 ];
 
 export default function QuickStartPage() {
   return (
-    <div className="flex">
-      <DocsContent
-        slug="quickstart"
-        title="Quick Start"
-        description="Get Apperio running in your application in under 5 minutes."
-      >
-        <DocCallout type="tip" title="Prerequisites">
-          You need a Apperio account and a project. Sign up at{" "}
-          <InlineCode>https://www.apperio.dev</InlineCode> and create your
-          first project to get an API key.
-        </DocCallout>
+    <DocPage slug="quickstart" toc={toc}>
+      <DocH2 id="before-you-start">Before you start</DocH2>
+      <DocP>
+        You need an Apperio account with beta access and a project. If you don’t have one
+        yet, see <DocLink href="/docs/introduction#access">Getting access</DocLink>. Then, in
+        the dashboard, create a project for the site or app you want to watch.
+      </DocP>
+      <DocP>
+        This guide sets up the SDK in browser code, where it captures errors on its own. For
+        a server, follow these steps and then read the{" "}
+        <DocLink href="/docs/guides/nodejs">Node.js guide</DocLink>.
+      </DocP>
 
-        <DocH2 id="install-the-sdk">Step 1: Install the SDK</DocH2>
-        <DocP>
-          Install the <InlineCode>apperio</InlineCode> package from npm:
-        </DocP>
-        <CodeBlock language="bash" code="npm install apperio" />
-        <DocP>Or use your preferred package manager:</DocP>
-        <CodeBlock
-          language="bash"
-          code={`yarn add apperio
-# or
-pnpm add apperio`}
-        />
+      <DocH2 id="find-your-keys">1. Find your API key and project ID</DocH2>
+      <DocUl>
+        <DocLi>
+          <DocStrong>API key:</DocStrong> open the project, then{" "}
+          <DocStrong>Settings › API Key</DocStrong>. Use <DocStrong>Reveal Key</DocStrong> or
+          the copy button.
+        </DocLi>
+        <DocLi>
+          <DocStrong>Project ID:</DocStrong> the long string after{" "}
+          <InlineCode>/projects/</InlineCode> in the dashboard address. It also appears in the
+          code preview on <DocStrong>Settings › SDK Config</DocStrong>.
+        </DocLi>
+      </DocUl>
 
-        <DocH2 id="initialize-apperio">Step 2: Initialize Apperio</DocH2>
-        <DocP>
-          Import and initialize Apperio at the entry point of your application.
-          You need your project ID and API key from the Apperio dashboard.
-        </DocP>
-        <CodeBlock
-          language="typescript"
-          filename="src/index.ts"
-          code={`import Apperio from "apperio";
+      <DocH2 id="install">2. Install the SDK</DocH2>
+      <CodeBlock language="bash" code="npm install apperio" />
+      <DocP>
+        Yarn and pnpm work too (<InlineCode>yarn add apperio</InlineCode>,{" "}
+        <InlineCode>pnpm add apperio</InlineCode>). The package ships ES module and CommonJS
+        builds with TypeScript types.
+      </DocP>
 
-Apperio.init({
-  projectId: "YOUR_PROJECT_ID",
-  apiKey: "YOUR_API_KEY",
-  environment: "production",
-  autoCapture: {
-    errors: true,
-    performance: true,
-    network: true,
-    console: true,
-  },
-});`}
-        />
+      <DocH2 id="initialise">3. Create the logger</DocH2>
+      <DocP>
+        Create one logger, as early as possible in your app’s startup code, so errors that
+        happen early are caught too:
+      </DocP>
+      <CodeBlock
+        language="ts"
+        filename="src/apperio.ts"
+        code={`
+import { Apperio } from 'apperio';
 
-        <DocCallout type="info">
-          Replace <InlineCode>YOUR_PROJECT_ID</InlineCode> and{" "}
-          <InlineCode>YOUR_API_KEY</InlineCode> with the values from your
-          project settings page. You can find these under{" "}
-          <DocStrong>Project Settings &gt; API Key</DocStrong>.
-        </DocCallout>
-
-        <DocH2 id="send-your-first-log">Step 3: Send Your First Log</DocH2>
-        <DocP>
-          Use the logging API to send events at any level. Apperio supports six
-          log levels: <InlineCode>trace</InlineCode>,{" "}
-          <InlineCode>debug</InlineCode>, <InlineCode>info</InlineCode>,{" "}
-          <InlineCode>warn</InlineCode>, <InlineCode>error</InlineCode>, and{" "}
-          <InlineCode>fatal</InlineCode>.
-        </DocP>
-        <CodeBlock
-          language="typescript"
-          code={`// Simple info log
-Apperio.info("Application started successfully");
-
-// Log with structured data
-Apperio.info("User signed in", {
-  userId: "user_123",
-  method: "oauth",
-  provider: "github",
+export const logger = new Apperio({
+  apiKey: 'your-api-key',
+  projectId: 'your-project-id',
+  environment: 'production',
+  serviceName: 'web',
 });
+`}
+      />
+      <DocP>
+        Creating the logger starts it: it begins capturing errors, page views and slow
+        requests straight away. There is no separate <InlineCode>init()</InlineCode> call.
+      </DocP>
+      <DocCallout type="warning" title="Set environment in production">
+        <p>
+          If you leave <InlineCode>environment</InlineCode> out, every log is tagged{" "}
+          <InlineCode>development</InlineCode>. New-error notifications only go out for{" "}
+          <InlineCode>production</InlineCode> unless you change that in{" "}
+          <DocStrong>Settings › Notifications</DocStrong>, so without it you won’t hear about
+          new errors.
+        </p>
+        <p>
+          A common pattern is to pass your build’s environment variable, for example{" "}
+          <InlineCode>process.env.NODE_ENV</InlineCode>.
+        </p>
+      </DocCallout>
+      <DocP>
+        The API key ends up in your site’s JavaScript, where anyone can read it. That is
+        expected for browser SDKs; see{" "}
+        <DocLink href="/docs/concepts/projects-and-api-keys">Projects and API keys</DocLink>{" "}
+        for what that means.
+      </DocP>
 
-// Log an error with context
-try {
-  await fetchUserData();
-} catch (err) {
-  Apperio.error("Failed to fetch user data", {
-    error: err,
-    retryCount: 3,
-  });
-}`}
-        />
-
-        <DocH2 id="view-in-dashboard">Step 4: View in Dashboard</DocH2>
-        <DocP>
-          Open the Apperio dashboard at{" "}
-          <InlineCode>https://www.apperio.dev</InlineCode> and navigate to
-          your project. You will see your logs appearing in real-time in the
-          log stream view.
-        </DocP>
-        <DocP>
-          The dashboard provides multiple views for your data:
-        </DocP>
-        <CodeBlock
-          language="bash"
-          code={`# Dashboard views available:
-# - Log Stream: Real-time log viewer with filtering
-# - Error Analysis: Grouped errors with stack traces
-# - Performance: Web Vitals and response time charts
-# - Activity: User sessions and interaction tracking
-# - Alerts: Notification rules and alert history`}
-        />
-
-        <DocH2 id="enable-auto-capture">Step 5: Enable Auto-Capture</DocH2>
-        <DocP>
-          With auto-capture enabled, Apperio automatically instruments your
-          application to collect errors, performance data, and more without any
-          additional code:
-        </DocP>
-        <CodeBlock
-          language="typescript"
-          code={`Apperio.init({
-  projectId: "YOUR_PROJECT_ID",
-  apiKey: "YOUR_API_KEY",
-  autoCapture: {
-    errors: true,           // Uncaught errors & unhandled rejections
-    performance: true,      // Core Web Vitals (LCP, FID, CLS)
-    network: true,          // XHR and Fetch request tracking
-    console: true,          // Console.log/warn/error capture
-    pageviews: true,        // Page navigation tracking
-    interactions: true,     // Click and form submission tracking
-  },
+      <DocH2 id="first-error">4. Send a test error</DocH2>
+      <DocP>
+        Throw an error nobody catches. In the browser, the SDK reports it on its own:
+      </DocP>
+      <CodeBlock
+        language="ts"
+        code={`
+setTimeout(() => {
+  throw new Error('Apperio test error');
+}, 0);
+`}
+      />
+      <DocP>Or report one yourself, with extra detail attached:</DocP>
+      <CodeBlock
+        language="ts"
+        code={`
+logger.error('Checkout failed', new Error('Card declined'), {
+  orderId: 'order-123',
 });
+`}
+      />
+      <DocP>
+        Logs are sent in batches: when 10 are waiting, every 5 seconds, and when the visitor
+        leaves or hides the page. Expect your test error within about 5 seconds.
+      </DocP>
 
-// That's it! Apperio handles the rest automatically.`}
-        />
+      <DocH2 id="see-it">5. See it in Apperio</DocH2>
+      <DocOl>
+        <DocLi>
+          <DocStrong>Issues</DocStrong> shows a new issue titled{" "}
+          <InlineCode>Error: Apperio test error</InlineCode>. Open it to see the stack trace,
+          how many times it happened and how many sessions it reached.
+        </DocLi>
+        <DocLi>
+          <DocStrong>Logs</DocStrong> shows the raw entry, along with the page view the SDK
+          sent when the page loaded.
+        </DocLi>
+        <DocLi>
+          As the project owner, you get a notification in the app and an email saying there
+          is a new error, as long as the error’s environment is one you are notified about.
+        </DocLi>
+      </DocOl>
+      <DocP>
+        Nothing showing up? See{" "}
+        <DocLink href="/docs/sdk/troubleshooting">Troubleshooting</DocLink>.
+      </DocP>
 
-        <DocH2 id="whats-next">What's Next</DocH2>
-        <DocP>
-          Now that you have Apperio running, explore these topics to get the
-          most out of the platform:
-        </DocP>
-        <CodeBlock
-          language="bash"
-          code={`# Recommended reading order:
-# 1. SDK Configuration - Fine-tune capture settings
-# 2. Data Sanitization - Configure PII protection
-# 3. Error Tracking   - Advanced error grouping
-# 4. Alert Rules      - Set up notifications
-# 5. Team Management  - Invite collaborators`}
-        />
-      </DocsContent>
-      <DocsTableOfContents items={toc} />
-    </div>
+      <DocH2 id="next-steps">Next steps</DocH2>
+      <DocUl>
+        <DocLi>
+          <DocLink href="/docs/concepts/connect-github">Connect GitHub</DocLink> so Apperio can
+          show which commit probably caused each error.
+        </DocLi>
+        <DocLi>
+          <DocLink href="/docs/environments-and-releases">Add a release</DocLink> to every
+          log, so you can tell which version of your code an error came from.
+        </DocLi>
+        <DocLi>
+          <DocLink href="/docs/concepts/deploys">Record your deploys</DocLink> to get a
+          verdict on each one.
+        </DocLi>
+        <DocLi>
+          Using React or Next.js? Follow the{" "}
+          <DocLink href="/docs/guides/react">React</DocLink> or{" "}
+          <DocLink href="/docs/guides/nextjs">Next.js</DocLink> guide, which also report the
+          errors those frameworks catch for you.
+        </DocLi>
+      </DocUl>
+    </DocPage>
   );
 }

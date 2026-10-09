@@ -7,9 +7,13 @@
 
    Neutral surfaces so the product screenshots carry the colour. Lime is the
    one accent, for live and signal states only. See docs/redesign/PLAN.md §6.
+
+   The public docs (/docs, wrapper class .docs) share these tokens so the two
+   public surfaces look like one site. Docs-only styles live in app/docs/docs.css.
    ============================================================================ */
 
-.landing {
+.landing,
+.docs {
   /* Type: Instrument Sans + JetBrains Mono (components/landing/fonts.ts) */
   --font-display: var(--font-instrument);
   --font-body: var(--font-instrument);
@@ -75,7 +79,8 @@
   font-family: var(--font-sans);
 }
 
-.dark .landing {
+.dark .landing,
+.dark .docs {
   --background: #0a0a0b;
   --foreground: #ededef;
   --card: #121214;
@@ -142,7 +147,8 @@
   font-variant-numeric: tabular-nums;
 }
 
-.landing ::selection {
+.landing ::selection,
+.docs ::selection {
   background: var(--signal-fill);
   color: var(--signal-ink);
 }

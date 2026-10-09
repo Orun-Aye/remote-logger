@@ -415,14 +415,14 @@ export function AppSidebar() {
               <SidebarMenuItem>
                 <SidebarMenuButton
                   asChild
-                  isActive={pathname.startsWith("/sdk")}
+                  isActive={pathname.startsWith("/docs")}
                   className={
-                    pathname.startsWith("/sdk")
+                    pathname.startsWith("/docs")
                       ? "bg-signal/10 text-signal font-medium border-l-2 border-signal"
                       : "text-text-secondary hover:text-text-primary hover:bg-bg-elevated/50"
                   }
                 >
-                  <Link href="/sdk">
+                  <Link href="/docs">
                     <Code className="w-4 h-4" />
                     <span>SDK Docs</span>
                   </Link>

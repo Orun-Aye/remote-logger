@@ -1,306 +1,201 @@
 import {
-  DocsContent,
+  DocPage,
   DocH2,
   DocP,
+  DocUl,
+  DocLi,
+  DocLink,
   DocCallout,
   DocTable,
   CodeBlock,
   InlineCode,
-  DocsTableOfContents,
   type TocItem,
 } from "@/components/docs";
 
 const toc: TocItem[] = [
-  { id: "what-gets-captured", title: "What Gets Captured", level: 2 },
-  { id: "error-capture", title: "Error Capture", level: 2 },
-  { id: "performance-capture", title: "Performance Capture", level: 2 },
-  { id: "network-capture", title: "Network Capture", level: 2 },
-  { id: "console-capture", title: "Console Capture", level: 2 },
-  { id: "pageview-capture", title: "Pageview Capture", level: 2 },
-  { id: "interaction-capture", title: "Interaction Capture", level: 2 },
-  { id: "selective-capture", title: "Selective Configuration", level: 2 },
+  { id: "overview", title: "Overview", level: 2 },
+  { id: "levels", title: "Levels decide what is sent", level: 2 },
+  { id: "errors", title: "errors", level: 2 },
+  { id: "performance", title: "performance", level: 2 },
+  { id: "network", title: "networkRequests", level: 2 },
+  { id: "page-views", title: "pageViews", level: 2 },
+  { id: "console", title: "consoleMessages", level: 2 },
+  { id: "interactions", title: "userInteractions", level: 2 },
+  { id: "breadcrumb-trail", title: "The breadcrumb trail", level: 2 },
+  { id: "how-it-hooks-in", title: "How it hooks in", level: 2 },
 ];
+
+const C = InlineCode;
 
 export default function AutoInstrumentationPage() {
   return (
-    <div className="flex">
-      <DocsContent
-        slug="sdk/auto-instrumentation"
-        title="Auto-Instrumentation"
-        description="Automatic event capture for errors, performance, network, console, pageviews, and interactions."
-      >
-        <DocH2 id="what-gets-captured">What Gets Captured</DocH2>
-        <DocP>
-          When auto-instrumentation is enabled, the Apperio SDK patches browser
-          APIs to capture events without any manual code. Each category can be
-          independently toggled.
-        </DocP>
+    <DocPage slug="sdk/auto-instrumentation" toc={toc}>
+      <DocH2 id="overview">Overview</DocH2>
+      <DocP>
+        In a browser, the SDK captures events without any code from you. Choose which with{" "}
+        <C>autoCapture</C>; anything you leave out keeps its default.
+      </DocP>
+      <CodeBlock
+        language="ts"
+        code={`
+import { Apperio } from 'apperio';
 
-        <DocTable
-          headers={["Category", "Browser API Patched", "Data Captured"]}
-          rows={[
-            [
-              "Errors",
-              <InlineCode key="e1">window.onerror</InlineCode>,
-              "Error name, message, stack trace, source URL, line/column",
-            ],
-            [
-              "Errors",
-              <InlineCode key="e2">unhandledrejection</InlineCode>,
-              "Promise rejection reason, stack trace",
-            ],
-            [
-              "Performance",
-              <InlineCode key="p1">PerformanceObserver</InlineCode>,
-              "LCP, FID, CLS, TTFB, INP values",
-            ],
-            [
-              "Network",
-              <InlineCode key="n1">XMLHttpRequest</InlineCode>,
-              "URL, method, status, duration, request/response size",
-            ],
-            [
-              "Network",
-              <InlineCode key="n2">fetch()</InlineCode>,
-              "URL, method, status, duration, headers",
-            ],
-            [
-              "Console",
-              <InlineCode key="c1">console.*</InlineCode>,
-              "Log level, message, arguments",
-            ],
-            [
-              "Pageviews",
-              <InlineCode key="pv1">History API</InlineCode>,
-              "URL, referrer, page title, navigation type",
-            ],
-            [
-              "Interactions",
-              <InlineCode key="i1">addEventListener</InlineCode>,
-              "Element tag, text, CSS selector, event type",
-            ],
-          ]}
-        />
-
-        <DocH2 id="error-capture">Error Capture</DocH2>
-        <DocP>
-          The SDK listens for unhandled errors and promise rejections at the
-          window level. Captured errors include full stack traces when available.
-        </DocP>
-        <CodeBlock
-          language="typescript"
-          code={`// These errors are captured automatically:
-
-// 1. Runtime errors
-function processData(data) {
-  // TypeError: Cannot read properties of undefined
-  return data.items.map(item => item.name);
-}
-
-// 2. Unhandled promise rejections
-fetch("/api/data")
-  .then(res => res.json())
-  .then(data => processData(data));
-  // No .catch() - rejection captured automatically
-
-// 3. Explicit throws
-throw new Error("Something went wrong");`}
-        />
-
-        <DocP>The captured error log entry includes:</DocP>
-        <CodeBlock
-          language="json"
-          code={`{
-  "level": "error",
-  "message": "Uncaught TypeError: Cannot read properties of undefined",
-  "eventType": "error",
-  "error": {
-    "name": "TypeError",
-    "message": "Cannot read properties of undefined (reading 'map')",
-    "stack": "TypeError: Cannot read properties...\\n    at processData (app.js:42:15)",
-    "url": "https://example.com/app.js",
-    "lineNumber": 42,
-    "columnNumber": 15
-  }
-}`}
-        />
-
-        <DocH2 id="performance-capture">Performance Capture</DocH2>
-        <DocP>
-          Performance auto-capture uses the <InlineCode>PerformanceObserver</InlineCode>{" "}
-          API to measure Core Web Vitals. Metrics are captured once per page load.
-        </DocP>
-        <DocTable
-          headers={["Metric", "Full Name", "What It Measures"]}
-          rows={[
-            [
-              "LCP",
-              "Largest Contentful Paint",
-              "Time until the largest visible element renders",
-            ],
-            [
-              "FID",
-              "First Input Delay",
-              "Delay between first user interaction and browser response",
-            ],
-            [
-              "CLS",
-              "Cumulative Layout Shift",
-              "Total unexpected visual movement of page elements",
-            ],
-            [
-              "TTFB",
-              "Time to First Byte",
-              "Time from navigation start to first response byte",
-            ],
-            [
-              "INP",
-              "Interaction to Next Paint",
-              "Latency of all user interactions during page lifecycle",
-            ],
-          ]}
-        />
-
-        <DocH2 id="network-capture">Network Capture</DocH2>
-        <DocP>
-          The SDK intercepts <InlineCode>XMLHttpRequest</InlineCode> and{" "}
-          <InlineCode>fetch</InlineCode> to record all network requests with
-          timing data:
-        </DocP>
-        <CodeBlock
-          language="typescript"
-          code={`// All of these are captured automatically:
-fetch("/api/users");
-axios.get("/api/products");
-
-const xhr = new XMLHttpRequest();
-xhr.open("POST", "/api/orders");
-xhr.send(JSON.stringify({ item: "widget" }));`}
-        />
-
-        <DocP>Captured network log entry:</DocP>
-        <CodeBlock
-          language="json"
-          code={`{
-  "level": "info",
-  "message": "GET /api/users 200",
-  "eventType": "network",
-  "responseTime": 145,
-  "data": {
-    "method": "GET",
-    "url": "/api/users",
-    "status": 200,
-    "duration": 145
-  }
-}`}
-        />
-
-        <DocCallout type="info">
-          Network capture automatically sanitizes query parameters that may
-          contain sensitive data (tokens, API keys). The request body is not
-          captured to avoid PII exposure.
-        </DocCallout>
-
-        <DocH2 id="console-capture">Console Capture</DocH2>
-        <DocP>
-          When enabled, the SDK intercepts <InlineCode>console.log</InlineCode>,{" "}
-          <InlineCode>console.warn</InlineCode>, and{" "}
-          <InlineCode>console.error</InlineCode> calls and forwards them as log
-          entries.
-        </DocP>
-        <CodeBlock
-          language="typescript"
-          code={`// With console capture enabled:
-console.log("User loaded", user);
-// -> Captured as info log with eventType: "console"
-
-console.warn("Deprecated API used");
-// -> Captured as warn log
-
-console.error("Failed to render component");
-// -> Captured as error log`}
-        />
-
-        <DocCallout type="warning">
-          Console capture is disabled by default. The SDK avoids recursive
-          capture by not intercepting its own console calls, but enabling this
-          in high-volume logging environments may increase data volume
-          significantly.
-        </DocCallout>
-
-        <DocH2 id="pageview-capture">Pageview Capture</DocH2>
-        <DocP>
-          Pageview tracking captures navigation events including initial page
-          loads and client-side route changes (via the History API):
-        </DocP>
-        <CodeBlock
-          language="json"
-          code={`{
-  "level": "info",
-  "message": "Pageview: /dashboard/analytics",
-  "eventType": "pageview",
-  "url": "https://example.com/dashboard/analytics",
-  "referrer": "https://example.com/dashboard",
-  "userAgent": "Mozilla/5.0 ..."
-}`}
-        />
-
-        <DocH2 id="interaction-capture">Interaction Capture</DocH2>
-        <DocP>
-          When enabled, the SDK tracks click events and form submissions,
-          capturing the target element context:
-        </DocP>
-        <CodeBlock
-          language="json"
-          code={`{
-  "level": "info",
-  "message": "User clicked: Submit Order",
-  "eventType": "interaction",
-  "data": {
-    "type": "click",
-    "element": "button",
-    "text": "Submit Order",
-    "selector": "#checkout-form > button.submit"
-  }
-}`}
-        />
-
-        <DocH2 id="selective-capture">Selective Configuration</DocH2>
-        <DocP>
-          Enable only the categories you need. Every combination is valid:
-        </DocP>
-        <CodeBlock
-          language="typescript"
-          code={`// Errors only - minimal overhead
-Apperio.init({
-  projectId: "...",
-  apiKey: "...",
+const logger = new Apperio({
+  apiKey: 'your-api-key',
+  projectId: 'your-project-id',
   autoCapture: {
-    errors: true,
-    performance: false,
-    network: false,
-    console: false,
-    pageviews: false,
-    interactions: false,
+    errors: true,           // default true
+    performance: true,      // default true
+    networkRequests: true,  // default true
+    pageViews: true,        // default true
+    consoleMessages: false, // default false
+    userInteractions: false // default false
   },
 });
+`}
+      />
+      <DocP>
+        None of this runs in Node.js. On a server, log what you need yourself; see the{" "}
+        <DocLink href="/docs/guides/nodejs">Node.js guide</DocLink>.
+      </DocP>
 
-// Full observability - maximum data
-Apperio.init({
-  projectId: "...",
-  apiKey: "...",
-  autoCapture: {
-    errors: true,
-    performance: true,
-    network: true,
-    console: true,
-    pageviews: true,
-    interactions: true,
-  },
-});`}
-        />
-      </DocsContent>
-      <DocsTableOfContents items={toc} />
-    </div>
+      <DocH2 id="levels">Levels decide what is sent</DocH2>
+      <DocP>
+        Every captured event becomes a log with a level, and the SDK drops logs below{" "}
+        <C>minLogLevel</C> (default <C>info</C>). Many routine events are logged at{" "}
+        <C>debug</C> or <C>trace</C>, so they are captured but never sent unless you lower{" "}
+        <C>minLogLevel</C>. The tables below list each event’s level.
+      </DocP>
+
+      <DocH2 id="errors">errors</DocH2>
+      <DocTable
+        headers={["Event", "Level", "Message"]}
+        rows={[
+          ["Uncaught error (window error event)", <C key="l">error</C>, "The error’s name and message, such as TypeError: x is undefined"],
+          ["Unhandled promise rejection", <C key="l">error</C>, "The rejection’s name and message"],
+        ]}
+      />
+      <DocP>
+        Each report includes the stack trace, the file, line and column the browser gave,
+        the recent <DocLink href="#breadcrumb-trail">breadcrumb trail</DocLink>,
+        and a snapshot of the page: its address, viewport size, scroll position, whether the
+        browser was online and, where the browser exposes them, the connection type and
+        memory use. See <DocLink href="/docs/sdk/error-tracking">Error tracking</DocLink>.
+      </DocP>
+
+      <DocH2 id="performance">performance</DocH2>
+      <DocTable
+        headers={["Event", "Level"]}
+        rows={[
+          ["Page load", <span key="l"><C>warn</C> over 3 s, <C>info</C> over 1 s, otherwise <C>debug</C></span>],
+          ["Script or stylesheet", <span key="l"><C>warn</C> over 3 s, <C>info</C> over 1 s, otherwise <C>debug</C></span>],
+          ["Other resource", <span key="l"><C>warn</C> over 3 s, otherwise <C>debug</C></span>],
+          ["Paint timing and your own performance measures", <C key="l">debug</C>],
+          ["LCP", <span key="l"><C>warn</C> over 4 s, <C>info</C> over 2.5 s, otherwise <C>debug</C></span>],
+          ["CLS", <span key="l"><C>warn</C> over 0.25, <C>info</C> over 0.1, otherwise <C>debug</C></span>],
+          ["INP, per interaction of 40 ms or more", <span key="l"><C>warn</C> over 500 ms, <C>info</C> over 200 ms, otherwise <C>debug</C></span>],
+        ]}
+      />
+      <DocP>
+        Web Vitals carry a <C>good</C>, <C>needs-improvement</C> or <C>poor</C> rating. See{" "}
+        <DocLink href="/docs/concepts/performance">Performance and Web Vitals</DocLink>.
+      </DocP>
+
+      <DocH2 id="network">networkRequests</DocH2>
+      <DocTable
+        headers={["Event", "Level", "Message"]}
+        rows={[
+          ["Response with status 500 or above", <C key="l">error</C>, "Server Error"],
+          ["Response with status 400 to 499", <C key="l">warn</C>, "Client Error"],
+          ["Response below 400 that took over 5 s", <C key="l">warn</C>, "Slow Network Request"],
+          ["Request that fails outright (fetch only)", <C key="l">error</C>, "Network Request Failed"],
+          ["Any other response", <C key="l">debug</C>, "Network Request"],
+        ]}
+      />
+      <DocP>
+        Covers <C>fetch</C> and <C>XMLHttpRequest</C>, so libraries built on them, such as
+        axios, are covered too. Each entry has the method, URL, status and duration. The{" "}
+        <C>token</C>, <C>key</C>, <C>password</C>, <C>secret</C> and <C>api_key</C> query
+        parameters are replaced with <C>[REDACTED]</C>. Requests to Apperio itself are
+        skipped.
+      </DocP>
+
+      <DocH2 id="page-views">pageViews</DocH2>
+      <DocP>
+        Logs a <C>Page View</C> at <C>info</C> when the page loads and after every{" "}
+        <C>history.pushState</C>, <C>history.replaceState</C> and back or forward
+        navigation, with the address, title and referrer. Single-page app route changes
+        are therefore counted, and so are calls to <C>replaceState</C> that don’t change the
+        page.
+      </DocP>
+
+      <DocH2 id="console">consoleMessages</DocH2>
+      <DocTable
+        headers={["Call", "Level", "Message"]}
+        rows={[
+          [<C key="c">console.error</C>, <C key="l">error</C>, "Console Error"],
+          [<C key="c">console.warn</C>, <C key="l">warn</C>, "Console Warning"],
+          [<C key="c">console.log</C>, <C key="l">info</C>, "Console Log"],
+          [<C key="c">console.info</C>, <C key="l">info</C>, "Console Info"],
+          [<C key="c">console.debug</C>, <C key="l">debug</C>, "Console Debug"],
+        ]}
+      />
+      <DocP>
+        The arguments are converted to strings and stored in the log’s data. The console
+        still prints as usual.
+      </DocP>
+      <DocCallout type="warning" title="Noisy, and it counts itself">
+        <p>
+          Every <C>console.error</C> becomes an error and can open an issue, including ones
+          from third-party scripts.
+        </p>
+        <p>
+          The SDK’s own console messages are captured too, such as{" "}
+          <C>Apperio: Network error on attempt 1</C> when Apperio can’t be reached. Turn
+          this on while investigating, not permanently.
+        </p>
+      </DocCallout>
+
+      <DocH2 id="interactions">userInteractions</DocH2>
+      <DocTable
+        headers={["Event", "Level"]}
+        rows={[
+          ["Click, with the element’s selector and coordinates", <C key="l">debug</C>],
+          ["Focus and blur", <C key="l">debug</C>],
+          ["Scroll, at most one per 100 ms", <C key="l">trace</C>],
+          ["Key press, at most one per 100 ms, without the key", <C key="l">trace</C>],
+        ]}
+      />
+      <DocP>
+        All of these are below <C>info</C>, so with the default level none are sent. Clicks
+        still feed the breadcrumb trail. To see clicks and scrolling in context, use{" "}
+        <DocLink href="/docs/concepts/session-replay">session replay</DocLink> instead.
+      </DocP>
+
+      <DocH2 id="breadcrumb-trail">The breadcrumb trail</DocH2>
+      <DocP>
+        The SDK keeps the last 50 page views, network requests, console messages and clicks
+        it has captured (each kind only when its capture is on), and attaches them to every
+        error it captures by itself. The trail lives in memory and is only sent as part of
+        an error. <C>logger.addBreadcrumb()</C> doesn’t add to it.
+      </DocP>
+
+      <DocH2 id="how-it-hooks-in">How it hooks in</DocH2>
+      <DocUl>
+        <DocLi>
+          <C>window.fetch</C> and <C>XMLHttpRequest.prototype.open</C> and <C>send</C> are
+          wrapped.
+        </DocLi>
+        <DocLi><C>history.pushState</C> and <C>replaceState</C> are wrapped.</DocLi>
+        <DocLi>The <C>console</C> methods are wrapped when <C>consoleMessages</C> is on.</DocLi>
+        <DocLi>
+          Errors, rejections and interactions use event listeners; timings use{" "}
+          <C>PerformanceObserver</C>.
+        </DocLi>
+      </DocUl>
+      <DocP>
+        <C>logger.shutdown()</C> removes all of them and restores the originals.
+      </DocP>
+    </DocPage>
   );
 }

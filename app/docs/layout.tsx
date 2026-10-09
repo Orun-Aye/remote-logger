@@ -1,10 +1,14 @@
 import type { Metadata } from "next";
-import { DocsSidebar, DocsMobileNav } from "@/components/docs";
+import { DocsSidebar, DocsHeader } from "@/components/docs";
+import { landingFontClasses } from "@/components/landing/fonts";
+import "../landing.css";
+import "./docs.css";
 
 export const metadata: Metadata = {
-  title: "Documentation - Apperio",
+  metadataBase: new URL("https://www.apperio.dev"),
+  title: "Apperio docs",
   description:
-    "Comprehensive documentation for Apperio: real-time logging, error tracking, and performance monitoring SDK.",
+    "How to set up Apperio: install the SDK, connect GitHub, record deploys, and trace each error back to the change that caused it.",
 };
 
 export default function DocsLayout({
@@ -13,16 +17,11 @@ export default function DocsLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="min-h-screen bg-bg-base text-text-primary">
-      {/* Mobile nav - visible only on small screens */}
-      <DocsMobileNav />
-
-      <div className="flex">
-        {/* Desktop sidebar */}
+    <div className={`docs ${landingFontClasses} min-h-screen bg-bg-base text-text-primary`}>
+      <DocsHeader />
+      <div className="mx-auto flex max-w-[1440px]">
         <DocsSidebar />
-
-        {/* Main content area */}
-        <main className="flex-1 min-w-0">{children}</main>
+        <main className="min-w-0 flex-1">{children}</main>
       </div>
     </div>
   );

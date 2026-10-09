@@ -18,7 +18,6 @@ const PUBLIC_PATHS = new Set([
   "/forgot-password",
   "/mfa-verify",
   "/callback",
-  "/sdk",
   "/changelog",
   "/status",
   "/docs",

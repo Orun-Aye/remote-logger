@@ -1,388 +1,184 @@
 import {
-  DocsContent,
+  DocPage,
   DocH2,
   DocP,
   DocUl,
   DocLi,
-  DocStrong,
+  DocLink,
   DocCallout,
   CodeBlock,
   InlineCode,
-  DocsTableOfContents,
   type TocItem,
 } from "@/components/docs";
 
 const toc: TocItem[] = [
-  { id: "setup", title: "Setup", level: 2 },
-  { id: "provider-pattern", title: "ApperioProvider Pattern", level: 2 },
-  { id: "error-boundaries", title: "Error Boundaries", level: 2 },
-  { id: "hook-usage", title: "Custom Hook Usage", level: 2 },
-  { id: "component-logging", title: "Component-Level Logging", level: 2 },
-  { id: "performance-tracking", title: "Performance Tracking", level: 2 },
-  { id: "best-practices", title: "Best Practices", level: 2 },
+  { id: "create-the-logger", title: "1. Create the logger", level: 2 },
+  { id: "load-it-first", title: "2. Load it before rendering", level: 2 },
+  { id: "error-boundary", title: "3. Report errors React catches", level: 2 },
+  { id: "use-it", title: "4. Log from components", level: 2 },
+  { id: "notes", title: "Notes", level: 2 },
 ];
+
+const C = InlineCode;
 
 export default function ReactGuidePage() {
   return (
-    <div className="flex">
-      <DocsContent
-        slug="guides/react"
-        title="React Integration"
-        description="Best practices for integrating Apperio with React applications."
-      >
-        <DocH2 id="setup">Setup</DocH2>
-        <DocP>
-          Install the SDK and initialize it at the root of your React
-          application, before any components render:
-        </DocP>
-        <CodeBlock
-          language="bash"
-          code="npm install apperio"
-        />
-        <CodeBlock
-          language="typescript"
-          filename="src/index.tsx"
-          code={`import React from "react";
-import ReactDOM from "react-dom/client";
-import Apperio from "apperio";
-import App from "./App";
+    <DocPage slug="guides/react" toc={toc}>
+      <DocP>
+        This guide is for a React app that runs in the browser, such as one built with Vite.
+        For Next.js, use the <DocLink href="/docs/guides/nextjs">Next.js guide</DocLink>. The
+        code works with React 18 and 19. Install the SDK first:{" "}
+        <C>npm install apperio</C>.
+      </DocP>
 
-// Initialize BEFORE rendering
-Apperio.init({
-  projectId: process.env.REACT_APP_APPERIO_PROJECT_ID!,
-  apiKey: process.env.REACT_APP_APPERIO_API_KEY!,
-  environment: process.env.NODE_ENV,
-  autoCapture: {
-    errors: true,
-    performance: true,
-    network: true,
-    console: false,
-    pageviews: true,
-  },
+      <DocH2 id="create-the-logger">1. Create the logger</DocH2>
+      <DocP>Create one logger in its own module and import it wherever you need it:</DocP>
+      <CodeBlock
+        language="ts"
+        filename="src/apperio.ts"
+        code={`
+import { Apperio } from 'apperio';
+
+export const logger = new Apperio({
+  apiKey: 'your-api-key',
+  projectId: 'your-project-id',
+  environment: 'production',
+  serviceName: 'web',
+  release: '1.0.0',
 });
+`}
+      />
+      <DocP>
+        Fill these in from your build’s environment variables. In Vite, for example, read{" "}
+        <C>import.meta.env.VITE_APPERIO_API_KEY</C> and{" "}
+        <C>import.meta.env.MODE</C>. The API key is public once it is in your bundle;
+        that is expected.
+      </DocP>
 
-const root = ReactDOM.createRoot(document.getElementById("root")!);
-root.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>
-);`}
-        />
+      <DocH2 id="load-it-first">2. Load it before rendering</DocH2>
+      <DocP>
+        Import the module at the top of your entry file, so the logger exists before React
+        renders anything and catches errors from the very first render:
+      </DocP>
+      <CodeBlock
+        language="tsx"
+        filename="src/main.tsx"
+        code={`
+import './apperio';
+import { StrictMode } from 'react';
+import { createRoot } from 'react-dom/client';
+import { App } from './App';
+import { ErrorBoundary } from './ErrorBoundary';
 
-        <DocH2 id="provider-pattern">ApperioProvider Pattern</DocH2>
-        <DocP>
-          Create a context provider to make Apperio accessible throughout
-          your component tree and to handle initialization lifecycle:
-        </DocP>
-        <CodeBlock
-          language="typescript"
-          filename="src/providers/ApperioProvider.tsx"
-          code={`import { createContext, useContext, useEffect, useRef } from "react";
-import Apperio from "apperio";
+createRoot(document.getElementById('root')!).render(
+  <StrictMode>
+    <ErrorBoundary>
+      <App />
+    </ErrorBoundary>
+  </StrictMode>,
+);
+`}
+      />
+      <DocP>
+        Because the logger is created once at module level, Strict Mode’s double rendering
+        doesn’t create a second one.
+      </DocP>
 
-interface ApperioContextValue {
-  log: typeof Apperio;
-}
-
-const ApperioContext = createContext<ApperioContextValue | null>(null);
-
-export function ApperioProvider({
-  children,
-  projectId,
-  apiKey,
-}: {
-  children: React.ReactNode;
-  projectId: string;
-  apiKey: string;
-}) {
-  const initialized = useRef(false);
-
-  useEffect(() => {
-    if (!initialized.current) {
-      Apperio.init({
-        projectId,
-        apiKey,
-        environment: process.env.NODE_ENV,
-        autoCapture: {
-          errors: true,
-          performance: true,
-          network: true,
-        },
-      });
-      initialized.current = true;
-    }
-
-    // Flush on unmount
-    return () => {
-      Apperio.flush();
-    };
-  }, [projectId, apiKey]);
-
-  return (
-    <ApperioContext.Provider value={{ log: Apperio }}>
-      {children}
-    </ApperioContext.Provider>
-  );
-}
-
-export function useApperio() {
-  const context = useContext(ApperioContext);
-  if (!context) {
-    throw new Error("useApperio must be used within a ApperioProvider");
-  }
-  return context.log;
-}`}
-        />
-        <DocP>Use the provider in your app root:</DocP>
-        <CodeBlock
-          language="typescript"
-          filename="src/App.tsx"
-          code={`import { ApperioProvider } from "./providers/ApperioProvider";
-import { Dashboard } from "./pages/Dashboard";
-
-function App() {
-  return (
-    <ApperioProvider
-      projectId={process.env.REACT_APP_APPERIO_PROJECT_ID!}
-      apiKey={process.env.REACT_APP_APPERIO_API_KEY!}
-    >
-      <Dashboard />
-    </ApperioProvider>
-  );
-}`}
-        />
-
-        <DocH2 id="error-boundaries">Error Boundaries</DocH2>
-        <DocP>
-          Create an error boundary that automatically reports rendering errors
-          to Apperio:
-        </DocP>
-        <CodeBlock
-          language="typescript"
-          filename="src/components/ApperioErrorBoundary.tsx"
-          code={`import React from "react";
-import Apperio from "apperio";
+      <DocH2 id="error-boundary">3. Report errors React catches</DocH2>
+      <DocP>
+        When an error boundary catches a rendering error, React shows the fallback and the
+        error doesn’t reach the window, so the SDK never sees it. Log it from{" "}
+        <C>componentDidCatch</C>:
+      </DocP>
+      <CodeBlock
+        language="tsx"
+        filename="src/ErrorBoundary.tsx"
+        code={`
+import { Component, type ErrorInfo, type ReactNode } from 'react';
+import { logger } from './apperio';
 
 interface Props {
-  children: React.ReactNode;
-  fallback?: React.ReactNode;
+  children: ReactNode;
 }
 
 interface State {
   hasError: boolean;
-  error: Error | null;
 }
 
-export class ApperioErrorBoundary extends React.Component<Props, State> {
-  state: State = { hasError: false, error: null };
+export class ErrorBoundary extends Component<Props, State> {
+  state: State = { hasError: false };
 
-  static getDerivedStateFromError(error: Error): State {
-    return { hasError: true, error };
+  static getDerivedStateFromError(): State {
+    return { hasError: true };
   }
 
-  componentDidCatch(error: Error, info: React.ErrorInfo) {
-    Apperio.error("React component error", {
-      error: {
-        name: error.name,
-        message: error.message,
-        stack: error.stack,
-      },
-      componentStack: info.componentStack,
+  componentDidCatch(error: Error, info: ErrorInfo) {
+    logger.error('React render error', error, {
+      componentStack: info.componentStack ?? undefined,
     });
   }
 
   render() {
     if (this.state.hasError) {
-      return this.props.fallback || (
-        <div style={{ padding: "20px", textAlign: "center" }}>
-          <h2>Something went wrong</h2>
-          <p>{this.state.error?.message}</p>
-        </div>
-      );
+      return <p>Something went wrong. Please reload the page.</p>;
     }
     return this.props.children;
   }
 }
+`}
+      />
+      <DocP>
+        The component stack goes with the error, so you can see which component failed.
+        Errors outside rendering, such as in event handlers and timers, don’t go through
+        boundaries; the SDK captures those itself.
+      </DocP>
 
-// Usage:
-// <ApperioErrorBoundary fallback={<ErrorFallback />}>
-//   <MyComponent />
-// </ApperioErrorBoundary>`}
-        />
+      <DocH2 id="use-it">4. Log from components</DocH2>
+      <CodeBlock
+        language="tsx"
+        filename="src/CheckoutButton.tsx"
+        code={`
+import { logger } from './apperio';
 
-        <DocCallout type="tip">
-          Wrap individual feature sections with separate error boundaries.
-          This way, a crash in one section does not take down the entire
-          application, and each crash is reported with the correct component
-          context.
-        </DocCallout>
-
-        <DocH2 id="hook-usage">Custom Hook Usage</DocH2>
-        <DocP>
-          Create custom hooks for common logging patterns:
-        </DocP>
-        <CodeBlock
-          language="typescript"
-          filename="src/hooks/useApperioAction.ts"
-          code={`import { useCallback } from "react";
-import Apperio from "apperio";
-
-/**
- * Hook for logging user actions with consistent formatting
- */
-export function useApperioAction(component: string) {
-  const logAction = useCallback(
-    (action: string, data?: Record<string, any>) => {
-      Apperio.info(component + ": " + action, {
-        component,
-        action,
-        ...data,
-      });
-    },
-    [component]
-  );
-
-  const logError = useCallback(
-    (action: string, error: unknown, data?: Record<string, any>) => {
-      Apperio.error(component + ": " + action + " failed", {
-        component,
-        action,
-        error,
-        ...data,
-      });
-    },
-    [component]
-  );
-
-  return { logAction, logError };
-}
-
-// Usage in a component:
-function CheckoutPage() {
-  const { logAction, logError } = useApperioAction("CheckoutPage");
-
-  const handleSubmit = async (order: Order) => {
-    logAction("submit_order", { orderId: order.id });
+export function CheckoutButton({ orderId }: { orderId: string }) {
+  const handleClick = async () => {
+    logger.info('Checkout started', { orderId });
     try {
-      await submitOrder(order);
-      logAction("order_success", { orderId: order.id });
+      await processOrder(orderId);
     } catch (err) {
-      logError("submit_order", err, { orderId: order.id });
+      logger.error('Checkout failed', err instanceof Error ? err : new Error(String(err)), {
+        orderId,
+      });
     }
   };
 
-  return <form onSubmit={handleSubmit}>...</form>;
-}`}
-        />
-
-        <DocH2 id="component-logging">Component-Level Logging</DocH2>
-        <DocP>
-          Log component lifecycle events for debugging render issues:
-        </DocP>
-        <CodeBlock
-          language="typescript"
-          code={`import { useEffect } from "react";
-import Apperio from "apperio";
-
-function UserProfile({ userId }: { userId: string }) {
-  // Log component mount/unmount
-  useEffect(() => {
-    Apperio.debug("UserProfile mounted", { userId });
-    return () => {
-      Apperio.debug("UserProfile unmounted", { userId });
-    };
-  }, [userId]);
-
-  // Log data fetching
-  useEffect(() => {
-    Apperio.debug("Fetching user data", { userId });
-    fetchUser(userId)
-      .then((user) => {
-        Apperio.info("User data loaded", {
-          userId,
-          loadTime: performance.now(),
-        });
-      })
-      .catch((err) => {
-        Apperio.error("Failed to load user data", {
-          userId,
-          error: err,
-        });
-      });
-  }, [userId]);
-
-  return <div>...</div>;
-}`}
-        />
-
-        <DocH2 id="performance-tracking">Performance Tracking</DocH2>
-        <DocP>
-          Track component render performance with the{" "}
-          <InlineCode>Performance API</InlineCode>:
-        </DocP>
-        <CodeBlock
-          language="typescript"
-          code={`import { useEffect, useRef } from "react";
-import Apperio from "apperio";
-
-function useRenderPerformance(componentName: string) {
-  const renderCount = useRef(0);
-  const startTime = useRef(performance.now());
-
-  useEffect(() => {
-    renderCount.current += 1;
-    const renderTime = performance.now() - startTime.current;
-
-    if (renderTime > 16) {
-      // Longer than one frame (60fps)
-      Apperio.warn("Slow render detected", {
-        component: componentName,
-        renderTime: Math.round(renderTime),
-        renderCount: renderCount.current,
-      });
-    }
-
-    startTime.current = performance.now();
-  });
+  return <button onClick={handleClick}>Pay now</button>;
 }
+`}
+      />
+      <DocP>
+        To tag every later log with the signed-in user, call{" "}
+        <C>{`logger.setContext({ userId })`}</C> after sign-in and{" "}
+        <C>logger.clearContext()</C> after sign-out. Avoid emails and names: an ID is enough
+        to find the user in your own systems.
+      </DocP>
 
-// Usage:
-function HeavyComponent() {
-  useRenderPerformance("HeavyComponent");
-  return <div>...</div>;
-}`}
-        />
-
-        <DocH2 id="best-practices">Best Practices</DocH2>
-        <DocUl>
-          <DocLi>
-            <DocStrong>Initialize once</DocStrong> -- Call{" "}
-            <InlineCode>Apperio.init()</InlineCode> in your entry file, not
-            inside components. Use a ref guard to prevent double-init in
-            StrictMode.
-          </DocLi>
-          <DocLi>
-            <DocStrong>Use error boundaries</DocStrong> -- Wrap feature
-            sections with <InlineCode>ApperioErrorBoundary</InlineCode> for
-            automatic React error reporting.
-          </DocLi>
-          <DocLi>
-            <DocStrong>Log meaningful context</DocStrong> -- Include
-            component names, user IDs, and relevant state in log data.
-          </DocLi>
-          <DocLi>
-            <DocStrong>Avoid over-logging</DocStrong> -- Use{" "}
-            <InlineCode>debug</InlineCode> level for development details
-            and set <InlineCode>logLevel: "info"</InlineCode> in production.
-          </DocLi>
-          <DocLi>
-            <DocStrong>Flush on navigation</DocStrong> -- Call{" "}
-            <InlineCode>Apperio.flush()</InlineCode> before page unload or
-            significant navigation events.
-          </DocLi>
-        </DocUl>
-      </DocsContent>
-      <DocsTableOfContents items={toc} />
-    </div>
+      <DocH2 id="notes">Notes</DocH2>
+      <DocUl>
+        <DocLi>
+          Route changes made with React Router, or anything else that uses the History API,
+          are logged as page views and stay in the same session.
+        </DocLi>
+        <DocLi>
+          Turn on <DocLink href="/docs/concepts/session-replay">session replay</DocLink> from
+          the dashboard; no code change is needed.
+        </DocLi>
+      </DocUl>
+      <DocCallout type="tip" title="Seeing it work">
+        Throw an error from a button’s click handler in development, with{" "}
+        <C>environment</C> set to <C>production</C> just for the test, and it appears in
+        Issues within a few seconds.
+      </DocCallout>
+    </DocPage>
   );
 }

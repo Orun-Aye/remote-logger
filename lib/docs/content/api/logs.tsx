@@ -1,318 +1,177 @@
 import {
-  DocsContent,
+  DocPage,
   DocH2,
+  DocH3,
   DocP,
+  DocUl,
+  DocLi,
+  DocLink,
+  DocStrong,
   DocCallout,
   DocTable,
+  EndpointBlock,
   CodeBlock,
   InlineCode,
-  EndpointBlock,
-  DocsTableOfContents,
   type TocItem,
 } from "@/components/docs";
 
 const toc: TocItem[] = [
-  { id: "create-log", title: "Create Log Entry", level: 2 },
-  { id: "query-logs", title: "Query Logs", level: 2 },
-  { id: "get-log", title: "Get Single Log", level: 2 },
-  { id: "log-summary", title: "Log Summary", level: 2 },
-  { id: "log-trends", title: "Log Trends", level: 2 },
-  { id: "unique-errors", title: "Unique Errors", level: 2 },
-  { id: "delete-logs", title: "Delete Logs", level: 2 },
-  { id: "log-schema", title: "Log Entry Schema", level: 2 },
+  { id: "batch", title: "Send a batch", level: 2 },
+  { id: "fields", title: "Entry fields", level: 3 },
+  { id: "limits", title: "Limits", level: 3 },
+  { id: "batch-response", title: "Response", level: 3 },
+  { id: "single", title: "Send one entry", level: 2 },
+  { id: "what-happens", title: "What happens to a log", level: 2 },
 ];
+
+const C = InlineCode;
 
 export default function ApiLogsPage() {
   return (
-    <div className="flex">
-      <DocsContent
-        slug="api/logs"
-        title="Logs API"
-        description="Endpoints for log ingestion, querying, filtering, and analysis."
-      >
-        <DocH2 id="create-log">Create Log Entry</DocH2>
-        <EndpointBlock
-          method="POST"
-          path="/api/v1/:projectId/logs"
-          description="Ingest a log entry (API Key auth)"
-        />
-        <DocP>
-          This is the primary ingestion endpoint used by the SDK. Requires API
-          key authentication via the <InlineCode>X-API-Key</InlineCode> header.
-        </DocP>
-        <CodeBlock
-          language="bash"
-          code={`curl -X POST https://apperioserver.onrender.com/api/v1/PROJECT_ID/logs \\
+    <DocPage slug="api/logs" toc={toc}>
+      <DocP>
+        Use these when the SDK doesn’t fit, for example from another language or a log
+        shipper. Authentication and errors are described in the{" "}
+        <DocLink href="/docs/api/overview">API overview</DocLink>.
+      </DocP>
+
+      <DocH2 id="batch">Send a batch</DocH2>
+      <EndpointBlock method="POST" path="/api/v1/{projectId}/logs/batch" description="X-API-Key required. What the SDK uses." />
+      <CodeBlock
+        language="bash"
+        code={`
+curl -X POST "https://apperioserver.onrender.com/api/v1/your-project-id/logs/batch" \\
   -H "X-API-Key: your-api-key" \\
   -H "Content-Type: application/json" \\
-  -d '{
-    "timestamp": "2026-03-07T10:30:00.000Z",
-    "level": "error",
-    "message": "Database connection timeout",
-    "service": "api-gateway",
-    "environment": "production",
-    "error": {
-      "name": "MongoTimeoutError",
-      "message": "Connection timed out after 30000ms",
-      "stack": "MongoTimeoutError: Connection timed out..."
-    },
-    "data": {
-      "host": "db.example.com",
-      "port": 27017,
-      "retryCount": 3
-    }
-  }'`}
-        />
-        <CodeBlock
-          language="json"
-          code={`// Response (201 Created)
+  -d @logs.json
+`}
+      />
+      <CodeBlock
+        language="json"
+        filename="logs.json"
+        code={`
 {
-  "status": "success",
-  "message": "Log created successfully",
-  "data": {
-    "id": "log_abc123",
-    "projectId": "PROJECT_ID",
-    "timestamp": "2026-03-07T10:30:00.000Z",
-    "level": "error",
-    "message": "Database connection timeout"
-  }
-}`}
-        />
-
-        <DocH2 id="query-logs">Query Logs</DocH2>
-        <EndpointBlock
-          method="GET"
-          path="/api/v1/:projectId/logs"
-          description="Query logs with filters and pagination (JWT auth)"
-        />
-        <DocP>
-          Retrieve logs with full filtering, search, and pagination support.
-        </DocP>
-        <DocTable
-          headers={["Parameter", "Type", "Description"]}
-          rows={[
-            [
-              <InlineCode key="p">page</InlineCode>,
-              "number",
-              "Page number (default: 1)",
-            ],
-            [
-              <InlineCode key="l">limit</InlineCode>,
-              "number",
-              "Results per page (default: 50, max: 100)",
-            ],
-            [
-              <InlineCode key="lv">level</InlineCode>,
-              "string",
-              "Filter by level (trace, debug, info, warn, error, fatal)",
-            ],
-            [
-              <InlineCode key="s">search</InlineCode>,
-              "string",
-              "Full-text search on message field",
-            ],
-            [
-              <InlineCode key="sf">startDate</InlineCode>,
-              "string",
-              "ISO date for range start",
-            ],
-            [
-              <InlineCode key="ef">endDate</InlineCode>,
-              "string",
-              "ISO date for range end",
-            ],
-            [
-              <InlineCode key="et">eventType</InlineCode>,
-              "string",
-              "Filter by event type",
-            ],
-            [
-              <InlineCode key="svc">service</InlineCode>,
-              "string",
-              "Filter by service name",
-            ],
-            [
-              <InlineCode key="env">environment</InlineCode>,
-              "string",
-              "Filter by environment",
-            ],
-            [
-              <InlineCode key="sb">sortBy</InlineCode>,
-              "string",
-              "Sort field (default: timestamp)",
-            ],
-            [
-              <InlineCode key="so">sortOrder</InlineCode>,
-              "string",
-              "asc or desc (default: desc)",
-            ],
-          ]}
-        />
-        <CodeBlock
-          language="bash"
-          code={`# Get recent error logs
-curl "https://apperioserver.onrender.com/api/v1/PROJECT_ID/logs?level=error&limit=20" \\
-  -H "Authorization: Bearer YOUR_JWT_TOKEN"
-
-# Search logs with date range
-curl "https://apperioserver.onrender.com/api/v1/PROJECT_ID/logs?search=timeout&startDate=2026-03-01&endDate=2026-03-07" \\
-  -H "Authorization: Bearer YOUR_JWT_TOKEN"`}
-        />
-        <CodeBlock
-          language="json"
-          code={`// Response (200 OK)
-{
-  "status": "success",
-  "data": [
+  "logs": [
     {
-      "id": "log_abc123",
-      "timestamp": "2026-03-07T10:30:00Z",
+      "level": "info",
+      "message": "Order placed",
+      "timestamp": "2026-01-15T12:00:00.000Z",
+      "service": "billing",
+      "environment": "production",
+      "release": "2.4.1",
+      "data": { "orderId": "order-123" }
+    },
+    {
       "level": "error",
-      "message": "Database connection timeout",
-      "service": "api-gateway",
-      "environment": "production"
+      "message": "Payment failed",
+      "service": "billing",
+      "environment": "production",
+      "error": {
+        "name": "CardError",
+        "message": "Card declined",
+        "stack": "CardError: Card declined\\n    at charge (billing/charge.py:42)"
+      }
     }
-  ],
-  "meta": {
-    "page": 1,
-    "limit": 20,
-    "total": 156,
-    "totalRecords": 156
-  }
-}`}
-        />
+  ]
+}
+`}
+      />
 
-        <DocH2 id="get-log">Get Single Log</DocH2>
-        <EndpointBlock
-          method="GET"
-          path="/api/v1/:projectId/logs/:logId"
-          description="Get a specific log entry by ID (JWT auth)"
-        />
-        <CodeBlock
-          language="bash"
-          code={`curl "https://apperioserver.onrender.com/api/v1/PROJECT_ID/logs/LOG_ID" \\
-  -H "Authorization: Bearer YOUR_JWT_TOKEN"`}
-        />
+      <DocH3 id="fields">Entry fields</DocH3>
+      <DocTable
+        headers={["Field", "Type", "Notes"]}
+        rows={[
+          [<C key="f">level</C>, "string, required", "trace, debug, info, warn, error or fatal"],
+          [<C key="f">message</C>, "string, required", "1 to 5,000 characters"],
+          [<C key="f">timestamp</C>, "string", "ISO 8601 in UTC ending in Z, such as 2026-01-15T12:00:00.000Z. Offsets like +01:00 are rejected. Defaults to the time Apperio receives it."],
+          [<C key="f">data</C>, "object", "Anything you want stored with the entry"],
+          [<C key="f">error</C>, "object", "name (up to 200), message (up to 1,000), and optional stack (up to 10,000), url, lineNumber, columnNumber"],
+          [<C key="f">service</C>, "string", "Up to 100 characters"],
+          [<C key="f">environment</C>, "string", "Up to 50 characters"],
+          [<C key="f">release</C>, "string", "Up to 100 characters"],
+          [<C key="f">context</C>, "object", "Shared details, such as a user ID"],
+          [<C key="f">metadata</C>, "any", ""],
+          [<C key="f">eventType</C>, "string", "error, performance, interaction, network, console, pageview, web-vital, breadcrumb, message or system"],
+          [<C key="f">sessionId</C>, "string", "Up to 100 characters. Groups entries into a session."],
+          [<C key="f">traceId, spanId, correlationId</C>, "string", "Up to 100 characters each"],
+          [<C key="f">url, referrer</C>, "string", "Up to 2,000 characters each"],
+          [<C key="f">userAgent</C>, "string", "Up to 500 characters"],
+        ]}
+      />
+      <DocP>Fields not in this list are dropped.</DocP>
 
-        <DocH2 id="log-summary">Log Summary</DocH2>
-        <EndpointBlock
-          method="GET"
-          path="/api/v1/:projectId/logs/summary"
-          description="Get aggregated log statistics (JWT auth)"
-        />
-        <DocP>
-          Returns counts grouped by level, event type, and time period:
-        </DocP>
-        <CodeBlock
-          language="json"
-          code={`// Response
+      <DocH3 id="limits">Limits</DocH3>
+      <DocUl>
+        <DocLi>1 to 100 entries per request.</DocLi>
+        <DocLi>
+          The whole request is rejected with 400 if any entry breaks a rule above. Fix the
+          entry and send the batch again.
+        </DocLi>
+        <DocLi>Request bodies can be up to 5 MB.</DocLi>
+      </DocUl>
+
+      <DocH3 id="batch-response">Response</DocH3>
+      <DocP>
+        <C>201</C>, with a result for each entry, in order:
+      </DocP>
+      <CodeBlock
+        language="json"
+        code={`
 {
   "status": "success",
+  "message": "Batch processing complete: 2 succeeded, 0 failed",
   "data": {
-    "totalLogs": 15420,
-    "byLevel": {
-      "trace": 1200,
-      "debug": 3400,
-      "info": 8500,
-      "warn": 1800,
-      "error": 490,
-      "fatal": 30
-    },
-    "byEventType": {
-      "error": 520,
-      "performance": 2100,
-      "network": 8400,
-      "console": 1200,
-      "pageview": 3200
-    }
+    "success": 2,
+    "failed": 0,
+    "results": [
+      { "index": 0, "success": true, "logId": "log-id-1" },
+      { "index": 1, "success": true, "logId": "log-id-2" }
+    ]
   }
-}`}
-        />
+}
+`}
+      />
+      <DocP>
+        An entry that passes validation but can’t be stored is reported with{" "}
+        <C>{`"success": false`}</C> and an <C>error</C> message, while the rest are saved.
+      </DocP>
 
-        <DocH2 id="log-trends">Log Trends</DocH2>
-        <EndpointBlock
-          method="GET"
-          path="/api/v1/:projectId/logs/trends"
-          description="Get log volume trends over time (JWT auth)"
-        />
-        <DocTable
-          headers={["Parameter", "Type", "Description"]}
-          rows={[
-            [
-              <InlineCode key="tr">timeRange</InlineCode>,
-              "string",
-              'Time range: "1h", "24h", "7d", "30d"',
-            ],
-            [
-              <InlineCode key="gr">granularity</InlineCode>,
-              "string",
-              '"minute", "hour", "day"',
-            ],
-          ]}
-        />
+      <DocH2 id="single">Send one entry</DocH2>
+      <EndpointBlock method="POST" path="/api/v1/{projectId}/logs" description="X-API-Key required." />
+      <DocP>
+        The body is one entry with the fields above. Here only the required fields and the
+        allowed values of <C>level</C> and <C>eventType</C> are checked; the length limits
+        apply to batches. The response is <C>201</C> with the stored entry in{" "}
+        <C>data</C>.
+      </DocP>
+      <CodeBlock
+        language="bash"
+        code={`
+curl -X POST "https://apperioserver.onrender.com/api/v1/your-project-id/logs" \\
+  -H "X-API-Key: your-api-key" \\
+  -H "Content-Type: application/json" \\
+  -d '{"level":"warn","message":"Disk 90% full","service":"worker","environment":"production"}'
+`}
+      />
+      <DocCallout type="info" title="Sampling">
+        The project’s <DocStrong>Settings › Sampling</DocStrong> applies to this endpoint
+        only. When an
+        entry is sampled out, the response is <C>202</C> with{" "}
+        <C>{`"message": "Log sampled out"`}</C> and nothing is stored. Batches, and so the
+        SDK, aren’t sampled.
+      </DocCallout>
 
-        <DocH2 id="unique-errors">Unique Errors</DocH2>
-        <EndpointBlock
-          method="GET"
-          path="/api/v1/:projectId/logs/unique-errors"
-          description="Get unique error messages with counts (JWT auth)"
-        />
-        <DocP>
-          Returns deduplicated error messages grouped by frequency, useful for
-          identifying the most impactful issues.
-        </DocP>
-
-        <DocH2 id="delete-logs">Delete Logs</DocH2>
-        <EndpointBlock
-          method="DELETE"
-          path="/api/v1/:projectId/logs"
-          description="Delete logs matching filters (JWT auth)"
-        />
-        <DocCallout type="danger">
-          This is a destructive operation. Deleted logs cannot be recovered.
-          Use filters to target specific logs for deletion.
-        </DocCallout>
-        <CodeBlock
-          language="bash"
-          code={`# Delete all debug logs older than 7 days
-curl -X DELETE "https://apperioserver.onrender.com/api/v1/PROJECT_ID/logs?level=debug&endDate=2026-02-28" \\
-  -H "Authorization: Bearer YOUR_JWT_TOKEN"`}
-        />
-
-        <DocH2 id="log-schema">Log Entry Schema</DocH2>
-        <DocP>
-          Complete schema for a log entry:
-        </DocP>
-        <CodeBlock
-          language="typescript"
-          code={`interface LogEntry {
-  projectId: string;
-  timestamp: string;              // ISO 8601 format
-  level: "trace" | "debug" | "info" | "warn" | "error" | "fatal";
-  message: string;
-  data?: Record<string, any>;     // Arbitrary structured data
-  error?: {
-    name: string;
-    message: string;
-    stack?: string;
-    url?: string;
-    lineNumber?: number;
-    columnNumber?: number;
-  };
-  service?: string;               // Service name tag
-  environment?: string;           // e.g., "production", "staging"
-  context?: Record<string, any>;  // Request/session context
-  metadata?: any;                 // SDK metadata (sanitization info, etc.)
-  eventType?: "error" | "performance" | "interaction"
-             | "network" | "console" | "pageview";
-  userAgent?: string;
-  url?: string;                   // Page URL
-  referrer?: string;
-  responseTime?: number;          // For network events (ms)
-}`}
-        />
-      </DocsContent>
-      <DocsTableOfContents items={toc} />
-    </div>
+      <DocH2 id="what-happens">What happens to a log</DocH2>
+      <DocUl>
+        <DocLi>It is stored as you sent it. Nothing is redacted on the server.</DocLi>
+        <DocLi>
+          Entries at <C>error</C> or <C>fatal</C> are grouped into issues and can notify
+          the project owner, exactly like errors from the SDK. Include{" "}
+          <C>error.name</C>, <C>error.message</C> and <C>error.stack</C> for good grouping.
+        </DocLi>
+        <DocLi>Every entry is checked against your alert rules.</DocLi>
+        <DocLi>Logs are kept for the project’s retention period, 30 days by default.</DocLi>
+      </DocUl>
+    </DocPage>
   );
 }

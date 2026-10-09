@@ -1,307 +1,230 @@
 import {
-  DocsContent,
+  DocPage,
   DocH2,
   DocH3,
   DocP,
-  DocStrong,
+  DocUl,
+  DocLi,
+  DocLink,
   DocCallout,
   DocTable,
   CodeBlock,
   InlineCode,
-  DocsTableOfContents,
   type TocItem,
 } from "@/components/docs";
 
 const toc: TocItem[] = [
-  { id: "overview", title: "Overview", level: 2 },
-  { id: "pii-patterns", title: "PII Detection Patterns", level: 2 },
+  { id: "defaults", title: "What happens by default", level: 2 },
+  { id: "patterns", title: "Built-in patterns", level: 2 },
+  { id: "fields", title: "Field masking", level: 2 },
   { id: "presets", title: "Presets", level: 2 },
-  { id: "custom-rules", title: "Custom Rules", level: 2 },
-  { id: "audit-trail", title: "Audit Trail", level: 2 },
-  { id: "url-sanitization", title: "URL Sanitization", level: 2 },
-  { id: "configuration", title: "Configuration", level: 2 },
+  { id: "custom-rules", title: "Custom rules", level: 2 },
+  { id: "config-type", title: "The full configuration", level: 2 },
+  { id: "changing-at-runtime", title: "Changing it at runtime", level: 3 },
+  { id: "audit-trail", title: "Audit trail", level: 2 },
+  { id: "turning-it-off", title: "Turning it off", level: 2 },
 ];
+
+const C = InlineCode;
 
 export default function DataSanitizationPage() {
   return (
-    <div className="flex">
-      <DocsContent
-        slug="sdk/data-sanitization"
-        title="Data Sanitization"
-        description="PII detection, redaction, and privacy protection built into the SDK."
-      >
-        <DocH2 id="overview">Overview</DocH2>
-        <DocP>
-          Apperio includes a built-in data sanitizer that automatically detects
-          and redacts Personally Identifiable Information (PII) before log
-          data leaves the browser. This ensures sensitive data never reaches
-          your logging backend.
-        </DocP>
-        <DocP>
-          Sanitization runs on all log data automatically when enabled (the
-          default). It supports 10+ detection patterns out of the box and
-          can be extended with custom rules.
-        </DocP>
+    <DocPage slug="sdk/data-sanitization" toc={toc}>
+      <DocH2 id="defaults">What happens by default</DocH2>
+      <DocP>
+        Before a log is queued, the SDK copies it and cleans the copy. It looks at the
+        message, the data you attach, the context, and the metadata. Two things happen:
+      </DocP>
+      <DocUl>
+        <DocLi>text matching a known pattern, such as an email address, is replaced;</DocLi>
+        <DocLi>fields whose names suggest secrets, such as <C>password</C>, are masked.</DocLi>
+      </DocUl>
+      <DocP>
+        The error’s name, message and stack, the page address, the referrer and the user
+        agent are not cleaned. See <DocLink href="/docs/concepts/privacy">Privacy and PII redaction</DocLink>{" "}
+        for the full picture.
+      </DocP>
 
-        <DocCallout type="info">
-          Sanitization happens <DocStrong>client-side</DocStrong> before any
-          data is transmitted. Sensitive values are replaced with redaction
-          markers like <InlineCode>[EMAIL_REDACTED]</InlineCode> and never
-          sent to the server.
-        </DocCallout>
+      <DocH2 id="patterns">Built-in patterns</DocH2>
+      <DocTable
+        headers={["Pattern", "Replaced with", "Notes"]}
+        rows={[
+          ["Email address", <C key="r">[EMAIL_REDACTED]</C>, ""],
+          ["US Social Security number", <C key="r">[SSN_REDACTED]</C>, "Any nine digits, with or without dashes"],
+          ["Card number", <C key="r">[CARD_REDACTED]</C>, "16 digits, optionally in groups of four"],
+          ["US phone number", <C key="r">[PHONE_REDACTED]</C>, "Ten digits, optionally with +1 and separators"],
+          ["IPv4 address", <C key="r">[IP_REDACTED]</C>, "Version numbers like Chrome/137.0.0.0 are kept"],
+          ["API key or token", <C key="r">[API_KEY_REDACTED]</C>, "api_key, token, secret, password or pwd, then = or :, then 20 or more characters"],
+          ["JWT", <C key="r">[JWT_REDACTED]</C>, "Three dot-separated parts starting with eyJ"],
+          ["Bank account number", <C key="r">[ACCOUNT_REDACTED]</C>, "8 to 17 digits after account, acct, routing, iban or bank"],
+          ["US driving licence", <C key="r">[DL_REDACTED]</C>, "A capital letter and 8 digits"],
+          ["Passport number", <C key="r">[PASSPORT_REDACTED]</C>, "One or two capital letters and 6 to 9 digits"],
+        ]}
+      />
+      <DocP>
+        The patterns are exported as <C>PII_PATTERNS</C>. They only look at text: a number
+        stored as a number is left alone, but the same digits inside a string can match. In
+        a string, a nine-digit order ID becomes <C>[SSN_REDACTED]</C> and a ten-digit Unix
+        timestamp becomes <C>[PHONE_REDACTED]</C>.
+      </DocP>
 
-        <DocH2 id="pii-patterns">PII Detection Patterns</DocH2>
-        <DocP>
-          The SDK detects the following PII patterns by default:
-        </DocP>
-        <DocTable
-          headers={["Pattern", "Example Input", "Redacted Output"]}
-          rows={[
-            [
-              "Email addresses",
-              "user@example.com",
-              "[EMAIL_REDACTED]",
-            ],
-            [
-              "Social Security Numbers",
-              "123-45-6789",
-              "[SSN_REDACTED]",
-            ],
-            [
-              "Credit card numbers",
-              "4111-1111-1111-1111",
-              "[CREDIT_CARD_REDACTED]",
-            ],
-            [
-              "Phone numbers",
-              "+1 (555) 123-4567",
-              "[PHONE_REDACTED]",
-            ],
-            [
-              "API keys",
-              "sk_live_abc123xyz",
-              "[API_KEY_REDACTED]",
-            ],
-            [
-              "JWT tokens",
-              "eyJhbGciOiJIUzI1NiJ9...",
-              "[JWT_REDACTED]",
-            ],
-            [
-              "IP addresses",
-              "192.168.1.100",
-              "[IP_REDACTED]",
-            ],
-            [
-              "AWS access keys",
-              "AKIA1234567890ABCDEF",
-              "[AWS_KEY_REDACTED]",
-            ],
-            [
-              "Password fields",
-              'password: "secret123"',
-              'password: "[PASSWORD_REDACTED]"',
-            ],
-            [
-              "Authorization headers",
-              "Bearer eyJhbGci...",
-              "Bearer [TOKEN_REDACTED]",
-            ],
-          ]}
-        />
+      <DocH2 id="fields">Field masking</DocH2>
+      <DocP>
+        Any field in the data, context or metadata whose name contains one of these words,
+        ignoring case, has its string value masked: <C>password</C>, <C>secret</C>,{" "}
+        <C>token</C>, <C>key</C>, <C>ssn</C>, <C>email</C>. The first and last characters
+        are kept and the rest become asterisks; values of 4 characters or fewer become{" "}
+        <C>[ANONYMIZED]</C>.
+      </DocP>
+      <CodeBlock
+        language="ts"
+        code={`
+logger.info('Signed in', { email: 'ada@example.com', apiKey: 'example-key-123', plan: 'pro' });
+// Sent as: { email: '[**************]', apiKey: 'e*************3', plan: 'pro' }
+`}
+      />
+      <DocP>
+        The <C>email</C> value was first replaced by the email pattern, then masked because
+        of its field name. Matching is by substring, so <C>key</C> also masks fields such as{" "}
+        <C>keyboardLayout</C> or <C>monkey</C>.
+      </DocP>
 
-        <DocH2 id="presets">Presets</DocH2>
-        <DocP>
-          Three presets control how aggressively the sanitizer operates:
-        </DocP>
+      <DocH2 id="presets">Presets</DocH2>
+      <DocTable
+        headers={["Preset", "Patterns", "Field masking", "Audit trail"]}
+        rows={[
+          [<C key="p">BALANCED</C>, "All ten", "password, secret, token, key, ssn, email", "On"],
+          [<C key="p">STRICT</C>, "All ten", "The same, plus phone and address", "On"],
+          [<C key="p">LENIENT</C>, "Only SSN, card, API key, JWT and bank account", "Off", "Off"],
+        ]}
+      />
+      <DocP>
+        <C>BALANCED</C> is what you get without configuring anything. Pick another with{" "}
+        <C>SANITIZATION_PRESETS</C>:
+      </DocP>
+      <DocCallout type="warning" title="LENIENT sends passwords in plain text">
+        <C>LENIENT</C> turns field masking off and drops the email pattern, so a{" "}
+        <C>password</C> or <C>email</C> field in your data is sent as it is. Use it only
+        where you are sure no such data is logged.
+      </DocCallout>
+      <CodeBlock
+        language="ts"
+        code={`
+import { Apperio, SANITIZATION_PRESETS } from 'apperio';
 
-        <DocH3 id="strict">STRICT</DocH3>
-        <DocP>
-          Maximum protection. Detects all patterns including partial matches
-          and ambiguous values. Best for healthcare, finance, and regulated
-          environments.
-        </DocP>
-        <CodeBlock
-          language="typescript"
-          code={`Apperio.init({
-  projectId: "...",
-  apiKey: "...",
+const logger = new Apperio({
+  apiKey: 'your-api-key',
+  projectId: 'your-project-id',
+  sanitization: { config: SANITIZATION_PRESETS.STRICT },
+});
+`}
+      />
+
+      <DocH2 id="custom-rules">Custom rules</DocH2>
+      <DocP>
+        Add a rule for data only your app has. Give the pattern the <C>g</C> flag, or only
+        the first match in each string is replaced.
+      </DocP>
+      <CodeBlock
+        language="ts"
+        code={`
+logger.addCustomSanitizationRule({
+  pattern: /CUST-\\d{6}/g,
+  replacement: '[CUSTOMER_ID]',
+  description: 'Customer number',
+  severity: 'medium',
+  category: 'custom',
+});
+
+logger.removeCustomSanitizationRule('Customer number'); // removed by description
+`}
+      />
+
+      <DocH2 id="config-type">The full configuration</DocH2>
+      <DocP>
+        <C>sanitization.config</C> takes a complete <C>SanitizationConfig</C>. The easiest
+        way to change one part is to start from a preset:
+      </DocP>
+      <CodeBlock
+        language="ts"
+        code={`
+import { Apperio, SANITIZATION_PRESETS } from 'apperio';
+
+const logger = new Apperio({
+  apiKey: 'your-api-key',
+  projectId: 'your-project-id',
   sanitization: {
-    enabled: true,
-    preset: "STRICT",
+    config: {
+      ...SANITIZATION_PRESETS.BALANCED,
+      sensitiveFields: [...SANITIZATION_PRESETS.BALANCED.sensitiveFields, 'address'],
+      customRules: [
+        {
+          pattern: /CUST-\\d{6}/g,
+          replacement: '[CUSTOMER_ID]',
+          description: 'Customer number',
+          severity: 'medium',
+          category: 'custom',
+        },
+      ],
+    },
   },
-});`}
-        />
+});
+`}
+      />
+      <DocTable
+        headers={["Field", "Type", "What it does"]}
+        rows={[
+          [<C key="f">enabled</C>, <C key="t">boolean</C>, "Whether this configuration runs at all."],
+          [<C key="f">rules</C>, <C key="t">SanitizationRule[]</C>, "The patterns to apply. PII_PATTERNS by default."],
+          [<C key="f">customRules</C>, <C key="t">SanitizationRule[]</C>, "Your own patterns, applied after rules."],
+          [<C key="f">sensitiveFields</C>, <C key="t">string[]</C>, "Field names to mask."],
+          [<C key="f">anonymizationEnabled</C>, <C key="t">boolean</C>, "Whether field masking runs."],
+          [<C key="f">auditEnabled</C>, <C key="t">boolean</C>, "Whether the audit trail records anything."],
+          [<C key="f">retentionPolicy</C>, <C key="t">RetentionPolicy</C>, "Required by the type, but it doesn’t affect stored data. Retention is set per project in Settings › Retention."],
+          [<C key="f">preserveStructure</C>, <C key="t">boolean</C>, "Required by the type; has no effect."],
+        ]}
+      />
 
-        <DocH3 id="balanced">BALANCED (Default)</DocH3>
-        <DocP>
-          Sensible defaults for most applications. Catches common PII patterns
-          with high confidence while minimizing false positives.
-        </DocP>
-        <CodeBlock
-          language="typescript"
-          code={`// BALANCED is the default - no explicit config needed
-Apperio.init({
-  projectId: "...",
-  apiKey: "...",
-  // sanitization.preset defaults to "BALANCED"
-});`}
-        />
+      <DocH3 id="changing-at-runtime">Changing it at runtime</DocH3>
+      <CodeBlock
+        language="ts"
+        code={`
+logger.updateSanitizationConfig({ sensitiveFields: ['password', 'secret', 'token'] });
+const current = logger.getSanitizationConfig();
+`}
+      />
 
-        <DocH3 id="lenient">LENIENT</DocH3>
-        <DocP>
-          Minimal sanitization. Only catches high-confidence matches like
-          full SSN patterns, Luhn-valid credit card numbers, and explicit
-          API key formats. Suitable for internal tools where PII risk is low.
-        </DocP>
-        <CodeBlock
-          language="typescript"
-          code={`Apperio.init({
-  projectId: "...",
-  apiKey: "...",
-  sanitization: {
-    enabled: true,
-    preset: "LENIENT",
-  },
-});`}
-        />
+      <DocH2 id="audit-trail">Audit trail</DocH2>
+      <DocP>
+        With <C>auditEnabled</C> on, the SDK records each clean-up in memory: when it
+        happened, sizes before and after, and which rules matched. It keeps the last 1,000
+        entries and never sends them anywhere. Read it while debugging your rules:
+      </DocP>
+      <CodeBlock
+        language="ts"
+        code={`
+const entries = logger.getAuditTrail(); // [{ timestamp, operation, rulesApplied, ... }]
+logger.clearAuditTrail();
+`}
+      />
 
-        <DocH2 id="custom-rules">Custom Rules</DocH2>
-        <DocP>
-          Add custom sanitization rules to handle domain-specific sensitive
-          data:
-        </DocP>
-        <CodeBlock
-          language="typescript"
-          code={`Apperio.init({
-  projectId: "...",
-  apiKey: "...",
-  sanitization: {
-    enabled: true,
-    preset: "BALANCED",
-    customRules: [
-      {
-        // Redact internal employee IDs
-        pattern: /EMP-\d{6}/g,
-        replacement: "[EMPLOYEE_ID_REDACTED]",
-        description: "Internal employee identifier",
-      },
-      {
-        // Redact medical record numbers
-        pattern: /MRN-[A-Z]{2}\d{8}/g,
-        replacement: "[MRN_REDACTED]",
-        description: "Medical record number",
-      },
-      {
-        // Redact custom API tokens
-        pattern: /myapp_[a-zA-Z0-9]{32}/g,
-        replacement: "[CUSTOM_TOKEN_REDACTED]",
-        description: "Application-specific API token",
-      },
-    ],
-  },
-});`}
-        />
+      <DocH2 id="turning-it-off">Turning it off</DocH2>
+      <CodeBlock
+        language="ts"
+        code={`
+import { Apperio } from 'apperio';
 
-        <DocCallout type="warning">
-          Custom rules are applied in addition to the preset patterns, not
-          instead of them. To disable built-in patterns entirely, set{" "}
-          <InlineCode>{"sanitization.enabled = false"}</InlineCode> and handle
-          sanitization manually.
-        </DocCallout>
-
-        <DocH2 id="audit-trail">Audit Trail</DocH2>
-        <DocP>
-          When sanitization redacts data, it creates an audit trail entry
-          recording what was sanitized without revealing the original value.
-          This helps with compliance and debugging.
-        </DocP>
-        <CodeBlock
-          language="json"
-          code={`{
-  "message": "User profile loaded",
-  "data": {
-    "name": "John Doe",
-    "email": "[EMAIL_REDACTED]",
-    "phone": "[PHONE_REDACTED]"
-  },
-  "metadata": {
-    "sanitization": {
-      "fieldsRedacted": 2,
-      "patterns": ["email", "phone"],
-      "timestamp": "2026-03-07T10:30:00Z"
-    }
-  }
-}`}
-        />
-
-        <DocP>
-          The audit trail is included in the log entry's metadata, so you can
-          search for sanitized entries in the dashboard and understand what
-          types of PII your application is handling.
-        </DocP>
-
-        <DocH2 id="url-sanitization">URL Sanitization</DocH2>
-        <DocP>
-          Network request URLs are automatically sanitized to remove
-          potentially sensitive query parameters:
-        </DocP>
-        <CodeBlock
-          language="typescript"
-          code={`// Before sanitization:
-// GET /api/users?token=abc123&api_key=sk_live_xyz
-
-// After sanitization:
-// GET /api/users?token=[REDACTED]&api_key=[REDACTED]`}
-        />
-        <DocP>
-          Common parameter names that are redacted include:{" "}
-          <InlineCode>token</InlineCode>, <InlineCode>api_key</InlineCode>,{" "}
-          <InlineCode>secret</InlineCode>, <InlineCode>password</InlineCode>,{" "}
-          <InlineCode>auth</InlineCode>, and <InlineCode>session</InlineCode>.
-        </DocP>
-
-        <DocH2 id="configuration">Configuration</DocH2>
-        <DocP>
-          Full sanitization configuration reference:
-        </DocP>
-        <CodeBlock
-          language="typescript"
-          code={`interface SanitizationConfig {
-  // Enable/disable sanitization entirely
-  enabled: boolean;          // default: true
-
-  // Preset level of detection
-  preset: "STRICT" | "BALANCED" | "LENIENT";  // default: "BALANCED"
-
-  // Additional custom rules
-  customRules?: Array<{
-    pattern: RegExp;         // Regex pattern to match
-    replacement: string;     // Replacement string
-    description?: string;    // Human-readable description
-  }>;
-}`}
-        />
-
-        <DocCallout type="tip">
-          In development, you may want to disable sanitization to see full
-          data for debugging. Use environment-based configuration to enable
-          sanitization only in production:
-        </DocCallout>
-
-        <CodeBlock
-          language="typescript"
-          code={`Apperio.init({
-  projectId: "...",
-  apiKey: "...",
-  sanitization: {
-    enabled: process.env.NODE_ENV === "production",
-    preset: "STRICT",
-  },
-});`}
-        />
-      </DocsContent>
-      <DocsTableOfContents items={toc} />
-    </div>
+const logger = new Apperio({
+  apiKey: 'your-api-key',
+  projectId: 'your-project-id',
+  sanitization: { enabled: false },
+});
+`}
+      />
+      <DocCallout type="warning" title="Nothing is redacted on the server">
+        Apperio’s servers store what the SDK sends. With sanitization off, everything you
+        log is stored as it is.
+      </DocCallout>
+    </DocPage>
   );
 }

@@ -16,7 +16,7 @@ export function QuickActions() {
       title: "View SDK Documentation",
       description: "Integration guides and code examples",
       icon: Code,
-      href: "/sdk",
+      href: "/docs",
       variant: "outline" as const,
     },
     {

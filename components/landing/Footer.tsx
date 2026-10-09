@@ -10,14 +10,14 @@ const footerSections = [
       { href: "/dashboard", label: "Dashboard" },
       { href: "/logs", label: "Log Explorer" },
       { href: "/alerts", label: "Alerts" },
-      { href: "/sdk", label: "SDK" },
+      { href: "/docs/quickstart", label: "SDK" },
     ],
   },
   {
     title: "Resources",
     links: [
       { href: "/docs", label: "Documentation" },
-      { href: "/sdk", label: "SDK Reference" },
+      { href: "/docs/sdk/configuration", label: "SDK Reference" },
       { href: "/status", label: "Status Page" },
     ],
   },

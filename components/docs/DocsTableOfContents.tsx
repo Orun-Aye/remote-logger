@@ -41,8 +41,8 @@ export function DocsTableOfContents({ items }: DocsTableOfContentsProps) {
   if (items.length === 0) return null;
 
   return (
-    <aside className="hidden xl:block w-52 shrink-0 sticky top-0 h-screen overflow-y-auto scrollbar-hide py-10 pr-4">
-      <p className="text-xs font-semibold uppercase tracking-wider text-text-muted mb-3 px-3">
+    <aside className="hidden xl:block w-56 shrink-0 sticky top-16 h-[calc(100vh-4rem)] overflow-y-auto scrollbar-hide py-10 pr-4">
+      <p className="mb-3 px-3 font-mono text-[11px] font-medium uppercase tracking-[0.08em] text-text-muted">
         On this page
       </p>
       <nav aria-label="Table of contents">
@@ -55,7 +55,7 @@ export function DocsTableOfContents({ items }: DocsTableOfContentsProps) {
                   "block text-xs py-1 px-3 rounded transition-colors duration-150",
                   item.level === 3 && "ml-3",
                   activeId === item.id
-                    ? "text-signal font-medium"
+                    ? "text-text-primary font-medium"
                     : "text-text-muted hover:text-text-secondary"
                 )}
               >

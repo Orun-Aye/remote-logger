@@ -1,0 +1,91 @@
+/* ============================================================================
+   DOCS STYLES
+   The palette and type come from the landing tokens (app/landing.css, which
+   scopes them to .landing and .docs). This file adds what only the docs need:
+   code block colours for Shiki's css-variables theme, and line numbers.
+
+   Every token colour below is at least 4.5:1 against both code surfaces
+   (--code-bg and --code-header) in its theme.
+   ============================================================================ */
+
+.docs {
+  --code-bg: #f4f4f5;
+  --code-header: #ececee;
+
+  --shiki-background: var(--code-bg);
+  --shiki-foreground: #18181b;
+  --shiki-token-comment: #5c5c64;
+  --shiki-token-keyword: #7c2d92;
+  --shiki-token-string: #166430;
+  --shiki-token-string-expression: #166430;
+  --shiki-token-constant: #8f4500;
+  --shiki-token-function: #1e4fa8;
+  --shiki-token-parameter: #3f3f46;
+  --shiki-token-punctuation: #52525b;
+  --shiki-token-link: #1e4fa8;
+  --shiki-line-number: #5c5c64;
+}
+
+.dark .docs {
+  --code-bg: #121214;
+  --code-header: #1a1a1d;
+
+  --shiki-foreground: #ededef;
+  --shiki-token-comment: #8f8f98;
+  --shiki-token-keyword: #d8b4fe;
+  --shiki-token-string: #aef78e;
+  --shiki-token-string-expression: #aef78e;
+  --shiki-token-constant: #fbbf24;
+  --shiki-token-function: #93c5fd;
+  --shiki-token-parameter: #d4d4d8;
+  --shiki-token-punctuation: #a1a1aa;
+  --shiki-token-link: #93c5fd;
+  --shiki-line-number: #8f8f98;
+}
+
+/* Two-column tables fit the screen, breaking long words where they must.
+   Wider tables keep code whole (option names never break) and scroll inside
+   their box, which DocTable makes keyboard-focusable. */
+.docs-table td {
+  overflow-wrap: anywhere;
+}
+
+.docs-table-wide td,
+.docs-table-wide code {
+  overflow-wrap: normal;
+}
+
+.docs-table-wide td:first-child > code {
+  white-space: nowrap;
+}
+
+.docs-code pre.shiki {
+  margin: 0;
+  padding: 14px 16px;
+  overflow-x: auto;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  line-height: 1.7;
+  tab-size: 2;
+}
+
+.docs-code pre.shiki:focus-visible {
+  outline: 2px solid var(--signal);
+  outline-offset: -2px;
+}
+
+/* Line numbers are generated content: never copied, never in textContent */
+.docs-code[data-line-numbers] pre.shiki code {
+  counter-reset: line;
+}
+
+.docs-code[data-line-numbers] pre.shiki .line::before {
+  counter-increment: line;
+  content: counter(line);
+  display: inline-block;
+  width: 2ch;
+  margin-right: 1.25rem;
+  text-align: right;
+  color: var(--shiki-line-number);
+  user-select: none;
+}

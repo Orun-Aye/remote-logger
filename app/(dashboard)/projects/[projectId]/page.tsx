@@ -1429,7 +1429,7 @@ function SdkStatusCard({
         </div>
       </div>
       <Link
-        href="/docs/api/sdk"
+        href="/docs/sdk/configuration"
         className="font-mono text-[11.5px] uppercase tracking-[0.05em] text-signal"
       >
         SDK config →
