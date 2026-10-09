@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Apperio type specimen</title>
+<!-- Specimen only. The shipped page will self-host through next/font. -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,700;12..96,800&family=Martian+Mono:wght@400;500&display=block" rel="stylesheet">
+<style>
+  :root {
+    --d-bg: #0a0a0b; --d-surface: #121214; --d-raised: #1a1a1d; --d-line: #26262b;
+    --d-text: #ededef; --d-text-2: #a1a1aa; --d-text-3: #8a8a93;
+    --l-bg: #fafaf9; --l-surface: #ffffff; --l-raised: #f4f4f5; --l-line: #e4e4e7;
+    --l-text: #18181b; --l-text-2: #52525b; --l-text-3: #71717a;
+    --signal: #aef78e; --signal-ink: #1f7a3d; --danger-d: #f87171; --danger-l: #c53030;
+  }
+  * { box-sizing: border-box; margin: 0; }
+  body { background: #1d1d20; color: #ededef; font: 14px/1.5 system-ui, sans-serif; padding: 32px; width: 1440px; }
+  .pair { margin-bottom: 32px; }
+  .pair-label { display: flex; gap: 16px; align-items: baseline; margin: 0 0 12px 4px; font: 600 13px system-ui; letter-spacing: .02em; color: #d4d4d8; }
+  .pair-label span { font-weight: 400; color: #8a8a93; }
+  .grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); border-radius: 14px; overflow: hidden; border: 1px solid #2c2c31; }
+  .side { padding: 40px 44px 36px; }
+  .dark { background: var(--d-bg); color: var(--d-text); }
+  .light { background: var(--l-bg); color: var(--l-text); }
+  .eyebrow { display: flex; align-items: center; gap: 10px; margin-bottom: 22px; }
+  .pill { display: inline-flex; align-items: center; gap: 6px; padding: 3px 10px; border-radius: 999px; background: var(--signal); color: #0a0a0b; font-size: 11px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; }
+  .pill i { width: 6px; height: 6px; border-radius: 50%; background: #0a0a0b; }
+  .kicker { font-size: 12px; letter-spacing: .08em; text-transform: uppercase; }
+  .dark .kicker { color: var(--d-text-3); } .light .kicker { color: var(--l-text-3); }
+  h1 { font-size: 46px; line-height: 1.06; letter-spacing: -0.025em; font-weight: 700; margin-bottom: 18px; }
+  h1 .t { font-variant-numeric: tabular-nums; }
+  .dark h1 .bad { color: var(--danger-d); } .light h1 .bad { color: var(--danger-l); }
+  .dark h1 .ok { color: var(--signal); } .light h1 .ok { color: var(--signal-ink); }
+  p.body { font-size: 17px; line-height: 1.6; max-width: 34em; margin-bottom: 26px; }
+  .dark p.body { color: var(--d-text-2); } .light p.body { color: var(--l-text-2); }
+  .log { border-radius: 10px; padding: 14px 16px; font-size: 12.5px; line-height: 1.9; }
+  .dark .log { background: var(--d-surface); border: 1px solid var(--d-line); }
+  .light .log { background: var(--l-surface); border: 1px solid var(--l-line); }
+  .row { display: grid; grid-template-columns: 9.5ch 8ch 1fr; gap: 12px; white-space: nowrap; overflow: hidden; }
+  .dark .muted { color: var(--d-text-3); } .light .muted { color: var(--l-text-3); }
+  .dark .sha { color: var(--signal); } .light .sha { color: var(--signal-ink); }
+  .dark .err { color: var(--danger-d); } .light .err { color: var(--danger-l); }
+  .verdict { display: inline-block; padding: 0 7px; border-radius: 5px; background: var(--signal); color: #0a0a0b; font-weight: 500; }
+  .inline { margin-top: 18px; font-size: 15px; }
+  .dark .inline { color: var(--d-text-2); } .light .inline { color: var(--l-text-2); }
+  .inline code { font-size: .9em; padding: 1px 5px; border-radius: 4px; }
+  .dark .inline code { background: var(--d-raised); color: var(--d-text); } .light .inline code { background: var(--l-raised); color: var(--l-text); }
+
+  .a { font-family: "Instrument Sans", sans-serif; } .a .m, .a code { font-family: "JetBrains Mono", monospace; }
+  .b { font-family: "IBM Plex Sans", sans-serif; } .b .m, .b code { font-family: "IBM Plex Mono", monospace; }
+  .c { font-family: "Bricolage Grotesque", sans-serif; } .c .m, .c code { font-family: "Martian Mono", monospace; }
+  .c .log, .c .inline code { font-size: 11.5px; }
+
+  .palette { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .swatches { border-radius: 14px; border: 1px solid #2c2c31; padding: 20px 24px; display: flex; gap: 14px; flex-wrap: wrap; }
+  .sw { width: 112px; font: 11px/1.4 "JetBrains Mono", monospace; }
+  .sw b { display: block; height: 44px; border-radius: 8px; margin-bottom: 6px; border: 1px solid rgba(128,128,128,.25); }
+</style>
+</head>
+<body>
+
+<!-- The three pairings share one block of markup per theme -->
+<template id="specimen">
+  <div class="eyebrow"><span class="pill"><i></i>Live</span><span class="kicker">Private beta</span></div>
+  <h1>Your code shipped at <span class="t">14:02</span>.<br>It broke at <span class="t bad">14:11</span>.<br><span class="ok">Apperio already knows why.</span></h1>
+  <p class="body">Apperio watches every error, every deploy and every commit in between, then tells you in plain English which change caused the break and what to do about it. One npm install. Nothing to configure.</p>
+  <div class="log m">
+    <div class="row"><span class="muted">14:02:07</span><span class="sha">a7f3c21</span><span>fix: use cached user profile on checkout  <span class="muted">3 files +41 -12</span></span></div>
+    <div class="row"><span class="muted">14:09:52</span><span class="sha">v2.4.1</span><span>deployed to production  <span class="muted">github</span></span></div>
+    <div class="row"><span class="muted">14:11:38</span><span class="err">TypeErr</span><span class="err">Cannot read properties of undefined (reading 'email')</span></div>
+    <div class="row"><span class="muted">14:33:10</span><span class="sha">v2.4.2</span><span><span class="verdict">Improved</span>  error rate 4.10% to 0.00%  <span class="muted">LCP 1.2s</span></span></div>
+  </div>
+  <p class="inline">Likely caused by <code>a7f3c21</code>, which touched <code>checkout.js</code>, the top frame in the stack.</p>
+</template>
+
+<section class="pair">
+  <div class="pair-label">A. Instrument Sans + JetBrains Mono <span>default from the brief · neutral, slightly condensed, crisp at small sizes</span></div>
+  <div class="grid a"><div class="side dark" data-fill></div><div class="side light" data-fill></div></div>
+</section>
+
+<section class="pair">
+  <div class="pair-label">B. IBM Plex Sans + IBM Plex Mono <span>one superfamily · engineered, warmer, SHAs sit naturally inside sentences</span></div>
+  <div class="grid b"><div class="side dark" data-fill></div><div class="side light" data-fill></div></div>
+</section>
+
+<section class="pair">
+  <div class="pair-label">C. Bricolage Grotesque + Martian Mono <span>expressive · optical sizing for the headline, wide instrument-readout mono</span></div>
+  <div class="grid c"><div class="side dark" data-fill></div><div class="side light" data-fill></div></div>
+</section>
+
+<section class="pair">
+  <div class="pair-label">Palette proposal <span>neutral surfaces, one accent (lime fill in both themes, deep green for accent text on light)</span></div>
+  <div class="palette">
+    <div class="swatches dark" style="background:#0a0a0b">
+      <div class="sw"><b style="background:#0a0a0b"></b>bg #0a0a0b</div>
+      <div class="sw"><b style="background:#121214"></b>surface #121214</div>
+      <div class="sw"><b style="background:#1a1a1d"></b>raised #1a1a1d</div>
+      <div class="sw"><b style="background:#26262b"></b>line #26262b</div>
+      <div class="sw"><b style="background:#ededef"></b>text #ededef</div>
+      <div class="sw"><b style="background:#a1a1aa"></b>text-2 #a1a1aa</div>
+      <div class="sw"><b style="background:#aef78e"></b>signal #aef78e</div>
+      <div class="sw"><b style="background:#f87171"></b>danger #f87171</div>
+    </div>
+    <div class="swatches light" style="background:#fafaf9;color:#18181b">
+      <div class="sw"><b style="background:#fafaf9"></b>bg #fafaf9</div>
+      <div class="sw"><b style="background:#ffffff"></b>surface #ffffff</div>
+      <div class="sw"><b style="background:#f4f4f5"></b>raised #f4f4f5</div>
+      <div class="sw"><b style="background:#e4e4e7"></b>line #e4e4e7</div>
+      <div class="sw"><b style="background:#18181b"></b>text #18181b</div>
+      <div class="sw"><b style="background:#52525b"></b>text-2 #52525b</div>
+      <div class="sw"><b style="background:#aef78e"></b>signal fill #aef78e</div>
+      <div class="sw"><b style="background:#1f7a3d"></b>signal text #1f7a3d</div>
+    </div>
+  </div>
+</section>
+
+<script>
+  const tpl = document.getElementById("specimen");
+  document.querySelectorAll("[data-fill]").forEach((el) => el.appendChild(tpl.content.cloneNode(true)));
+</script>
+</body>
+</html>

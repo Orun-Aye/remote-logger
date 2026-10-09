@@ -50,7 +50,7 @@ function Hero() {
           <span className="block">
             It broke at{" "}
             <span className="tabular-nums text-status-danger">
-              {RUN.errorTime}
+              {RUN.brokeTime}
             </span>
             .
           </span>

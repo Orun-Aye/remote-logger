@@ -24,7 +24,7 @@ interface Step {
   shots: { name: string; caption: string }[];
 }
 
-const sinceCommit = minutesBetween(RUN.commitTime, RUN.errorTime);
+const sinceCommit = minutesBetween(RUN.commitTime, RUN.brokeTime);
 const totalMinutes = minutesBetween(RUN.commitTime, RUN.resolvedTime);
 
 const STEPS: Step[] = [
@@ -32,7 +32,7 @@ const STEPS: Step[] = [
     time: RUN.commitTime,
     tone: "neutral",
     actor: "You",
-    title: "You push to main and go make coffee.",
+    title: "You push a small fix and go make coffee.",
     body: "The GitHub App's push webhook delivers the commit to Apperio. The diff is read and the commit gets a plain-English summary, with the technical one underneath.",
     shots: [{ name: "commit-card", caption: "Change feed" }],
   },
@@ -45,7 +45,7 @@ const STEPS: Step[] = [
     shots: [{ name: "chart-deploy-markers", caption: "Errors chart" }],
   },
   {
-    time: RUN.errorTime,
+    time: RUN.brokeTime,
     tone: "danger",
     actor: "A customer",
     title: "Someone cannot pay you.",
@@ -64,10 +64,10 @@ const STEPS: Step[] = [
     time: RUN.errorTime,
     tone: "danger",
     actor: "Apperio",
-    // TODO(run): confirm the owner email arrived in production (needs Resend
-    // configured). If it did not, drop "and by email" from the body.
+    // In-app only: the demo account has no mailbox, so the owner email could
+    // not be verified in the run.
     title: "You are told, without having written an alert rule.",
-    body: "In-app and by email. Nobody configures a threshold for an error that has never existed before. A new kind of failure is worth interrupting you for, and that is the default.",
+    body: "In the app, as a new notification. Nobody configures a threshold for an error that has never existed before. A new kind of failure is worth interrupting you for, and that is the default.",
     shots: [{ name: "alert-in-app", caption: "Notifications" }],
   },
   {
@@ -137,7 +137,7 @@ export function IncidentTimeline() {
             eyebrow="Anatomy of an incident"
             headline={`${capitalise(inWords(totalMinutes))} minutes, start to finish.`}
             headlineAccent="You opened one page."
-            sub={`Not a highlight reel of separate features. One ${RUN.weekday} afternoon on a demo shop, in order, with nothing configured in advance.${anyShot ? " Every capture below comes from that run." : ""}`}
+            sub={`Not a highlight reel of separate features. One ${RUN.weekday} ${RUN.dayPart} on a demo shop, in order, with no alert rules set up.${anyShot ? " Every capture below comes from that run." : ""}`}
           />
         </div>
 

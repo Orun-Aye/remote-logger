@@ -91,7 +91,7 @@ export function ProductClip({ name, caption, className }: ProductClipProps) {
         <ThemedClip clip={clip.light} className="block dark:hidden" />
       </div>
       <figcaption className="mt-3 font-mono text-[11px] text-text-muted">
-        {caption ? `${caption} · ` : ""}Demo Shop · screen recording
+        {caption ? `${caption} · ` : ""}Demo shop · screen recording
         {clip.dark.capturedAt ? `, ${clip.dark.capturedAt.slice(0, 10)}` : ""}
       </figcaption>
     </figure>

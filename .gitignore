@@ -43,3 +43,6 @@ next-env.d.ts
 # crash dumps
 bash.exe.stackdump
 *.stackdump
+
+# Playwright login state for the screenshot pipeline
+.auth/

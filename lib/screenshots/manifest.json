@@ -1,1 +1,566 @@
-{ "generatedAt": null, "shots": [], "clips": [] }
+{
+  "generatedAt": "2026-10-09T00:50:03.730Z",
+  "shots": [
+    {
+      "name": "ai-root-cause",
+      "variant": "desktop",
+      "theme": "dark",
+      "src": "/screenshots/dark/ai-root-cause.webp",
+      "width": 1656,
+      "height": 1370,
+      "alt": "Root Cause Analysis on the TypeError's error page: the AI traces it to renderCheckoutSummary in checkout.js line 25, explains why it fails and suggests a fix, marked Claude AI with a confidence label",
+      "capturedAt": "2026-10-09T00:20:16.629Z"
+    },
+    {
+      "name": "ai-root-cause",
+      "variant": "desktop",
+      "theme": "light",
+      "src": "/screenshots/light/ai-root-cause.webp",
+      "width": 1656,
+      "height": 1370,
+      "alt": "Root Cause Analysis on the TypeError's error page: the AI traces it to renderCheckoutSummary in checkout.js line 25, explains why it fails and suggests a fix, marked Claude AI with a confidence label",
+      "capturedAt": "2026-10-09T00:20:16.629Z"
+    },
+    {
+      "name": "alert-in-app",
+      "variant": "desktop",
+      "theme": "dark",
+      "src": "/screenshots/dark/alert-in-app.webp",
+      "width": 818,
+      "height": 444,
+      "alt": "Apperio notifications with an unread alert: New error in Coffee Kit Shop: TypeError: Cannot read properties of undefined (reading 'email') (production)",
+      "capturedAt": "2026-10-09T00:49:56.468Z"
+    },
+    {
+      "name": "alert-in-app",
+      "variant": "desktop",
+      "theme": "light",
+      "src": "/screenshots/light/alert-in-app.webp",
+      "width": 818,
+      "height": 444,
+      "alt": "Apperio notifications with an unread alert: New error in Coffee Kit Shop: TypeError: Cannot read properties of undefined (reading 'email') (production)",
+      "capturedAt": "2026-10-09T00:50:06.836Z"
+    },
+    {
+      "name": "captured-error",
+      "variant": "desktop",
+      "theme": "dark",
+      "src": "/screenshots/dark/captured-error.webp",
+      "width": 1600,
+      "height": 776,
+      "alt": "The first captured TypeError in the log explorer: level, time and release v2.4.1, the message, and its stack trace through checkout.js",
+      "capturedAt": "2026-10-09T00:50:11.712Z"
+    },
+    {
+      "name": "captured-error",
+      "variant": "desktop",
+      "theme": "light",
+      "src": "/screenshots/light/captured-error.webp",
+      "width": 1600,
+      "height": 776,
+      "alt": "The first captured TypeError in the log explorer: level, time and release v2.4.1, the message, and its stack trace through checkout.js",
+      "capturedAt": "2026-10-09T00:50:23.341Z"
+    },
+    {
+      "name": "chart-deploy-markers",
+      "variant": "desktop",
+      "theme": "dark",
+      "src": "/screenshots/dark/chart-deploy-markers.webp",
+      "width": 1656,
+      "height": 812,
+      "alt": "Error Count Over Time chart for the demo shop with a marker for each of the three deploys, v2.4.0, v2.4.1 and v2.4.2, snapped to the chart's hourly buckets",
+      "capturedAt": "2026-10-09T00:17:53.378Z"
+    },
+    {
+      "name": "chart-deploy-markers",
+      "variant": "desktop",
+      "theme": "light",
+      "src": "/screenshots/light/chart-deploy-markers.webp",
+      "width": 1656,
+      "height": 812,
+      "alt": "Error Count Over Time chart for the demo shop with a marker for each of the three deploys, v2.4.0, v2.4.1 and v2.4.2, snapped to the chart's hourly buckets",
+      "capturedAt": "2026-10-09T00:18:02.003Z"
+    },
+    {
+      "name": "commit-card",
+      "variant": "desktop",
+      "theme": "dark",
+      "src": "/screenshots/dark/commit-card.webp",
+      "width": 1688,
+      "height": 358,
+      "alt": "Changes feed card for the checkout commit: a plain-English summary with the technical summary under it, the author, short SHA, files changed and Explain this change",
+      "capturedAt": "2026-10-08T22:47:01.674Z"
+    },
+    {
+      "name": "commit-card",
+      "variant": "desktop",
+      "theme": "light",
+      "src": "/screenshots/light/commit-card.webp",
+      "width": 1688,
+      "height": 358,
+      "alt": "Changes feed card for the checkout commit: a plain-English summary with the technical summary under it, the author, short SHA, files changed and Explain this change",
+      "capturedAt": "2026-10-08T22:47:09.186Z"
+    },
+    {
+      "name": "commit-card",
+      "variant": "mobile",
+      "theme": "dark",
+      "src": "/screenshots/dark/commit-card@mobile.webp",
+      "width": 620,
+      "height": 1170,
+      "alt": "Changes feed card for the checkout commit: a plain-English summary with the technical summary under it, the author, short SHA, files changed and Explain this change",
+      "capturedAt": "2026-10-08T22:47:18.215Z"
+    },
+    {
+      "name": "commit-card",
+      "variant": "mobile",
+      "theme": "light",
+      "src": "/screenshots/light/commit-card@mobile.webp",
+      "width": 620,
+      "height": 1170,
+      "alt": "Changes feed card for the checkout commit: a plain-English summary with the technical summary under it, the author, short SHA, files changed and Explain this change",
+      "capturedAt": "2026-10-08T22:47:26.186Z"
+    },
+    {
+      "name": "commit-explained",
+      "variant": "desktop",
+      "theme": "dark",
+      "src": "/screenshots/dark/commit-explained.webp",
+      "width": 1688,
+      "height": 1344,
+      "alt": "The checkout commit's card with Explain this change open: an AI explanation of what the code change does, written from the diff",
+      "capturedAt": "2026-10-08T22:47:34.626Z"
+    },
+    {
+      "name": "commit-explained",
+      "variant": "desktop",
+      "theme": "light",
+      "src": "/screenshots/light/commit-explained.webp",
+      "width": 1688,
+      "height": 1344,
+      "alt": "The checkout commit's card with Explain this change open: an AI explanation of what the code change does, written from the diff",
+      "capturedAt": "2026-10-08T22:47:43.083Z"
+    },
+    {
+      "name": "deploy-impact",
+      "variant": "desktop",
+      "theme": "dark",
+      "src": "/screenshots/dark/deploy-impact.webp",
+      "width": 818,
+      "height": 498,
+      "alt": "Deploy Impact card on the project overview: the v2.4.2 deploy rated Healthy, with its error rate in the hour before and the hour after",
+      "capturedAt": "2026-10-08T23:37:53.703Z"
+    },
+    {
+      "name": "deploy-impact",
+      "variant": "desktop",
+      "theme": "light",
+      "src": "/screenshots/light/deploy-impact.webp",
+      "width": 818,
+      "height": 498,
+      "alt": "Deploy Impact card on the project overview: the v2.4.2 deploy rated Healthy, with its error rate in the hour before and the hour after",
+      "capturedAt": "2026-10-08T23:38:07.854Z"
+    },
+    {
+      "name": "deploy-impact",
+      "variant": "mobile",
+      "theme": "dark",
+      "src": "/screenshots/dark/deploy-impact@mobile.webp",
+      "width": 748,
+      "height": 492,
+      "alt": "Deploy Impact card on the project overview: the v2.4.2 deploy rated Healthy, with its error rate in the hour before and the hour after",
+      "capturedAt": "2026-10-08T23:38:29.673Z"
+    },
+    {
+      "name": "deploy-impact",
+      "variant": "mobile",
+      "theme": "light",
+      "src": "/screenshots/light/deploy-impact@mobile.webp",
+      "width": 730,
+      "height": 524,
+      "alt": "Deploy Impact card on the project overview: the v2.4.2 deploy rated Healthy, with its error rate in the hour before and the hour after",
+      "capturedAt": "2026-10-08T23:38:49.297Z"
+    },
+    {
+      "name": "deploy-verdicts",
+      "variant": "desktop",
+      "theme": "dark",
+      "src": "/screenshots/dark/deploy-verdicts.webp",
+      "width": 1692,
+      "height": 548,
+      "alt": "Two deploy cards from the Changes feed: v2.4.2 rated Healthy and v2.4.1 rated Degraded, each with the change in error rate in the hour after the deploy",
+      "capturedAt": "2026-10-08T23:36:08.806Z"
+    },
+    {
+      "name": "deploy-verdicts",
+      "variant": "desktop",
+      "theme": "light",
+      "src": "/screenshots/light/deploy-verdicts.webp",
+      "width": 1692,
+      "height": 548,
+      "alt": "Two deploy cards from the Changes feed: v2.4.2 rated Healthy and v2.4.1 rated Degraded, each with the change in error rate in the hour after the deploy",
+      "capturedAt": "2026-10-08T23:36:51.103Z"
+    },
+    {
+      "name": "deploy-verdicts",
+      "variant": "mobile",
+      "theme": "dark",
+      "src": "/screenshots/dark/deploy-verdicts@mobile.webp",
+      "width": 748,
+      "height": 548,
+      "alt": "Two deploy cards from the Changes feed: v2.4.2 rated Healthy and v2.4.1 rated Degraded, each with the change in error rate in the hour after the deploy",
+      "capturedAt": "2026-10-08T23:37:20.632Z"
+    },
+    {
+      "name": "deploy-verdicts",
+      "variant": "mobile",
+      "theme": "light",
+      "src": "/screenshots/light/deploy-verdicts@mobile.webp",
+      "width": 748,
+      "height": 548,
+      "alt": "Two deploy cards from the Changes feed: v2.4.2 rated Healthy and v2.4.1 rated Degraded, each with the change in error rate in the hour after the deploy",
+      "capturedAt": "2026-10-08T23:37:39.345Z"
+    },
+    {
+      "name": "error-group-header",
+      "variant": "desktop",
+      "theme": "dark",
+      "src": "/screenshots/dark/error-group-header.webp",
+      "width": 1500,
+      "height": 378,
+      "alt": "Error group header: TypeError: Cannot read properties of undefined (reading 'email'), first seen on v2.4.1, with its occurrences, sessions affected and last seen",
+      "capturedAt": "2026-10-08T22:34:05.783Z"
+    },
+    {
+      "name": "error-group-header",
+      "variant": "desktop",
+      "theme": "light",
+      "src": "/screenshots/light/error-group-header.webp",
+      "width": 1500,
+      "height": 378,
+      "alt": "Error group header: TypeError: Cannot read properties of undefined (reading 'email'), first seen on v2.4.1, with its occurrences, sessions affected and last seen",
+      "capturedAt": "2026-10-08T22:34:05.783Z"
+    },
+    {
+      "name": "github-app-card",
+      "variant": "desktop",
+      "theme": "dark",
+      "src": "/screenshots/dark/github-app-card.webp",
+      "width": 910,
+      "height": 736,
+      "alt": "GitHub App card in the project's integrations: connected via the Apperio GitHub App, with the demo shop repository covered",
+      "capturedAt": "2026-10-08T21:22:09.753Z"
+    },
+    {
+      "name": "github-app-card",
+      "variant": "desktop",
+      "theme": "light",
+      "src": "/screenshots/light/github-app-card.webp",
+      "width": 910,
+      "height": 736,
+      "alt": "GitHub App card in the project's integrations: connected via the Apperio GitHub App, with the demo shop repository covered",
+      "capturedAt": "2026-10-08T21:22:09.753Z"
+    },
+    {
+      "name": "github-app-card",
+      "variant": "mobile",
+      "theme": "dark",
+      "src": "/screenshots/dark/github-app-card@mobile.webp",
+      "width": 690,
+      "height": 952,
+      "alt": "GitHub App card in the project's integrations: connected via the Apperio GitHub App, with the demo shop repository covered",
+      "capturedAt": "2026-10-08T21:22:35.421Z"
+    },
+    {
+      "name": "github-app-card",
+      "variant": "mobile",
+      "theme": "light",
+      "src": "/screenshots/light/github-app-card@mobile.webp",
+      "width": 690,
+      "height": 952,
+      "alt": "GitHub App card in the project's integrations: connected via the Apperio GitHub App, with the demo shop repository covered",
+      "capturedAt": "2026-10-08T21:22:35.421Z"
+    },
+    {
+      "name": "github-issue",
+      "variant": "desktop",
+      "theme": "dark",
+      "src": "/screenshots/dark/github-issue.webp",
+      "width": 1920,
+      "height": 1120,
+      "alt": "The GitHub issue Apperio opened in the demo shop's public repository, written from the error's stack trace, impact and suspect commit",
+      "capturedAt": "2026-10-08T22:24:48.579Z"
+    },
+    {
+      "name": "github-issue",
+      "variant": "desktop",
+      "theme": "light",
+      "src": "/screenshots/light/github-issue.webp",
+      "width": 1920,
+      "height": 1120,
+      "alt": "The GitHub issue Apperio opened in the demo shop's public repository, written from the error's stack trace, impact and suspect commit",
+      "capturedAt": "2026-10-08T22:24:48.579Z"
+    },
+    {
+      "name": "issue-draft",
+      "variant": "desktop",
+      "theme": "dark",
+      "src": "/screenshots/dark/issue-draft.webp",
+      "width": 1344,
+      "height": 1532,
+      "alt": "Create GitHub issue dialog with the AI draft: a title and a markdown body written from the stack trace, impact data and suspect commits, ready to review",
+      "capturedAt": "2026-10-08T22:14:08.726Z"
+    },
+    {
+      "name": "issue-draft",
+      "variant": "desktop",
+      "theme": "light",
+      "src": "/screenshots/light/issue-draft.webp",
+      "width": 1344,
+      "height": 1532,
+      "alt": "Create GitHub issue dialog with the AI draft: a title and a markdown body written from the stack trace, impact data and suspect commits, ready to review",
+      "capturedAt": "2026-10-08T22:14:08.726Z"
+    },
+    {
+      "name": "issue-draft",
+      "variant": "mobile",
+      "theme": "dark",
+      "src": "/screenshots/dark/issue-draft@mobile.webp",
+      "width": 780,
+      "height": 1436,
+      "alt": "The AI-drafted GitHub issue on a phone: its title and the first lines of the markdown body",
+      "capturedAt": "2026-10-08T22:14:08.726Z"
+    },
+    {
+      "name": "issue-draft",
+      "variant": "mobile",
+      "theme": "light",
+      "src": "/screenshots/light/issue-draft@mobile.webp",
+      "width": 780,
+      "height": 1436,
+      "alt": "The AI-drafted GitHub issue on a phone: its title and the first lines of the markdown body",
+      "capturedAt": "2026-10-08T22:14:08.726Z"
+    },
+    {
+      "name": "latest-changes",
+      "variant": "desktop",
+      "theme": "dark",
+      "src": "/screenshots/dark/latest-changes.webp",
+      "width": 980,
+      "height": 498,
+      "alt": "Latest Changes card on the project overview: the newest commits and deploys, each commit summarised in plain English",
+      "capturedAt": "2026-10-08T23:39:28.082Z"
+    },
+    {
+      "name": "latest-changes",
+      "variant": "desktop",
+      "theme": "light",
+      "src": "/screenshots/light/latest-changes.webp",
+      "width": 980,
+      "height": 498,
+      "alt": "Latest Changes card on the project overview: the newest commits and deploys, each commit summarised in plain English",
+      "capturedAt": "2026-10-08T23:39:53.660Z"
+    },
+    {
+      "name": "latest-changes",
+      "variant": "mobile",
+      "theme": "dark",
+      "src": "/screenshots/dark/latest-changes@mobile.webp",
+      "width": 900,
+      "height": 498,
+      "alt": "Latest Changes card on the project overview: the newest commits and deploys, each commit summarised in plain English",
+      "capturedAt": "2026-10-08T23:40:24.501Z"
+    },
+    {
+      "name": "latest-changes",
+      "variant": "mobile",
+      "theme": "light",
+      "src": "/screenshots/light/latest-changes@mobile.webp",
+      "width": 900,
+      "height": 498,
+      "alt": "Latest Changes card on the project overview: the newest commits and deploys, each commit summarised in plain English",
+      "capturedAt": "2026-10-08T23:40:39.656Z"
+    },
+    {
+      "name": "pii-redacted-log",
+      "variant": "desktop",
+      "theme": "dark",
+      "src": "/screenshots/dark/pii-redacted-log.webp",
+      "width": 942,
+      "height": 336,
+      "alt": "A Checkout submitted log entry's custom data: the shopper's email and card number arrive already masked by the SDK in the browser",
+      "capturedAt": "2026-10-08T21:08:22.764Z"
+    },
+    {
+      "name": "pii-redacted-log",
+      "variant": "desktop",
+      "theme": "light",
+      "src": "/screenshots/light/pii-redacted-log.webp",
+      "width": 942,
+      "height": 336,
+      "alt": "A Checkout submitted log entry's custom data: the shopper's email and card number arrive already masked by the SDK in the browser",
+      "capturedAt": "2026-10-08T21:08:22.764Z"
+    },
+    {
+      "name": "pii-redacted-log",
+      "variant": "mobile",
+      "theme": "dark",
+      "src": "/screenshots/dark/pii-redacted-log@mobile.webp",
+      "width": 928,
+      "height": 336,
+      "alt": "A Checkout submitted log entry's custom data: the shopper's email and card number arrive already masked by the SDK in the browser",
+      "capturedAt": "2026-10-08T21:09:04.710Z"
+    },
+    {
+      "name": "pii-redacted-log",
+      "variant": "mobile",
+      "theme": "light",
+      "src": "/screenshots/light/pii-redacted-log@mobile.webp",
+      "width": 928,
+      "height": 336,
+      "alt": "A Checkout submitted log entry's custom data: the shopper's email and card number arrive already masked by the SDK in the browser",
+      "capturedAt": "2026-10-08T21:09:04.710Z"
+    },
+    {
+      "name": "resolved-via-github",
+      "variant": "desktop",
+      "theme": "dark",
+      "src": "/screenshots/dark/resolved-via-github.webp",
+      "width": 1684,
+      "height": 144,
+      "alt": "The TypeError's row in Issues, Resolved tab: Resolved via GitHub, with the linked GitHub issue shown as closed",
+      "capturedAt": "2026-10-08T22:54:18.149Z"
+    },
+    {
+      "name": "resolved-via-github",
+      "variant": "desktop",
+      "theme": "light",
+      "src": "/screenshots/light/resolved-via-github.webp",
+      "width": 1684,
+      "height": 144,
+      "alt": "The TypeError's row in Issues, Resolved tab: Resolved via GitHub, with the linked GitHub issue shown as closed",
+      "capturedAt": "2026-10-08T22:54:31.327Z"
+    },
+    {
+      "name": "resolved-via-github",
+      "variant": "mobile",
+      "theme": "dark",
+      "src": "/screenshots/dark/resolved-via-github@mobile.webp",
+      "width": 726,
+      "height": 340,
+      "alt": "The TypeError's row in Issues, Resolved tab: Resolved via GitHub, with the linked GitHub issue shown as closed",
+      "capturedAt": "2026-10-08T22:54:40.580Z"
+    },
+    {
+      "name": "resolved-via-github",
+      "variant": "mobile",
+      "theme": "light",
+      "src": "/screenshots/light/resolved-via-github@mobile.webp",
+      "width": 726,
+      "height": 340,
+      "alt": "The TypeError's row in Issues, Resolved tab: Resolved via GitHub, with the linked GitHub issue shown as closed",
+      "capturedAt": "2026-10-08T22:54:49.231Z"
+    },
+    {
+      "name": "session-replay",
+      "variant": "desktop",
+      "theme": "dark",
+      "src": "/screenshots/dark/session-replay.webp",
+      "width": 1788,
+      "height": 1370,
+      "alt": "Session replay (beta) of a shopper who hit the TypeError: the checkout page as recorded, with the player noting that the error came just before the recording began",
+      "capturedAt": "2026-10-09T00:21:59.921Z"
+    },
+    {
+      "name": "session-replay",
+      "variant": "desktop",
+      "theme": "light",
+      "src": "/screenshots/light/session-replay.webp",
+      "width": 1788,
+      "height": 1370,
+      "alt": "Session replay (beta) of a shopper who hit the TypeError: the checkout page as recorded, with the player noting that the error came just before the recording began",
+      "capturedAt": "2026-10-09T00:22:13.883Z"
+    },
+    {
+      "name": "suspect-commit",
+      "variant": "desktop",
+      "theme": "dark",
+      "src": "/screenshots/dark/suspect-commit.webp",
+      "width": 1536,
+      "height": 1400,
+      "alt": "Apperio issue dialog for TypeError: Cannot read properties of undefined (reading 'email'), first seen on v2.4.1, with occurrences and sessions affected, and Likely caused by naming the commit fix: use cached user profile on checkout",
+      "capturedAt": "2026-10-08T22:33:19.193Z"
+    },
+    {
+      "name": "suspect-commit",
+      "variant": "desktop",
+      "theme": "light",
+      "src": "/screenshots/light/suspect-commit.webp",
+      "width": 1536,
+      "height": 1400,
+      "alt": "Apperio issue dialog for TypeError: Cannot read properties of undefined (reading 'email'), first seen on v2.4.1, with occurrences and sessions affected, and Likely caused by naming the commit fix: use cached user profile on checkout",
+      "capturedAt": "2026-10-08T22:33:19.193Z"
+    },
+    {
+      "name": "suspect-commit",
+      "variant": "mobile",
+      "theme": "dark",
+      "src": "/screenshots/dark/suspect-commit@mobile.webp",
+      "width": 940,
+      "height": 668,
+      "alt": "Likely caused by: the commit fix: use cached user profile on checkout, with its SHA and the AI's one-sentence reason",
+      "capturedAt": "2026-10-08T22:46:43.662Z"
+    },
+    {
+      "name": "suspect-commit",
+      "variant": "mobile",
+      "theme": "light",
+      "src": "/screenshots/light/suspect-commit@mobile.webp",
+      "width": 940,
+      "height": 668,
+      "alt": "Likely caused by: the commit fix: use cached user profile on checkout, with its SHA and the AI's one-sentence reason",
+      "capturedAt": "2026-10-08T22:46:52.846Z"
+    },
+    {
+      "name": "web-vitals",
+      "variant": "desktop",
+      "theme": "dark",
+      "src": "/screenshots/dark/web-vitals.webp",
+      "width": 1620,
+      "height": 516,
+      "alt": "Core Web Vitals gauges for the shop, measured in visitors' browsers: Largest Contentful Paint, Interaction to Next Paint and Cumulative Layout Shift, each with its rating",
+      "capturedAt": "2026-10-08T21:07:18.596Z"
+    },
+    {
+      "name": "web-vitals",
+      "variant": "desktop",
+      "theme": "light",
+      "src": "/screenshots/light/web-vitals.webp",
+      "width": 1620,
+      "height": 516,
+      "alt": "Core Web Vitals gauges for the shop, measured in visitors' browsers: Largest Contentful Paint, Interaction to Next Paint and Cumulative Layout Shift, each with its rating",
+      "capturedAt": "2026-10-08T21:07:18.596Z"
+    },
+    {
+      "name": "web-vitals",
+      "variant": "mobile",
+      "theme": "dark",
+      "src": "/screenshots/dark/web-vitals@mobile.webp",
+      "width": 1412,
+      "height": 1644,
+      "alt": "Core Web Vitals gauges for the shop, measured in visitors' browsers: Largest Contentful Paint, Interaction to Next Paint and Cumulative Layout Shift, each with its rating",
+      "capturedAt": "2026-10-08T21:19:25.222Z"
+    },
+    {
+      "name": "web-vitals",
+      "variant": "mobile",
+      "theme": "light",
+      "src": "/screenshots/light/web-vitals@mobile.webp",
+      "width": 1412,
+      "height": 1644,
+      "alt": "Core Web Vitals gauges for the shop, measured in visitors' browsers: Largest Contentful Paint, Interaction to Next Paint and Cumulative Layout Shift, each with its rating",
+      "capturedAt": "2026-10-08T21:19:25.222Z"
+    }
+  ],
+  "clips": []
+}

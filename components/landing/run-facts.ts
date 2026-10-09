@@ -2,32 +2,35 @@
  * Facts from the Demo Shop run that the landing copy quotes: the hero
  * headline, the incident timeline and the hero "last shipped" line.
  *
- * TODO(run): every value below is the PLANNED value. The screenshot session
- * must replace each one with what the real captures show (times from the
- * commit, deploy and error rows, the SHA from the suspect card), then delete
- * this TODO. Durations and the "nine minutes ago" style phrases are computed
- * from the times, so only the times need editing.
+ * All from the run on Thursday 2026-10-08 (Africa/Lagos, UTC+1), project
+ * "Coffee Kit Shop", repo Orun-Aye/apperio-demo-shop on branch demo-3, read
+ * back from the API and the captures. Durations and the "eleven minutes
+ * before" style phrases are computed from these times.
  */
 export const RUN = {
-  /** Day of the run, for "one Thursday afternoon". TODO(run) */
+  /** Day of the run, for "one Thursday night". */
   weekday: "Thursday",
-  /** Local time the bad commit was pushed. TODO(run) */
-  commitTime: "14:02",
-  /** Local time the bad release's deploy was recorded. TODO(run): the scheduler deploys at 14:08, so the recorded time may be 14:08 or 14:09. */
-  deployTime: "14:09",
-  /** First TypeError captured. TODO(run) */
-  errorTime: "14:11",
-  /** Group opened, suspects computed. TODO(run) */
-  suspectTime: "14:12",
-  /** GitHub issue created from the draft. TODO(run) */
-  issueTime: "14:13",
-  /** Issue closed on GitHub, group resolved. TODO(run): fix deploy at 14:32, close at 14:35. */
-  resolvedTime: "14:33",
-  /** Release that introduced the bug. TODO(run) */
+  /** Part of the day the bad commit went out, for the same line. */
+  dayPart: "night",
+  /** Bad commit f01bc1d pushed (committed 23:02:04, webhook in at 23:02:12). */
+  commitTime: "23:02",
+  /** v2.4.1 deploy recorded through the deploy API at 23:08:41. */
+  deployTime: "23:08",
+  /** The first shopper's browser threw the TypeError at 23:12:59 (the SDK's timestamp on the captured error). */
+  brokeTime: "23:12",
+  /** Apperio ingested and grouped that error at 23:13:05, and notified the owner. */
+  errorTime: "23:13",
+  /** Group opened at 23:13:24, suspects computed at 23:13:34. */
+  suspectTime: "23:13",
+  /** GitHub issue #1 created from the AI draft at 23:14:16. */
+  issueTime: "23:14",
+  /** Issue #1 closed on GitHub at 23:42:45, group resolved via GitHub at 23:42:47. */
+  resolvedTime: "23:42",
+  /** Release that introduced the bug. */
   badRelease: "v2.4.1",
-  /** Release that fixed it. TODO(run) */
+  /** Release that fixed it (deployed 23:32:30). */
   fixRelease: "v2.4.2",
-  /** File named in the top stack frame and touched by the bad commit. TODO(run) */
+  /** File named in the top stack frame and touched by the bad commit. */
   stackFile: "checkout.js",
 } as const;
 

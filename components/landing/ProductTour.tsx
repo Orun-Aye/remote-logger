@@ -30,7 +30,7 @@ const TABS: Tab[] = [
       "The top candidate shows as Likely caused by: the commit message, a link to the commit, and one sentence on why.",
     ],
     shots: [
-      { name: "error-group-header", caption: "Error group" },
+      // The suspect-commit capture already shows the group header above the suspects
       { name: "suspect-commit", caption: "Likely caused by" },
     ],
   },
@@ -54,11 +54,11 @@ const TABS: Tab[] = [
     beta: true,
     title: "Watch the session that broke.",
     points: [
-      "Watch replay on an error group opens the recording of a session that hit it, with the clicks, scrolls and route changes that led there.",
+      "Watch replay on an error group opens the recording of a session that hit it, so you see the page the visitor saw and what they did on it.",
       "Every input is masked in the browser by default, before anything is sent.",
       "Off until you switch it on, per project, with a sample rate you choose. Recordings are kept for seven days.",
     ],
-    shots: [{ name: "session-replay", caption: "Session replay" }],
+    shots: [{ name: "session-replay", caption: "Session replay (beta)" }],
   },
 ];
 

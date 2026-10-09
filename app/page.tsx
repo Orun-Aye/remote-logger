@@ -22,12 +22,11 @@ export const metadata: Metadata = {
     title: TITLE,
     description: DESCRIPTION,
     locale: "en_GB",
-    // TODO(run): add `images` from a real capture (suspect-commit, 1200x630)
-    // once the screenshot run has produced it, or add app/opengraph-image.png.
+    // The image is app/opengraph-image.png: a crop of the real suspect-commit
+    // capture from the demo shop run (alt text in opengraph-image.alt.txt)
   },
   twitter: {
-    // TODO(run): switch to "summary_large_image" when the OG image exists.
-    card: "summary",
+    card: "summary_large_image",
     title: TITLE,
     description: DESCRIPTION,
   },

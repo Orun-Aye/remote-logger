@@ -125,7 +125,7 @@ function Placeholder({ name, className }: { name: string; className?: string }) 
         </div>
       </div>
       <figcaption className="mt-3 font-mono text-[11px] text-text-muted">
-        Demo Shop · capture pending
+        Demo shop · capture pending
       </figcaption>
     </figure>
   );
@@ -169,7 +169,7 @@ export function ProductShot({
     </>
   );
 
-  const provenance = `Demo Shop · captured ${captureDate(shot.dark)}`;
+  const provenance = `Demo shop · captured ${captureDate(shot.dark)}`;
 
   return (
     <figure

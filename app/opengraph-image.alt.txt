@@ -1,0 +1,1 @@
+Apperio issue dialog from the demo shop run: TypeError: Cannot read properties of undefined (reading 'email'), first seen on v2.4.1, with Likely caused by naming the commit fix: use cached user profile on checkout
