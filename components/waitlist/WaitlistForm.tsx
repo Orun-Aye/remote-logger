@@ -12,7 +12,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
-import { ArrowRight, Check, CircleAlert, Copy, PartyPopper } from "lucide-react";
+import { ArrowRight, CircleAlert, PartyPopper } from "lucide-react";
 
 // ─── Shared signup state ─────────────────────────────────────────────────────
 // Two forms appear on the page (hero and closing CTA). They
@@ -22,7 +22,6 @@ interface SignupState {
   loading: boolean;
   submitted: boolean;
   position: number | null;
-  referralCode: string | null;
   error: string | null;
   submit: (email: string) => Promise<void>;
 }
@@ -33,7 +32,6 @@ export function WaitlistSignupProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [position, setPosition] = useState<number | null>(null);
-  const [referralCode, setReferralCode] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   const submit = useCallback(async (email: string) => {
@@ -53,7 +51,6 @@ export function WaitlistSignupProvider({ children }: { children: ReactNode }) {
       }
 
       setPosition(typeof data.position === "number" ? data.position : null);
-      setReferralCode(data.referralCode ?? null);
       setSubmitted(true);
     } catch {
       setError("Could not reach the server. Check your connection and retry.");
@@ -63,8 +60,8 @@ export function WaitlistSignupProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const value = useMemo(
-    () => ({ loading, submitted, position, referralCode, error, submit }),
-    [loading, submitted, position, referralCode, error, submit]
+    () => ({ loading, submitted, position, error, submit }),
+    [loading, submitted, position, error, submit]
   );
 
   return (
@@ -78,47 +75,6 @@ export function useWaitlistSignup() {
     throw new Error("useWaitlistSignup must be used inside WaitlistSignupProvider");
   }
   return ctx;
-}
-
-// ─── Referral share row (success state) ──────────────────────────────────────
-
-function ReferralRow({ code }: { code: string }) {
-  const [copied, setCopied] = useState(false);
-  const link = `https://www.apperio.dev/?ref=${code}`;
-
-  const copy = () => {
-    navigator.clipboard.writeText(link).then(() => {
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    });
-  };
-
-  return (
-    <button
-      type="button"
-      onClick={copy}
-      className="group flex items-center gap-2 w-full max-w-md rounded-lg border border-border-subtle bg-bg-void/60 px-3 py-2.5 text-left transition-colors duration-150 hover:border-signal/40"
-    >
-      <span className="flex-1 truncate font-mono text-[11px] text-text-muted">
-        {link}
-      </span>
-      {copied ? (
-        <>
-          <Check className="w-3.5 h-3.5 text-signal shrink-0" />
-          <span className="text-[11px] font-semibold text-signal shrink-0">
-            Copied
-          </span>
-        </>
-      ) : (
-        <>
-          <Copy className="w-3.5 h-3.5 text-text-muted shrink-0 group-hover:text-text-secondary" />
-          <span className="text-[11px] text-text-muted shrink-0 group-hover:text-text-secondary">
-            Copy invite link
-          </span>
-        </>
-      )}
-    </button>
-  );
 }
 
 // ─── Form ────────────────────────────────────────────────────────────────────
@@ -136,8 +92,7 @@ export function WaitlistForm({
   cta = "Request early access",
   className,
 }: WaitlistFormProps) {
-  const { loading, submitted, position, referralCode, error, submit } =
-    useWaitlistSignup();
+  const { loading, submitted, position, error, submit } = useWaitlistSignup();
   const [email, setEmail] = useState("");
   // Three forms share the page, so ids must be unique per instance.
   const uid = useId();
@@ -180,19 +135,6 @@ export function WaitlistForm({
             )}
           </p>
         </div>
-        {referralCode && (
-          <>
-            <ReferralRow code={referralCode} />
-            <p
-              className={cn(
-                "text-xs text-text-muted max-w-md",
-                align === "center" && "text-center"
-              )}
-            >
-              Every builder who joins through your link moves you up the queue.
-            </p>
-          </>
-        )}
       </div>
     );
   }

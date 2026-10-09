@@ -41,7 +41,7 @@ const FAQS = [
   },
   {
     q: "When do I actually get in?",
-    a: "Invites go out in batches in waitlist order as capacity allows. You get an email with a code that unlocks signup. Sharing your invite link moves you up the queue when someone joins through it.",
+    a: "Invites go out in batches in waitlist order as capacity allows. You get an email with a code that unlocks signup.",
   },
 ];
 

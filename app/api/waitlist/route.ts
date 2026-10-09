@@ -35,7 +35,6 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       status: "success",
       position: data.position,
-      referralCode: data.referralCode,
       message: data.message,
     });
   } catch {
