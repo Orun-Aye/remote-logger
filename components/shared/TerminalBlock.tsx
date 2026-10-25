@@ -39,9 +39,9 @@ export function TerminalBlock({
       <div className="flex items-center justify-between h-10 px-4 bg-bg-surface border-b border-border-faint">
         <div className="flex items-center gap-2">
           {/* Traffic lights */}
-          <span className="w-3 h-3 rounded-full bg-[#ff5f57]" />
-          <span className="w-3 h-3 rounded-full bg-[#ffbd2e]" />
-          <span className="w-3 h-3 rounded-full bg-[#28c840]" />
+          <span className="w-3 h-3 rounded-full bg-gs-300" />
+          <span className="w-3 h-3 rounded-full bg-gs-300" />
+          <span className="w-3 h-3 rounded-full bg-gs-300" />
           {filename && (
             <span className="ml-3 text-xs text-text-muted font-code">
               {filename}

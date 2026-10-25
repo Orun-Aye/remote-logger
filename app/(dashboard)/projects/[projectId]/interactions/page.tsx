@@ -69,7 +69,7 @@ export default function InteractionsPage() {
 
   if (ovLoading) {
     return (
-      <div className="p-6 bg-bg-base min-h-full">
+      <div className="bg-bg-base min-h-full">
         <PageHeader title="User Interactions" description="Click, scroll, and keypress analytics" />
         <SkeletonDashboard />
       </div>
@@ -77,7 +77,7 @@ export default function InteractionsPage() {
   }
 
   return (
-    <div className="p-6 bg-bg-base min-h-full space-y-6">
+    <div className="bg-bg-base min-h-full space-y-6">
       <PageHeader title="User Interactions" description="Click, scroll, and keypress analytics" />
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">

@@ -50,7 +50,7 @@ function statusBadge(status: WaitlistStatus) {
   switch (status) {
     case "pending":
       return (
-        <Badge className="bg-amber-500/15 text-amber-400 border-amber-500/30">
+        <Badge className="bg-status-warn/10 text-status-warn border-transparent">
           <Clock className="w-3 h-3 mr-1" />
           Pending
         </Badge>
@@ -64,7 +64,7 @@ function statusBadge(status: WaitlistStatus) {
       );
     case "rejected":
       return (
-        <Badge className="bg-red-500/15 text-red-400 border-red-500/30">
+        <Badge className="bg-status-danger/10 text-status-danger border-transparent">
           <X className="w-3 h-3 mr-1" />
           Rejected
         </Badge>
@@ -345,7 +345,7 @@ export default function AdminWaitlistPage() {
                             {formatDate(entry.invitedAt)}
                           </span>
                         ) : entry.status === "approved" ? (
-                          <span className="text-amber-400">Not sent</span>
+                          <span className="text-status-warn">Not sent</span>
                         ) : (
                           "--"
                         )}
@@ -389,7 +389,7 @@ export default function AdminWaitlistPage() {
                               <Button
                                 variant="ghost"
                                 size="sm"
-                                className="h-8 px-2 text-text-muted hover:text-red-400"
+                                className="h-8 px-2 text-text-muted hover:text-status-danger"
                                 onClick={() => handleReject(entry._id)}
                                 disabled={rejectEntry.isPending}
                                 title="Reject"

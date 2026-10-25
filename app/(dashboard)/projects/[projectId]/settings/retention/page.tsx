@@ -141,7 +141,7 @@ export default function RetentionSettingsPage() {
               max={3650}
               value={retentionDays}
               onChange={(e) => setRetentionDays(Number(e.target.value))}
-              className="bg-bg-elevated border-border-subtle text-text-primary focus:border-signal focus:ring-signal/20 font-mono w-40"
+              className="bg-background border-input text-text-primary focus:border-gs-900 focus:ring-0 font-mono w-40"
             />
           </div>
 

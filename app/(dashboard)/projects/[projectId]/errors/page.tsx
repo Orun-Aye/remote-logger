@@ -178,12 +178,12 @@ function TopErrorsTable({
             {/* Status */}
             <div>
               {error.status === "resolved" ? (
-                <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-status-ok/10 text-status-ok text-xs">
+                <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-sm bg-status-ok/10 text-status-ok text-xs">
                   <SignalDot status="ok" size="sm" pulse={false} />
                   Resolved
                 </span>
               ) : (
-                <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-status-danger/10 text-status-danger text-xs">
+                <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-sm bg-status-danger/10 text-status-danger text-xs">
                   <SignalDot status="danger" size="sm" />
                   Active
                 </span>
@@ -366,7 +366,7 @@ export default function ErrorAnalyticsPage() {
 
   if (isCriticalLoading) {
     return (
-      <div className="p-6 bg-bg-base min-h-full">
+      <div className="bg-bg-base min-h-full">
         <PageHeader
           title="Error Analytics"
           description="Error trends and distribution"
@@ -377,7 +377,7 @@ export default function ErrorAnalyticsPage() {
   }
 
   return (
-    <div className="p-6 bg-bg-base min-h-full space-y-6">
+    <div className="bg-bg-base min-h-full space-y-6">
       {/* Header */}
       <PageHeader
         title="Error Analytics"

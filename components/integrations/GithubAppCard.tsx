@@ -265,7 +265,7 @@ function InstallationRow({
           href={installation.manageUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className="flex shrink-0 items-center gap-1 text-xs text-signal hover:underline"
+          className="flex shrink-0 items-center gap-1 text-xs text-text-primary underline underline-offset-4 decoration-border-accent hover:decoration-current"
         >
           Manage
           <ExternalLink className="h-3 w-3" />

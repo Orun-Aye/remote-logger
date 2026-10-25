@@ -120,7 +120,7 @@ export default function RateLimitSettingsPage() {
                 max={10000}
                 value={effectiveMaxRequests}
                 onChange={(e) => setMaxRequests(Number(e.target.value))}
-                className="bg-bg-elevated border-border-subtle text-text-primary focus:border-signal focus:ring-signal/20 font-mono"
+                className="bg-background border-input text-text-primary focus:border-gs-900 focus:ring-0 font-mono"
               />
               <p className="text-xs text-text-muted">
                 Default: 100 requests/min
@@ -134,7 +134,7 @@ export default function RateLimitSettingsPage() {
                 max={10000}
                 value={effectiveBurstLimit}
                 onChange={(e) => setBurstLimit(Number(e.target.value))}
-                className="bg-bg-elevated border-border-subtle text-text-primary focus:border-signal focus:ring-signal/20 font-mono"
+                className="bg-background border-input text-text-primary focus:border-gs-900 focus:ring-0 font-mono"
               />
               <p className="text-xs text-text-muted">
                 Maximum burst before throttling

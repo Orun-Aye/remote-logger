@@ -142,7 +142,7 @@ function GeneralForm({ project }: { project: any }) {
             value={name}
             onChange={(e) => setName(e.target.value)}
             placeholder="My Project"
-            className="bg-bg-elevated border-border-subtle text-text-primary placeholder:text-text-muted focus:border-signal focus:ring-signal/20"
+            className="bg-background border-input text-text-primary placeholder:text-text-muted focus:border-gs-900 focus:ring-0"
           />
         </div>
 
@@ -156,7 +156,7 @@ function GeneralForm({ project }: { project: any }) {
             onChange={(e) => setDescription(e.target.value)}
             placeholder="Describe what this project monitors..."
             rows={3}
-            className="bg-bg-elevated border-border-subtle text-text-primary placeholder:text-text-muted focus:border-signal focus:ring-signal/20"
+            className="bg-background border-input text-text-primary placeholder:text-text-muted focus:border-gs-900 focus:ring-0"
           />
         </div>
 

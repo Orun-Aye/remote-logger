@@ -27,10 +27,10 @@ export default function AdminLayout({
   const pathname = usePathname();
 
   return (
-    <div className="flex min-h-[calc(100vh-4rem)]">
+    <div className="flex items-stretch">
 
       {/* Content area */}
-      <div className="flex-1 p-8 overflow-auto">{children}</div>
+      <div className="min-w-0 flex-1 overflow-auto pl-8 lg:pl-10">{children}</div>
     </div>
   );
 }

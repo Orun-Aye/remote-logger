@@ -43,7 +43,7 @@ export default function AlertEventsPage() {
   const selectedProject = projects.find((p) => p._id === projectFilter);
 
   return (
-    <div className="p-6 space-y-8">
+    <div className="space-y-8">
       {/* Header */}
       <div>
         <h1 className="text-3xl font-bold tracking-tight flex items-center gap-2">
@@ -207,7 +207,7 @@ function AlertEventCard({
       case "low":
         return "border-data-info bg-data-info/10";
       default:
-        return "border-gray-500 bg-gray-50";
+        return "border-border-accent bg-gs-50";
     }
   };
 
@@ -220,7 +220,7 @@ function AlertEventCard({
       case "resolved":
         return <CheckCircle className="w-5 h-5 text-status-ok" />;
       default:
-        return <XCircle className="w-5 h-5 text-gray-500" />;
+        return <XCircle className="w-5 h-5 text-text-muted" />;
     }
   };
 

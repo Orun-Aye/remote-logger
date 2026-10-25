@@ -82,9 +82,9 @@ export default function ProjectSettingsLayout({
     typeof params?.projectId === "string" ? params.projectId : "";
 
   return (
-    <div className="flex min-h-[calc(100vh-4rem)]">
+    <div className="flex items-stretch">
       {/* Left sidebar navigation */}
-      <nav className="w-1/5.5 shrink-0 border-r border-border-subtle  p-4 space-y-1">
+      <nav className="w-52 shrink-0 border-r border-border-subtle pr-4 space-y-0.5">
         {/* Back link */}
         <Button
           variant="ghost"
@@ -100,7 +100,7 @@ export default function ProjectSettingsLayout({
 
         <div className="border-b border-border-subtle mb-3 pb-1" />
 
-        <h2 className="text-xs font-semibold uppercase tracking-wider text-text-muted mb-4 px-3">
+        <h2 className="eyebrow mb-3 px-3">
           Project Settings
         </h2>
 
@@ -117,10 +117,10 @@ export default function ProjectSettingsLayout({
               key={tab.name}
               href={tabHref}
               className={cn(
-                "flex items-center gap-3 px-3 py-2.5  text-sm font-medium transition-colors duration-150",
+                "flex items-center gap-2.5 px-3 h-9 text-sm transition-colors [&_svg]:hidden",
                 isActive
-                  ? "bg-signal/10 text-signal border-l-2 border-signal"
-                  : "text-text-secondary hover:text-text-primary hover:bg-bg-elevated"
+                  ? "bg-gs-100 text-text-primary font-medium shadow-[inset_2px_0_0_var(--gs-900)]"
+                  : "text-text-secondary hover:text-text-primary hover:bg-gs-50"
               )}
             >
               <Icon className="w-4 h-4 shrink-0" />
@@ -131,7 +131,7 @@ export default function ProjectSettingsLayout({
       </nav>
 
       {/* Content area */}
-      <div className="flex-1 p-8 overflow-auto">{children}</div>
+      <div className="min-w-0 flex-1 overflow-auto pl-8 lg:pl-10">{children}</div>
     </div>
   );
 }

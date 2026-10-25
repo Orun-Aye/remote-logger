@@ -92,7 +92,7 @@ export default function NetworkMonitoringPage() {
 
   if (ovLoading) {
     return (
-      <div className="p-6 bg-bg-base min-h-full">
+      <div className="bg-bg-base min-h-full">
         <PageHeader title="Network Monitoring" description="HTTP request analytics and performance" />
         <SkeletonDashboard />
       </div>
@@ -100,7 +100,7 @@ export default function NetworkMonitoringPage() {
   }
 
   return (
-    <div className="p-6 bg-bg-base min-h-full space-y-6">
+    <div className="bg-bg-base min-h-full space-y-6">
       <PageHeader title="Network Monitoring" description="HTTP request analytics and performance" />
 
       {/* Metric Cards */}

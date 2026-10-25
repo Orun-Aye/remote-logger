@@ -10,22 +10,28 @@ interface PageHeaderProps {
   className?: string;
 }
 
+/** Page title in the display face, a one-line description, and a hairline rule. */
 export function PageHeader({ title, description, actions, badge, className }: PageHeaderProps) {
   return (
-    <div className={cn('flex items-start justify-between gap-4 pb-6 px-4', className)}>
-      <div className="space-y-1 min-w-0">
+    <div
+      className={cn(
+        'mb-8 flex flex-wrap items-end justify-between gap-4 border-b border-border-subtle pb-6',
+        className
+      )}
+    >
+      <div className="min-w-0 space-y-2">
         <div className="flex items-center gap-3">
-          <h1 className="text-2xl font-display font-bold text-text-primary tracking-tight truncate">
+          <h1 className="truncate font-display text-[28px] leading-tight text-text-primary">
             {title}
           </h1>
           {badge}
         </div>
         {description && (
-          <p className="text-sm text-text-secondary max-w-2xl">{description}</p>
+          <p className="max-w-2xl text-[15px] text-text-secondary">{description}</p>
         )}
       </div>
       {actions && (
-        <div className="flex items-center gap-2 shrink-0">{actions}</div>
+        <div className="flex shrink-0 items-center gap-2">{actions}</div>
       )}
     </div>
   );

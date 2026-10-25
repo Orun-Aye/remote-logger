@@ -212,7 +212,7 @@ export default function WebVitalsPage() {
   // ---- Loading state ----
   if (isLoading) {
     return (
-      <div className="p-6 bg-bg-base min-h-full">
+      <div className="bg-bg-base min-h-full">
         <PageHeader
           title="Core Web Vitals"
           description="LCP, INP, CLS performance"
@@ -225,7 +225,7 @@ export default function WebVitalsPage() {
   // ---- Empty state ----
   if (!hasData) {
     return (
-      <div className="p-6 bg-bg-base min-h-full">
+      <div className="bg-bg-base min-h-full">
         <PageHeader
           title="Core Web Vitals"
           description="LCP, INP, CLS performance"
@@ -246,7 +246,7 @@ export default function WebVitalsPage() {
 
   // ---- Data state ----
   return (
-    <div className="p-6 bg-bg-base min-h-full space-y-8">
+    <div className="bg-bg-base min-h-full space-y-8">
       {/* Page Header */}
       <PageHeader
         title="Core Web Vitals"

@@ -435,26 +435,25 @@ html {
 }
 
 /* ============================================================================
-   CUSTOM SCROLLBAR — Signal green
+   CUSTOM SCROLLBAR: thin, neutral
    ============================================================================ */
 
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 8px;
+  height: 8px;
 }
 
 ::-webkit-scrollbar-track {
-  background: var(--bg-void, #060b14);
-  border-radius: 3px;
+  background: transparent;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--border-accent, #2d4266);
-  border-radius: 3px;
+  background: var(--border-accent, #cfcfcf);
+  border-radius: 2px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--signal, #00d97e);
+  background: var(--text-muted, #737373);
 }
 
 /* ============================================================================
@@ -484,12 +483,12 @@ html {
 }
 
 /* ============================================================================
-   FOCUS INDICATORS — Signal green, not browser blue
+   FOCUS INDICATORS: a 2px ink ring, offset from the control
    ============================================================================ */
 
 :focus-visible {
-  outline: 2px solid var(--signal, #00d97e);
-  outline-offset: 3px;
+  outline: 2px solid var(--signal, #0a0a0a);
+  outline-offset: 2px;
 }
 
 /* ============================================================================

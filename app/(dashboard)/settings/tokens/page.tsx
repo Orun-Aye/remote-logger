@@ -234,7 +234,7 @@ export default function TokensSettingsPage() {
 
       {/* One-time token reveal */}
       {revealedToken && (
-        <Card className="bg-bg-surface border-signal/30 shadow-[0_0_24px_rgba(0,217,126,0.08)]">
+        <Card className="bg-bg-surface border-signal/30">
           <CardContent className="p-6">
             <div className="flex items-start gap-3 mb-4">
               <div className="w-8 h-8 rounded-lg bg-status-warn/10 flex items-center justify-center shrink-0 mt-0.5">
@@ -390,7 +390,7 @@ export default function TokensSettingsPage() {
                 value={tokenName}
                 onChange={(e) => setTokenName(e.target.value)}
                 placeholder="e.g. CI/CD Pipeline, Local Development"
-                className="bg-bg-elevated border-border-subtle text-text-primary placeholder:text-text-muted focus:border-signal focus:ring-signal/20"
+                className="bg-background border-input text-text-primary placeholder:text-text-muted focus:border-gs-900 focus:ring-0"
               />
               <p className="text-xs text-text-muted">
                 A descriptive name to identify this token

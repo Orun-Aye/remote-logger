@@ -310,29 +310,7 @@ function ProjectHero({
   const previousLabel = rangePreviousLabel(selectedRange);
 
   return (
-    <div className="relative overflow-hidden border-b border-border-faint px-8 py-7">
-      <svg
-        width="100%"
-        height="100%"
-        className="pointer-events-none absolute inset-0 opacity-[0.03]"
-      >
-        <defs>
-          <pattern
-            id="hero-grid"
-            width="40"
-            height="40"
-            patternUnits="userSpaceOnUse"
-          >
-            <path
-              d="M 40 0 L 0 0 0 40"
-              fill="none"
-              stroke="var(--text-primary)"
-              strokeWidth="0.5"
-            />
-          </pattern>
-        </defs>
-        <rect width="100%" height="100%" fill="url(#hero-grid)" />
-      </svg>
+    <div className="relative border-b border-border-subtle pb-7">
 
       <div className="relative flex items-start justify-between gap-8">
         <div className="min-w-0 flex-1">
@@ -465,7 +443,7 @@ function ProjectHero({
               onCustomRangeChange={onCustomRangeChange}
             />
             <div className="relative">
-              <HealthRing score={healthScore} size={112} stroke={5} />
+              <HealthRing score={healthScore} size={112} stroke={2} />
               <div className="absolute inset-0 flex flex-col items-center justify-center">
                 <div className="tabular-nums font-display text-[30px] font-extrabold leading-none text-text-primary">
                   {healthScore}
@@ -1018,7 +996,7 @@ function SlowestEndpoints({
               style={{
                 width: `${(e.p95 / max) * 100}%`,
                 background:
-                  "linear-gradient(90deg, transparent, rgba(139,189,212,0.06))",
+                  "var(--bg-elevated)",
               }}
             />
             <div className="relative min-w-0 flex-1">
@@ -1621,7 +1599,7 @@ export default function ProjectDashboard() {
 
   if (projectLoading) {
     return (
-      <div className="p-6 md:px-8 lg:p-10">
+      <div>
         <SkeletonDashboard />
       </div>
     );
@@ -1629,7 +1607,7 @@ export default function ProjectDashboard() {
 
   if (!project) {
     return (
-      <div className="p-6 md:px-8 lg:p-10">
+      <div>
         <div className="rounded-lg border border-border-subtle bg-bg-surface py-16 text-center">
           <h2 className="font-display text-2xl font-bold text-text-primary">
             Project not found
@@ -1665,7 +1643,7 @@ export default function ProjectDashboard() {
         onCustomRangeChange={setCustomTimeRange}
       />
 
-      <div className="flex flex-1 flex-col gap-4 px-8 pt-5 pb-10">
+      <div className="flex flex-1 flex-col gap-4 pt-6">
         <div
           className="grid gap-3.5"
           style={{ gridTemplateColumns: "1.4fr 1fr 1fr 1fr" }}

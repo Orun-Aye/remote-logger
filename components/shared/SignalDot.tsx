@@ -17,15 +17,7 @@ const statusColors: Record<SignalStatus, string> = {
   warn: "bg-status-warn",
   danger: "bg-status-danger",
   fatal: "bg-status-fatal",
-  info: "bg-data",
-};
-
-const statusGlows: Record<SignalStatus, string> = {
-  ok: "shadow-[0_0_12px_#00d97e40]",
-  warn: "shadow-[0_0_12px_#f59e0b40]",
-  danger: "shadow-[0_0_12px_#ef444440]",
-  fatal: "shadow-[0_0_12px_#c0392b40]",
-  info: "shadow-[0_0_12px_#4d8ef840]",
+  info: "bg-data-info",
 };
 
 const pulseColors: Record<SignalStatus, string> = {
@@ -45,7 +37,7 @@ const sizes = {
 export function SignalDot({
   status = "ok",
   size = "md",
-  pulse = true,
+  pulse = false,
   className,
   label,
 }: SignalDotProps) {
@@ -63,8 +55,7 @@ export function SignalDot({
         className={cn(
           "rounded-full",
           sizes[size],
-          statusColors[status],
-          statusGlows[status]
+          statusColors[status]
         )}
       />
       {pulse && (

@@ -23,10 +23,10 @@ export default function SettingsLayout({
   const pathname = usePathname();
 
   return (
-    <div className="flex min-h-[calc(100vh-4rem)]">
+    <div className="flex items-stretch">
       {/* Left sidebar navigation */}
-      <nav className="w-1/5.5 shrink-0 border-r border-border-subtle space-y-1">
-        <h2 className="text-xs font-semibold uppercase tracking-wider text-text-muted mb-4 px-3">
+      <nav className="w-52 shrink-0 border-r border-border-subtle pr-4 space-y-0.5">
+        <h2 className="eyebrow mb-3 px-3">
           Settings
         </h2>
         {settingsTabs.map((tab) => {
@@ -40,10 +40,10 @@ export default function SettingsLayout({
               key={tab.href}
               href={tab.href}
               className={cn(
-                "flex items-center gap-3 px-3 py-2.5  text-sm font-medium transition-colors duration-150",
+                "flex items-center gap-2.5 px-3 h-9 text-sm transition-colors [&_svg]:hidden",
                 isActive
-                  ? "bg-signal/10 text-signal border-l-2 border-signal"
-                  : "text-text-secondary hover:text-text-primary hover:bg-bg-elevated"
+                  ? "bg-gs-100 text-text-primary font-medium shadow-[inset_2px_0_0_var(--gs-900)]"
+                  : "text-text-secondary hover:text-text-primary hover:bg-gs-50"
               )}
             >
               <Icon className="w-4 h-4 shrink-0" />
@@ -54,7 +54,7 @@ export default function SettingsLayout({
       </nav>
 
       {/* Content area */}
-      <div className="flex-1 p-8 overflow-auto">{children}</div>
+      <div className="min-w-0 flex-1 overflow-auto pl-8 lg:pl-10">{children}</div>
     </div>
   );
 }

@@ -79,7 +79,7 @@ export default function PageviewAnalyticsPage() {
 
   if (ovLoading) {
     return (
-      <div className="p-6 bg-bg-base min-h-full">
+      <div className="bg-bg-base min-h-full">
         <PageHeader title="Pageview Analytics" description="Page traffic and navigation patterns" />
         <SkeletonDashboard />
       </div>
@@ -101,7 +101,7 @@ export default function PageviewAnalyticsPage() {
   })();
 
   return (
-    <div className="p-6 bg-bg-base min-h-full space-y-6">
+    <div className="bg-bg-base min-h-full space-y-6">
       <PageHeader title="Pageview Analytics" description="Page traffic and navigation patterns" />
 
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">

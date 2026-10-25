@@ -204,7 +204,7 @@ function renderLabel({ cx, cy, midAngle, innerRadius, outerRadius, percent, name
       style={{
         fontSize: 11,
         fill: "var(--text-secondary)",
-        fontFamily: "var(--font-body), DM Sans, sans-serif",
+        fontFamily: "var(--font-body), Inter, sans-serif",
       }}
     >
       {name} ({(percent * 100).toFixed(0)}%)

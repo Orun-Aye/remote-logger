@@ -68,7 +68,7 @@ export default function IntegrationsPage() {
   ).length ?? 0;
 
   return (
-    <div className="flex flex-col gap-6 p-6">
+    <div className="flex flex-col gap-6">
       <PageHeader
         title="Integrations"
         description="Connect Apperio with your favorite tools for issue tracking, incident management, and team communication."

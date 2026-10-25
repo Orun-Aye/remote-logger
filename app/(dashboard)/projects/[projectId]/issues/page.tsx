@@ -58,7 +58,7 @@ type StatusTab = (typeof STATUS_TABS)[number]["id"];
 function StatusBadge({ group }: { group: ErrorGroup }) {
   if (group.status === "resolved") {
     return (
-      <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-status-ok/10 text-status-ok text-xs">
+      <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-sm bg-status-ok/10 text-status-ok text-xs">
         <SignalDot status="ok" size="sm" pulse={false} />
         Resolved{group.resolvedBy === "github" ? " via GitHub" : ""}
       </span>
@@ -66,13 +66,13 @@ function StatusBadge({ group }: { group: ErrorGroup }) {
   }
   if (group.status === "ignored") {
     return (
-      <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-bg-elevated text-text-muted text-xs">
+      <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-sm bg-bg-elevated text-text-muted text-xs">
         Ignored
       </span>
     );
   }
   return (
-    <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-status-danger/10 text-status-danger text-xs">
+    <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-sm bg-status-danger/10 text-status-danger text-xs">
       <SignalDot status="danger" size="sm" />
       {group.regressed ? "Regressed" : "Unresolved"}
     </span>

@@ -70,7 +70,7 @@ export function FilterBar({
           value={value}
           onChange={handleChange}
           placeholder={searchPlaceholder}
-          className="w-full h-9 pl-9 pr-8 rounded-md bg-bg-elevated border border-border-subtle text-sm text-text-primary placeholder:text-text-muted focus:outline-none focus:border-signal/50 focus:ring-1 focus:ring-signal/20 transition-colors"
+          className="w-full h-9 pl-9 pr-8 rounded-md bg-bg-elevated border border-border-subtle text-sm text-text-primary placeholder:text-text-muted focus:outline-none focus:border-gs-900/50 focus:ring-1 focus:ring-gs-900/10 transition-colors"
         />
         {value && (
           <button

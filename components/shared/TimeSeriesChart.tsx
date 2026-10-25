@@ -367,7 +367,6 @@ export function TimeSeriesChart({
                   fill: "var(--bg-surface)",
                   style: { filter: `drop-shadow(0 0 6px ${s.color})` },
                 }}
-                filter={!isDimmed ? `url(#glow-${s.key})` : undefined}
                 style={{ transition: "opacity 200ms ease" }}
                 {...ANIMATION_CONFIG}
               />
@@ -389,7 +388,6 @@ export function TimeSeriesChart({
                   fill: "var(--bg-surface)",
                   style: { filter: `drop-shadow(0 0 6px ${s.color})` },
                 }}
-                filter={!isDimmed ? `url(#glow-${s.key})` : undefined}
                 style={{ transition: "opacity 200ms ease" }}
                 {...ANIMATION_CONFIG}
               />

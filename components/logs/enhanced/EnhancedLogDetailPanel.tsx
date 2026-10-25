@@ -105,9 +105,9 @@ function EmptyDetailState() {
     <div className="h-full flex flex-col items-center justify-center px-10 py-10">
       <div className="w-full max-w-sm rounded-lg border border-border-faint bg-bg-void overflow-hidden">
         <div className="flex items-center gap-1.5 px-3 py-2 border-b border-border-faint bg-bg-surface">
-          <span className="w-2.5 h-2.5 rounded-full bg-[#ff5f57]" />
-          <span className="w-2.5 h-2.5 rounded-full bg-[#ffbd2e]" />
-          <span className="w-2.5 h-2.5 rounded-full bg-[#28c840]" />
+          <span className="w-2.5 h-2.5 rounded-full bg-gs-300" />
+          <span className="w-2.5 h-2.5 rounded-full bg-gs-300" />
+          <span className="w-2.5 h-2.5 rounded-full bg-gs-300" />
           <span className="ml-2 text-[11px] font-mono text-text-muted">
             apperio / log-detail
           </span>

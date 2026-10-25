@@ -548,7 +548,7 @@ export function CreateAlertModal({
                       >
                         {email}
                         <X
-                          className="w-3 h-3 cursor-pointer hover:text-red-500"
+                          className="w-3 h-3 cursor-pointer hover:text-status-danger"
                           onClick={() => removeEmail(email)}
                         />
                       </Badge>

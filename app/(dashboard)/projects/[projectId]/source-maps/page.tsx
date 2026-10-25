@@ -113,7 +113,7 @@ export default function SourceMapsPage() {
   };
 
   return (
-    <div className="p-6 space-y-8">
+    <div className="space-y-8">
       {/* Header */}
       <div>
         <h1 className="text-2xl font-display font-bold tracking-tight text-text-primary flex items-center gap-2.5">
@@ -148,7 +148,7 @@ export default function SourceMapsPage() {
               value={releaseVersion}
               onChange={(e) => setReleaseVersion(e.target.value)}
               placeholder="e.g. 1.0.0, v2.3.1, abc123"
-              className="bg-bg-elevated border-border-subtle text-text-primary placeholder:text-text-muted focus:border-signal focus:ring-signal/20 font-mono"
+              className="bg-background border-input text-text-primary placeholder:text-text-muted focus:border-gs-900 focus:ring-0 font-mono"
             />
           </div>
 

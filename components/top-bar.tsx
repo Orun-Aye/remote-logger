@@ -1,9 +1,9 @@
 "use client";
 
-import { useState, useEffect, useCallback, useMemo } from "react";
-import { usePathname, useRouter } from "next/navigation";
+import { useState, useEffect, useCallback } from "react";
+import { useRouter } from "next/navigation";
+import { useTheme } from "next-themes";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -19,34 +19,21 @@ import {
 } from "@/components/ui/popover";
 import { Calendar as CalendarComponent } from "@/components/ui/calendar";
 import { SidebarTrigger } from "@/components/ui/sidebar";
-import { Separator } from "@/components/ui/separator";
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb";
 import {
   Search,
   Bell,
-  Command,
   Calendar,
-  Clock,
   AlertTriangle,
   CheckCircle,
   Info,
   X,
-  Globe,
   RefreshCw,
   ChevronDown,
-  LayoutDashboard,
 } from "lucide-react";
-import { ThemeToggle } from "@/components/theme-toggle";
 import { useWebsocket } from "@/hooks/useWebsocket";
 import { useApperioStore } from "@/store/apperio-store";
-import { useProjects } from "@/hooks/project.hooks";
+import { useProfile } from "@/hooks/user.hook";
+import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 import type { DateRange } from "react-day-picker";
 
@@ -83,7 +70,7 @@ const TIME_RANGES = [
 ] as const;
 
 const ENVIRONMENTS = [
-  { label: "All Environments", value: "all" },
+  { label: "All environments", value: "all" },
   { label: "Production", value: "production" },
   { label: "Staging", value: "staging" },
   { label: "Development", value: "development" },
@@ -100,16 +87,6 @@ const REFRESH_INTERVALS = [
 // HELPERS
 // ============================================
 
-const isObjectId = (str: string) => /^[a-f\d]{24}$/i.test(str);
-
-const decodeSegment = (segment: string) => {
-  try {
-    return decodeURIComponent(segment);
-  } catch {
-    return segment;
-  }
-};
-
 const getTimeRangeLabel = (
   value: string,
   customRange?: { start: Date; end: Date } | null,
@@ -122,7 +99,7 @@ const getTimeRangeLabel = (
 
 const getEnvironmentLabel = (value: string) => {
   return (
-    ENVIRONMENTS.find((env) => env.value === value)?.label || "All Environments"
+    ENVIRONMENTS.find((env) => env.value === value)?.label || "All environments"
   );
 };
 
@@ -144,13 +121,29 @@ const getNotificationIcon = (type: string) => {
   }
 };
 
+/** Selected rows in the top bar menus: ink text on the grey fill. */
+const selectedItem = "bg-gs-100 text-text-primary font-medium";
+
+/** The quiet mono controls in the top bar (time range, environment). */
+const barControl =
+  "hidden md:inline-flex h-8 gap-1.5 px-2 font-mono text-xs text-text-secondary hover:text-text-primary";
+
+const clearAllCookies = () => {
+  const cookies = document.cookie.split(";");
+  for (const cookie of cookies) {
+    const eqPos = cookie.indexOf("=");
+    const name = eqPos > -1 ? cookie.substr(0, eqPos).trim() : cookie.trim();
+    document.cookie = `${name}=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/`;
+  }
+};
+
 // ============================================
 // COMPONENT
 // ============================================
 
 export function TopBar({ onCommandOpen }: TopBarProps) {
-  const pathname = usePathname();
   const router = useRouter();
+  const { resolvedTheme, setTheme } = useTheme();
 
   // Local state
   const [notifications, setNotifications] = useState<Notification[]>([]);
@@ -172,25 +165,18 @@ export function TopBar({ onCommandOpen }: TopBarProps) {
     (s) => s.setAutoRefreshInterval,
   );
 
-  // Projects for breadcrumb ObjectId resolution
-  const { data: projectsResponse } = useProjects();
+  const { data: userProfile } = useProfile();
+  const displayName =
+    userProfile?.firstName && userProfile?.lastName
+      ? `${userProfile.firstName} ${userProfile.lastName}`
+      : userProfile?.firstName || userProfile?.email || "Account";
+  const initials =
+    ((userProfile?.firstName?.[0] ?? "") + (userProfile?.lastName?.[0] ?? "")).toUpperCase() ||
+    userProfile?.email?.[0]?.toUpperCase() ||
+    "U";
 
   // WebSocket connection for real-time notifications
   const { lastMessage } = useWebsocket();
-
-  // Build a lookup map from project IDs to names
-  const projectNameMap = useMemo(() => {
-    const map = new Map<string, string>();
-    const projects = projectsResponse?.data;
-    if (Array.isArray(projects)) {
-      for (const project of projects) {
-        if (project?._id && project?.name) {
-          map.set(project._id, project.name);
-        }
-      }
-    }
-    return map;
-  }, [projectsResponse]);
 
   // Handle real-time notifications from WebSocket
   useEffect(() => {
@@ -222,35 +208,6 @@ export function TopBar({ onCommandOpen }: TopBarProps) {
     }
   }, [lastMessage]);
 
-  // Generate breadcrumbs from pathname with ObjectId resolution
-  const breadcrumbs = useMemo(() => {
-    const segments = pathname.split("/").filter(Boolean);
-    const items: { name: string; href: string; isLast: boolean }[] = [];
-
-    for (let i = 0; i < segments.length; i++) {
-      const segment = segments[i];
-      const href = "/" + segments.slice(0, i + 1).join("/");
-      const isLast = i === segments.length - 1;
-
-      let name: string;
-      if (isObjectId(segment)) {
-        name = projectNameMap.get(segment) || segment.slice(0, 8) + "...";
-      } else {
-        const label = decodeSegment(segment)
-          .split("-")
-          .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-          .join(" ");
-        // Dynamic segments (an error message on the error page) are long, and
-        // URL-encoded they are one unbreakable word that widened the whole page
-        name = label.length > 32 ? `${label.slice(0, 31)}…` : label;
-      }
-
-      items.push({ name, href, isLast });
-    }
-
-    return items;
-  }, [pathname, projectNameMap]);
-
   const unreadCount = notifications.filter((n) => n.unread).length;
 
   // Notification handlers
@@ -279,88 +236,52 @@ export function TopBar({ onCommandOpen }: TopBarProps) {
     setNotifications((prev) => prev.filter((n) => n.id !== notificationId));
   }, []);
 
+  const handleLogout = () => {
+    try {
+      clearAllCookies();
+      if (typeof window !== "undefined") {
+        localStorage.clear();
+        sessionStorage.clear();
+      }
+    } catch {}
+    router.replace("/login");
+  };
+
   return (
-    <header className="sticky top-0 z-20 flex h-16 shrink-0 items-center gap-2 border-b border-border-subtle bg-bg-base/95 backdrop-blur supports-[backdrop-filter]:bg-bg-base/60 px-4">
-      <SidebarTrigger className="-ml-1" />
-      <Separator orientation="vertical" className="mr-2 h-4" />
+    <header className="sticky top-0 z-20 flex h-[52px] shrink-0 items-center gap-3 border-b border-border-subtle bg-background px-4 lg:px-6">
+      <SidebarTrigger className="-ml-1 md:hidden" />
 
-      {/* Breadcrumbs */}
-      <Breadcrumb>
-        <BreadcrumbList>
-          <BreadcrumbItem className="hidden lg:block">
-            <BreadcrumbLink
-              href="/dashboard"
-              className="text-text-muted hover:text-text-secondary"
-            >
-              <LayoutDashboard />
-            </BreadcrumbLink>
-          </BreadcrumbItem>
-          {breadcrumbs.map((breadcrumb) => (
-            <div key={breadcrumb.href} className="flex items-center">
-              <BreadcrumbSeparator className="hidden mr-2 md:block" />
-              <BreadcrumbItem>
-                {breadcrumb.isLast ? (
-                  <BreadcrumbPage className="text-text-primary">
-                    {breadcrumb.name}
-                  </BreadcrumbPage>
-                ) : (
-                  <BreadcrumbLink
-                    href={breadcrumb.href}
-                    className="text-text-muted hover:text-text-secondary"
-                  >
-                    {breadcrumb.name}
-                  </BreadcrumbLink>
-                )}
-              </BreadcrumbItem>
-            </div>
-          ))}
-        </BreadcrumbList>
-      </Breadcrumb>
+      {/* Command palette trigger, shaped like a search field */}
+      <button
+        onClick={onCommandOpen}
+        className="flex h-9 w-full max-w-xl min-w-0 items-center gap-2.5 rounded-md border border-border-subtle bg-gs-50 px-3 text-sm text-text-muted transition-colors hover:border-border-accent hover:text-text-secondary"
+      >
+        <Search className="h-4 w-4 shrink-0" />
+        <span className="flex-1 truncate text-left">
+          Search projects, logs and actions
+        </span>
+        <kbd className="pointer-events-none hidden h-5 select-none items-center rounded-sm border border-border-subtle bg-background px-1.5 font-mono text-[11px] text-text-secondary sm:inline-flex">
+          Ctrl K
+        </kbd>
+      </button>
 
-      <div className="ml-auto flex items-center space-x-2">
-        {/* Command Palette Trigger */}
-        <button
-          onClick={onCommandOpen}
-          className="hidden md:inline-flex items-center gap-2 h-9 w-64 rounded-md border border-border-subtle bg-bg-surface px-3 text-sm text-text-muted hover:bg-bg-elevated/50 hover:text-text-secondary transition-colors"
-        >
-          <Search className="w-4 h-4" />
-          <span className="flex-1 text-left">Search...</span>
-          <kbd className="pointer-events-none inline-flex h-5 select-none items-center gap-1 rounded border border-border-subtle bg-bg-elevated px-1.5 font-mono text-[10px] font-medium text-text-muted">
-            <Command className="h-3 w-3" />K
-          </kbd>
-        </button>
-
-        <Separator orientation="vertical" className="h-4" />
-
+      <div className="ml-auto flex items-center gap-1">
         {/* Time Range Selector */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button
-              variant="ghost"
-              size="sm"
-              className="hidden md:flex text-text-secondary hover:text-text-primary"
-            >
-              <Clock className="w-4 h-4 mr-2" />
+            <Button variant="ghost" size="sm" className={barControl}>
               {getTimeRangeLabel(selectedTimeRange, customTimeRange)}
+              <ChevronDown className="size-3 text-text-muted" />
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent
-            align="end"
-            className="bg-bg-surface border-border-subtle"
-          >
-            <DropdownMenuLabel className="text-text-muted">
-              Time Range
-            </DropdownMenuLabel>
+          <DropdownMenuContent align="end">
+            <DropdownMenuLabel className="eyebrow">Time range</DropdownMenuLabel>
             <DropdownMenuSeparator />
             {TIME_RANGES.map((range) => (
               <DropdownMenuItem
                 key={range.value}
                 onSelect={() => setTimeRange(range.value as any)}
-                className={
-                  selectedTimeRange === range.value
-                    ? "bg-signal/10 text-signal"
-                    : ""
-                }
+                className={selectedTimeRange === range.value ? selectedItem : ""}
               >
                 {range.label}
               </DropdownMenuItem>
@@ -371,9 +292,7 @@ export function TopBar({ onCommandOpen }: TopBarProps) {
                 e.preventDefault();
                 setDatePickerOpen(true);
               }}
-              className={
-                selectedTimeRange === "custom" ? "bg-signal/10 text-signal" : ""
-              }
+              className={selectedTimeRange === "custom" ? selectedItem : ""}
             >
               <Popover open={datePickerOpen}>
                 <PopoverTrigger asChild>
@@ -382,11 +301,7 @@ export function TopBar({ onCommandOpen }: TopBarProps) {
                     Custom range
                   </span>
                 </PopoverTrigger>
-                <PopoverContent
-                  className="w-auto p-0 bg-bg-surface border-border-subtle"
-                  align="end"
-                  sideOffset={8}
-                >
+                <PopoverContent className="w-auto p-0" align="end" sideOffset={8}>
                   <div className="p-3 border-b border-border-subtle">
                     <p className="text-sm font-medium text-text-primary">
                       Select date range
@@ -424,39 +339,25 @@ export function TopBar({ onCommandOpen }: TopBarProps) {
                 </PopoverContent>
               </Popover>
             </DropdownMenuItem>
-            {/* Custom Date Range Popover */}
           </DropdownMenuContent>
         </DropdownMenu>
 
         {/* Environment Filter */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button
-              variant="ghost"
-              size="sm"
-              className="hidden md:flex text-text-secondary hover:text-text-primary"
-            >
-              <Globe className="w-4 h-4 mr-2" />
+            <Button variant="ghost" size="sm" className={barControl}>
               {getEnvironmentLabel(selectedEnvironment)}
+              <ChevronDown className="size-3 text-text-muted" />
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent
-            align="end"
-            className="bg-bg-surface border-border-subtle"
-          >
-            <DropdownMenuLabel className="text-text-muted">
-              Environment
-            </DropdownMenuLabel>
+          <DropdownMenuContent align="end">
+            <DropdownMenuLabel className="eyebrow">Environment</DropdownMenuLabel>
             <DropdownMenuSeparator />
             {ENVIRONMENTS.map((env) => (
               <DropdownMenuItem
                 key={env.value}
                 onSelect={() => setSelectedEnvironment(env.value)}
-                className={
-                  selectedEnvironment === env.value
-                    ? "bg-signal/10 text-signal"
-                    : ""
-                }
+                className={selectedEnvironment === env.value ? selectedItem : ""}
               >
                 {env.label}
               </DropdownMenuItem>
@@ -470,51 +371,42 @@ export function TopBar({ onCommandOpen }: TopBarProps) {
             variant="ghost"
             size="sm"
             onClick={toggleAutoRefresh}
-            className={
+            aria-pressed={autoRefreshEnabled}
+            title={autoRefreshEnabled ? "Auto-refresh on" : "Auto-refresh off"}
+            className={cn(
+              "h-8 px-2 font-mono text-xs",
               autoRefreshEnabled
-                ? "text-signal hover:text-signal"
-                : "text-text-secondary hover:text-text-primary"
-            }
+                ? "text-text-primary"
+                : "text-text-muted hover:text-text-primary",
+            )}
           >
             <RefreshCw
-              className={`w-4 h-4 ${autoRefreshEnabled ? "animate-spin" : ""}`}
+              className={`w-3.5 h-3.5 ${autoRefreshEnabled ? "animate-spin" : ""}`}
               style={
                 autoRefreshEnabled ? { animationDuration: "3s" } : undefined
               }
             />
-            {autoRefreshEnabled && (
-              <span className="ml-1.5 text-xs">
-                {formatRefreshInterval(autoRefreshInterval)}
-              </span>
-            )}
+            {autoRefreshEnabled && formatRefreshInterval(autoRefreshInterval)}
           </Button>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button
                 variant="ghost"
                 size="sm"
+                aria-label="Refresh interval"
                 className="h-8 w-5 px-0 text-text-muted hover:text-text-primary"
               >
                 <ChevronDown className="w-3 h-3" />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent
-              align="end"
-              className="bg-bg-surface border-border-subtle"
-            >
-              <DropdownMenuLabel className="text-text-muted">
-                Refresh Interval
-              </DropdownMenuLabel>
+            <DropdownMenuContent align="end">
+              <DropdownMenuLabel className="eyebrow">Refresh interval</DropdownMenuLabel>
               <DropdownMenuSeparator />
               {REFRESH_INTERVALS.map((interval) => (
                 <DropdownMenuItem
                   key={interval.value}
                   onSelect={() => setAutoRefreshInterval(interval.value)}
-                  className={
-                    autoRefreshInterval === interval.value
-                      ? "bg-signal/10 text-signal"
-                      : ""
-                  }
+                  className={autoRefreshInterval === interval.value ? selectedItem : ""}
                 >
                   {interval.label}
                 </DropdownMenuItem>
@@ -523,56 +415,48 @@ export function TopBar({ onCommandOpen }: TopBarProps) {
           </DropdownMenu>
         </div>
 
-        <Separator orientation="vertical" className="h-4" />
-
         {/* Notifications */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="sm" className="relative">
+            <Button
+              variant="ghost"
+              size="sm"
+              aria-label="Notifications"
+              className="relative h-8 w-8 px-0 text-text-secondary hover:text-text-primary"
+            >
               <Bell className="w-4 h-4" />
               {unreadCount > 0 && (
-                <span className="absolute -top-1 -right-1 h-5 w-5 rounded-full bg-status-danger text-[10px] text-white flex items-center justify-center font-medium">
+                <span className="absolute -top-0.5 -right-0.5 flex h-4 min-w-4 items-center justify-center rounded-sm bg-status-danger px-1 font-mono text-[10px] text-white">
                   {unreadCount}
                 </span>
               )}
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent
-            align="end"
-            className="w-80 bg-bg-surface border-border-subtle"
-          >
+          <DropdownMenuContent align="end" className="w-80">
             <DropdownMenuLabel className="flex items-center justify-between">
-              <span className="text-text-primary">Notifications</span>
-              <div className="flex items-center gap-2">
-                {unreadCount > 0 && (
-                  <Badge variant="secondary" className="text-xs">
-                    {unreadCount} new
-                  </Badge>
-                )}
-                {unreadCount > 0 && (
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={markAllAsRead}
-                    className="h-6 px-2 text-xs text-signal hover:text-signal-bright"
-                  >
-                    Mark all read
-                  </Button>
-                )}
-              </div>
+              <span className="eyebrow">Notifications</span>
+              {unreadCount > 0 && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={markAllAsRead}
+                  className="h-6 px-2 text-xs"
+                >
+                  Mark all read
+                </Button>
+              )}
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <div className="max-h-96 overflow-y-auto">
               {notifications.length === 0 ? (
-                <div className="flex flex-col items-center justify-center py-8 text-center">
-                  <Bell className="h-8 w-8 text-text-muted mb-2" />
-                  <p className="text-sm text-text-muted">No notifications</p>
-                </div>
+                <p className="px-3 py-8 text-center text-sm text-text-muted">
+                  No notifications
+                </p>
               ) : (
                 notifications.map((notification) => (
                   <DropdownMenuItem
                     key={notification.id}
-                    className="flex flex-col items-start p-4 space-y-1 cursor-pointer hover:bg-bg-elevated/50"
+                    className="flex flex-col items-start p-3 space-y-1 cursor-pointer"
                     onSelect={() => handleNotificationClick(notification)}
                   >
                     <div className="flex items-center justify-between w-full">
@@ -582,12 +466,13 @@ export function TopBar({ onCommandOpen }: TopBarProps) {
                           {notification.title}
                         </h4>
                         {notification.unread && (
-                          <div className="w-2 h-2 bg-signal rounded-full" />
+                          <span className="size-1.5 bg-gs-900" aria-label="Unread" />
                         )}
                       </div>
                       <Button
                         variant="ghost"
                         size="sm"
+                        aria-label="Dismiss"
                         onClick={(e) => {
                           e.stopPropagation();
                           clearNotification(notification.id);
@@ -600,26 +485,16 @@ export function TopBar({ onCommandOpen }: TopBarProps) {
                     <p className="text-xs text-text-muted">
                       {notification.message}
                     </p>
-                    <div className="flex items-center justify-between w-full">
-                      <span className="text-xs text-text-muted">
-                        {notification.time}
-                      </span>
-                      {notification.projectId && (
-                        <Badge
-                          variant="outline"
-                          className="text-xs border-border-subtle"
-                        >
-                          Project
-                        </Badge>
-                      )}
-                    </div>
+                    <span className="font-mono text-[11px] text-text-muted">
+                      {notification.time}
+                    </span>
                   </DropdownMenuItem>
                 ))
               )}
             </div>
             <DropdownMenuSeparator />
             <DropdownMenuItem
-              className="text-center text-signal hover:text-signal-bright"
+              className="justify-center text-text-primary"
               onSelect={() => router.push("/notifications")}
             >
               View all notifications
@@ -627,7 +502,66 @@ export function TopBar({ onCommandOpen }: TopBarProps) {
           </DropdownMenuContent>
         </DropdownMenu>
 
-        <ThemeToggle />
+        {/* Account */}
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <button className="ml-2 flex items-center gap-2.5 rounded-sm py-1 pl-1 pr-1.5 text-left transition-colors hover:bg-gs-50">
+              {userProfile?.avatarUrl ? (
+                <img
+                  src={userProfile.avatarUrl}
+                  alt=""
+                  className="size-7 shrink-0 rounded-sm object-cover"
+                />
+              ) : (
+                <span className="flex size-7 shrink-0 items-center justify-center rounded-sm bg-gs-900 font-mono text-[11px] font-semibold text-gs-0">
+                  {initials}
+                </span>
+              )}
+              <span className="hidden min-w-0 leading-tight lg:block">
+                <span className="block max-w-40 truncate text-sm font-medium text-text-primary">
+                  {displayName}
+                </span>
+                {userProfile?.email && userProfile.email !== displayName && (
+                  <span className="block max-w-40 truncate text-xs text-text-muted">
+                    {userProfile.email}
+                  </span>
+                )}
+              </span>
+              <ChevronDown className="size-3.5 text-text-muted" />
+            </button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-64 p-0">
+            <div className="border-b border-border-subtle px-4 py-3">
+              <p className="eyebrow">Signed in</p>
+              <p className="mt-2 text-sm font-medium text-text-primary">{displayName}</p>
+              {userProfile?.email && (
+                <p className="mt-1 truncate font-mono text-xs text-text-secondary">
+                  {userProfile.email}
+                </p>
+              )}
+            </div>
+            <div className="p-1">
+              <DropdownMenuItem onSelect={() => router.push("/settings")}>
+                Settings
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onSelect={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
+              >
+                {resolvedTheme === "dark" ? "Light theme" : "Dark theme"}
+              </DropdownMenuItem>
+              <DropdownMenuItem onSelect={onCommandOpen}>
+                Command palette
+                <kbd className="ml-auto rounded-sm border border-border-subtle px-1 font-mono text-[11px] text-text-muted">
+                  Ctrl K
+                </kbd>
+              </DropdownMenuItem>
+            </div>
+            <DropdownMenuSeparator className="my-0" />
+            <div className="p-1">
+              <DropdownMenuItem onSelect={handleLogout}>Sign out</DropdownMenuItem>
+            </div>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
     </header>
   );

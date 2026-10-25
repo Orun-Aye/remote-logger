@@ -283,7 +283,7 @@ export default function EnvironmentsPage() {
 
   if (isLoading) {
     return (
-      <div className="p-6 space-y-6 bg-bg-base min-h-screen">
+      <div className="space-y-6 bg-bg-base min-h-screen">
         <PageHeader
           title="Environments"
           description="Compare metrics across environments"
@@ -299,7 +299,7 @@ export default function EnvironmentsPage() {
 
   if (environments.length === 0) {
     return (
-      <div className="p-6 space-y-6 bg-bg-base min-h-screen">
+      <div className="space-y-6 bg-bg-base min-h-screen">
         <PageHeader
           title="Environments"
           description="Compare metrics across environments"
@@ -324,7 +324,7 @@ export default function EnvironmentsPage() {
   // ---------------------------------------------------------------------------
 
   return (
-    <div className="p-6 space-y-6 bg-bg-base min-h-screen">
+    <div className="space-y-6 bg-bg-base min-h-screen">
       <PageHeader
         title="Environments"
         description="Compare metrics across environments"

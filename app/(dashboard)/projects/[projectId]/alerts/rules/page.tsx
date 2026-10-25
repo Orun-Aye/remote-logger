@@ -254,7 +254,7 @@ export default function AlertRulesPage() {
   return (
     <div className="flex flex-col h-full bg-bg-base">
       {/* Header */}
-      <div className="shrink-0 px-6 pt-6">
+      <div className="shrink-0">
         <PageHeader
           title="Alert Rules"
           description="Configure alert conditions and notification channels"
@@ -283,7 +283,7 @@ export default function AlertRulesPage() {
       </div>
 
       {/* Content */}
-      <div className="flex-1 min-h-0 overflow-y-auto px-6 pb-6 space-y-8">
+      <div className="flex-1 min-h-0 overflow-y-auto pb-6 space-y-8">
         {/* Search */}
         <div className="relative max-w-sm">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-text-muted" />

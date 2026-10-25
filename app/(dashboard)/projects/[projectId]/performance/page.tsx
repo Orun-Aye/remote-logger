@@ -492,7 +492,7 @@ export default function PerformanceAnalyticsPage() {
 
   if (isLoading) {
     return (
-      <div className="p-6 space-y-6 bg-bg-base min-h-screen">
+      <div className="space-y-6 bg-bg-base min-h-screen">
         <PageHeader
           title="Performance Analytics"
           description="Response times and throughput"
@@ -508,7 +508,7 @@ export default function PerformanceAnalyticsPage() {
 
   if (!hasData) {
     return (
-      <div className="p-6 space-y-6 bg-bg-base min-h-screen">
+      <div className="space-y-6 bg-bg-base min-h-screen">
         <PageHeader
           title="Performance Analytics"
           description="Response times and throughput"
@@ -547,7 +547,7 @@ export default function PerformanceAnalyticsPage() {
   // ---------------------------------------------------------------------------
 
   return (
-    <div className="p-6 space-y-6 bg-bg-base min-h-screen">
+    <div className="space-y-6 bg-bg-base min-h-screen">
       <PageHeader
         title="Performance Analytics"
         description="Response times and throughput"

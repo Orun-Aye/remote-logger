@@ -169,7 +169,7 @@ export default function PlansPage() {
               key={plan.id}
               className={`rounded-xl border bg-bg-surface p-5 flex flex-col transition-all duration-200 hover:-translate-y-0.5 relative ${
                 isCurrent
-                  ? "border-signal/50 shadow-[0_0_24px_-6px_var(--signal-glow)]"
+                  ? "border-gs-900"
                   : isProfessional
                   ? "border-t-2 border-t-signal border-signal/30"
                   : "border-border-subtle"
@@ -187,7 +187,7 @@ export default function PlansPage() {
               {/* Recommended badge */}
               {isProfessional && !isCurrent && (
                 <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                  <span className="px-3 py-1 rounded-full bg-signal text-bg-void text-[10px] font-display font-bold uppercase tracking-wider">
+                  <span className="px-3 py-1 rounded-sm bg-signal text-bg-void text-[10px] font-display font-bold uppercase tracking-wider">
                     Recommended
                   </span>
                 </div>

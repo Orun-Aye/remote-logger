@@ -189,7 +189,7 @@ export default function OrgGeneralPage() {
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="My Organization"
-              className="bg-bg-elevated border-border-subtle text-text-primary placeholder:text-text-muted focus:border-signal focus:ring-signal/20"
+              className="bg-background border-input text-text-primary placeholder:text-text-muted focus:border-gs-900 focus:ring-0"
             />
           </div>
 
@@ -218,7 +218,7 @@ export default function OrgGeneralPage() {
               value={billingEmail}
               onChange={(e) => setBillingEmail(e.target.value)}
               placeholder="billing@company.com"
-              className="bg-bg-elevated border-border-subtle text-text-primary placeholder:text-text-muted focus:border-signal focus:ring-signal/20"
+              className="bg-background border-input text-text-primary placeholder:text-text-muted focus:border-gs-900 focus:ring-0"
             />
             <p className="text-xs text-text-muted">
               Used for billing notifications and invoices
@@ -250,7 +250,7 @@ export default function OrgGeneralPage() {
               max={365}
               value={retentionDays}
               onChange={(e) => setRetentionDays(parseInt(e.target.value) || 30)}
-              className="bg-bg-elevated border-border-subtle text-text-primary focus:border-signal focus:ring-signal/20 w-32"
+              className="bg-background border-input text-text-primary focus:border-gs-900 focus:ring-0 w-32"
             />
             <p className="text-xs text-text-muted">
               How long to retain log data by default (1-365 days)

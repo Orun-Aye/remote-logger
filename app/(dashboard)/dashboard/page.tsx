@@ -123,7 +123,7 @@ export default function DashboardPage() {
 
   if (isLoading) {
     return (
-      <div className="p-6 md:px-8 lg:p-10">
+      <div>
         <SkeletonDashboard />
       </div>
     );
@@ -172,16 +172,18 @@ export default function DashboardPage() {
   if (projects.length === 0 && !dashboardHasData) {
     return (
       <div className="p-6 md:px-8 lg:p-10">
-        <div className="flex items-center justify-between mb-6">
-          <PageHeader title="Dashboard" description="Cross-project overview" />
-          <Button variant="ghost" size="sm" onClick={() => refetch()}>
-            <RefreshCw className="w-4 h-4" />
-          </Button>
-        </div>
+        <PageHeader
+          title="Dashboard"
+          description="Cross-project overview"
+          actions={
+            <Button variant="outline" size="sm" onClick={() => refetch()}>
+              <RefreshCw className="w-4 h-4" />
+              Refresh
+            </Button>
+          }
+        />
         <div className="flex flex-col items-center justify-center py-24 text-center">
-          <div className="w-16 h-16 rounded-2xl bg-signal/10 flex items-center justify-center mb-6">
-            <FolderOpen className="w-8 h-8 text-signal" />
-          </div>
+          <FolderOpen className="w-8 h-8 text-text-muted mb-6" />
           <h2 className="text-2xl font-display font-bold text-text-primary mb-2">
             Welcome to Apperio
           </h2>
@@ -200,13 +202,17 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="p-6 md:px-8 lg:p-10 space-y-6">
-      <div className="flex items-center justify-between">
-        <PageHeader title="Dashboard" description="Cross-project overview" />
-        <Button variant="ghost" size="sm" onClick={() => refetch()}>
-          <RefreshCw className="w-4 h-4" />
-        </Button>
-      </div>
+    <div className="space-y-6">
+      <PageHeader
+        title="Dashboard"
+        description="Cross-project overview"
+        actions={
+          <Button variant="outline" size="sm" onClick={() => refetch()}>
+            <RefreshCw className="w-4 h-4" />
+            Refresh
+          </Button>
+        }
+      />
 
       {/* Metric Cards — with sparklines and real comparison data */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
@@ -368,7 +374,7 @@ export default function DashboardPage() {
               <ViewToggle mode={projectsView} onChange={setProjectsView} />
               <Link
                 href="/projects"
-                className="text-xs text-signal hover:text-signal-bright transition-colors flex items-center gap-1"
+                className="text-xs text-text-primary underline underline-offset-4 decoration-border-accent hover:decoration-current transition-colors flex items-center gap-1"
               >
                 View all <ArrowRight className="w-3 h-3" />
               </Link>
@@ -450,7 +456,7 @@ export default function DashboardPage() {
               <ViewToggle mode={alertsView} onChange={setAlertsView} />
               <Link
                 href="/alerts"
-                className="text-xs text-signal hover:text-signal-bright transition-colors flex items-center gap-1"
+                className="text-xs text-text-primary underline underline-offset-4 decoration-border-accent hover:decoration-current transition-colors flex items-center gap-1"
               >
                 View all <ArrowRight className="w-3 h-3" />
               </Link>

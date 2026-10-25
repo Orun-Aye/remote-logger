@@ -349,7 +349,7 @@ export default function ProjectLogsPage() {
   // ---------------------------------------------------------------------------
 
   return (
-    <div className="h-[calc(100vh-4rem)] flex flex-col bg-bg-base">
+    <div className="h-[calc(100dvh-11rem)] min-h-[480px] flex flex-col">
       {/* Page Header */}
       <div className="border-b border-border-subtle px-6 pt-4 pb-3">
         <PageHeader

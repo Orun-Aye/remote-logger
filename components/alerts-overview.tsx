@@ -50,7 +50,7 @@ export function AlertsOverview() {
       case "resolved":
         return <CheckCircle className="w-4 h-4 text-status-ok" />
       default:
-        return <Bell className="w-4 h-4 text-gray-500" />
+        return <Bell className="w-4 h-4 text-text-muted" />
     }
   }
 

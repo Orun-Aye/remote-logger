@@ -428,7 +428,7 @@ export function EnhancedLogExplorer() {
   const selectedLog = selectedLogIndex >= 0 ? logs[selectedLogIndex] : null;
 
   return (
-    <div className="h-[calc(100vh-4rem)] flex flex-col bg-bg-base overflow-hidden">
+    <div className="h-[calc(100dvh-11rem)] min-h-[480px] flex flex-col overflow-hidden">
       {/* Single-row toolbar replaces previous header + results strip */}
       <Toolbar
         logCount={totalLogCount}

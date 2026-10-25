@@ -117,7 +117,7 @@ export default function TracesPage() {
   return (
     <div className="flex flex-col h-full bg-bg-base">
       {/* Header */}
-      <div className="shrink-0 px-6 pt-6">
+      <div className="shrink-0">
         <PageHeader
           title="Distributed Traces"
           description="End-to-end request tracing across services"
@@ -134,7 +134,7 @@ export default function TracesPage() {
       </div>
 
       {/* Content */}
-      <div className="flex-1 min-h-0 overflow-y-auto px-6 pb-6 space-y-6">
+      <div className="flex-1 min-h-0 overflow-y-auto pb-6 space-y-6">
         {/* Filter Bar */}
         <div className="flex flex-wrap items-center gap-3">
           <Select value={timeRange} onValueChange={(v) => { setTimeRange(v); setPage(1); }}>

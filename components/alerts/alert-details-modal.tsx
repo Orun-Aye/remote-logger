@@ -45,7 +45,7 @@ export function AlertDetailsModal({ alert, open, onOpenChange, onStatusChange }:
       case "low":
         return "bg-data-info/15 text-data-info border-data-info/30"
       default:
-        return "bg-gray-100 text-gray-800 border-gray-200"
+        return "bg-gs-100 text-text-secondary border-border-subtle"
     }
   }
 
@@ -58,9 +58,9 @@ export function AlertDetailsModal({ alert, open, onOpenChange, onStatusChange }:
       case "resolved":
         return "bg-status-ok/15 text-status-ok border-status-ok/30"
       case "snoozed":
-        return "bg-purple-100 text-purple-800 border-purple-200"
+        return "bg-data-purple/10 text-data-purple border-transparent"
       default:
-        return "bg-gray-100 text-gray-800 border-gray-200"
+        return "bg-gs-100 text-text-secondary border-border-subtle"
     }
   }
 
@@ -75,7 +75,7 @@ export function AlertDetailsModal({ alert, open, onOpenChange, onStatusChange }:
       case "low":
         return <Bell className="w-5 h-5 text-data-info" />
       default:
-        return <Bell className="w-5 h-5 text-gray-500" />
+        return <Bell className="w-5 h-5 text-text-muted" />
     }
   }
 
@@ -262,7 +262,7 @@ export function AlertDetailsModal({ alert, open, onOpenChange, onStatusChange }:
                       <span className="text-sm">Slack</span>
                     </div>
                     <div className="flex items-center space-x-2">
-                      <Webhook className="w-4 h-4 text-purple-600" />
+                      <Webhook className="w-4 h-4 text-data-purple" />
                       <span className="text-sm">Webhook</span>
                     </div>
                   </div>
@@ -297,7 +297,7 @@ export function AlertDetailsModal({ alert, open, onOpenChange, onStatusChange }:
                           <span className="text-xs text-muted-foreground">{activity.user}</span>
                         </div>
                       </div>
-                      {index < activityLog.length - 1 && <div className="absolute left-4 mt-8 w-px h-4 bg-gray-200" />}
+                      {index < activityLog.length - 1 && <div className="absolute left-4 mt-8 w-px h-4 bg-border-subtle" />}
                     </div>
                   ))}
                 </div>

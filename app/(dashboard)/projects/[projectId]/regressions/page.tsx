@@ -314,7 +314,7 @@ export default function RegressionsPage() {
 
   if (isLoading) {
     return (
-      <div className="p-6 space-y-6 bg-bg-base min-h-screen">
+      <div className="space-y-6 bg-bg-base min-h-screen">
         <PageHeader
           title="Performance Regressions"
           description="Detect degradations from baseline"
@@ -330,7 +330,7 @@ export default function RegressionsPage() {
 
   if (regressions.length === 0 && !regressionsLoading) {
     return (
-      <div className="p-6 space-y-6 bg-bg-base min-h-screen">
+      <div className="space-y-6 bg-bg-base min-h-screen">
         <PageHeader
           title="Performance Regressions"
           description="Detect degradations from baseline"
@@ -415,7 +415,7 @@ export default function RegressionsPage() {
   // ---------------------------------------------------------------------------
 
   return (
-    <div className="p-6 space-y-6 bg-bg-base min-h-screen">
+    <div className="space-y-6 bg-bg-base min-h-screen">
       <PageHeader
         title="Performance Regressions"
         description="Detect degradations from baseline"

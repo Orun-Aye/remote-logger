@@ -99,7 +99,7 @@ export default function LoginPage() {
                   </FormLabel>
                   <Link
                     href="/forgot-password"
-                    className="text-xs text-signal hover:text-signal-bright transition-colors"
+                    className="text-xs text-text-primary underline underline-offset-4 decoration-border-accent hover:decoration-current transition-colors"
                   >
                     Forgot password?
                   </Link>
@@ -171,7 +171,7 @@ export default function LoginPage() {
           New to Apperio?{" "}
           <Link
             href="/signup"
-            className="text-signal hover:text-signal-bright font-medium transition-colors"
+            className="text-text-primary underline underline-offset-4 decoration-border-accent hover:decoration-current font-medium transition-colors"
           >
             Create an account
           </Link>

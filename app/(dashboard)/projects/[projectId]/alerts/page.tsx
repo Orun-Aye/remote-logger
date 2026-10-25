@@ -139,7 +139,7 @@ export default function ProjectAlertsPage() {
   return (
     <div className="flex flex-col h-full bg-bg-base">
       {/* Header */}
-      <div className="shrink-0 px-6 pt-6 border-b border-border-subtle">
+      <div className="shrink-0 border-b border-border-subtle">
         <PageHeader
           title={`${projectName} Alerts`}
           description="Monitor alert events, manage rules, and review AI suggestions for this project"
@@ -269,7 +269,7 @@ function EventsTab({ projectId }: { projectId: string }) {
   );
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="space-y-6">
       {/* Stats */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <MetricCard
@@ -648,7 +648,7 @@ function RulesTab({ projectId }: { projectId: string }) {
   };
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="space-y-6">
       {/* Actions */}
       <div className="flex items-center justify-between">
         <div className="relative max-w-sm flex-1">
@@ -917,7 +917,7 @@ function AISuggestionsTab({
   };
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center gap-3">
         <Sparkles className="h-5 w-5 text-signal" />

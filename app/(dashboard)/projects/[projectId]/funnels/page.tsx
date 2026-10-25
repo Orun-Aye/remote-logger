@@ -127,7 +127,7 @@ function StepBuilder({
                   value={step.eventType}
                   onChange={(e) => onChange(step.id, e.target.value)}
                   placeholder="/page-url or event"
-                  className="w-44 h-9 text-xs font-mono bg-bg-elevated border-border-subtle focus:border-signal"
+                  className="w-44 h-9 text-xs font-mono bg-bg-elevated border-border-subtle focus:border-gs-900"
                 />
                 {steps.length > 1 && (
                   <Button
@@ -447,7 +447,7 @@ export default function FunnelAnalysisPage() {
   // ---------------------------------------------------------------------------
 
   return (
-    <div className="p-6 space-y-6 bg-bg-base min-h-screen">
+    <div className="space-y-6 bg-bg-base min-h-screen">
       <PageHeader
         title="Funnel Analysis"
         description="Build conversion funnels to understand how users move through your application"

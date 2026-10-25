@@ -176,8 +176,6 @@ export function EnhancedAlertListItem({
         )}
       </div>
 
-      {/* Hover Glow Effect */}
-      <div className="absolute inset-0 bg-gradient-to-r from-[var(--signal)]/0 via-[var(--signal)]/5 to-[var(--signal)]/0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
     </Card>
   );
 }

@@ -234,7 +234,7 @@ export function WebVitalGauge({
           dominantBaseline="central"
           fill="var(--text-muted)"
           fontSize="11"
-          fontFamily="var(--font-body), DM Sans, sans-serif"
+          fontFamily="var(--font-body), Inter, sans-serif"
         >
           {unit || label}
         </text>
@@ -248,7 +248,7 @@ export function WebVitalGauge({
           fill="var(--rating-good)"
           fontSize="8"
           fontWeight="600"
-          fontFamily="var(--font-body), DM Sans, sans-serif"
+          fontFamily="var(--font-body), Inter, sans-serif"
         >
           Good
         </text>
@@ -258,7 +258,7 @@ export function WebVitalGauge({
           textAnchor="start"
           fill="var(--text-muted)"
           fontSize="7"
-          fontFamily="var(--font-body), DM Sans, sans-serif"
+          fontFamily="var(--font-body), Inter, sans-serif"
         >
           {`< ${thresholds.good}${unit}`}
         </text>
@@ -271,7 +271,7 @@ export function WebVitalGauge({
           fill="var(--rating-poor)"
           fontSize="8"
           fontWeight="600"
-          fontFamily="var(--font-body), DM Sans, sans-serif"
+          fontFamily="var(--font-body), Inter, sans-serif"
         >
           Poor
         </text>
@@ -281,7 +281,7 @@ export function WebVitalGauge({
           textAnchor="end"
           fill="var(--text-muted)"
           fontSize="7"
-          fontFamily="var(--font-body), DM Sans, sans-serif"
+          fontFamily="var(--font-body), Inter, sans-serif"
         >
           {`> ${thresholds.needsImprovement}${unit}`}
         </text>

@@ -338,7 +338,7 @@ export default function SecuritySettingsPage() {
                     setVerifyError("");
                   }}
                   placeholder="000000"
-                  className={`bg-bg-elevated border-border-subtle text-text-primary placeholder:text-text-muted focus:border-signal focus:ring-signal/20 text-center font-mono text-xl tracking-[0.3em] h-12 ${
+                  className={`bg-background border-input text-text-primary placeholder:text-text-muted focus:border-gs-900 focus:ring-0 text-center font-mono text-xl tracking-[0.3em] h-12 ${
                     verifyError ? "border-status-danger" : ""
                   }`}
                   autoFocus
@@ -424,7 +424,7 @@ export default function SecuritySettingsPage() {
                     type="checkbox"
                     checked={backupConfirmed}
                     onChange={(e) => setBackupConfirmed(e.target.checked)}
-                    className="w-4 h-4 rounded border-border-subtle text-signal focus:ring-signal/20 bg-bg-elevated"
+                    className="w-4 h-4 rounded border-border-subtle text-signal focus:ring-gs-900/10 bg-bg-elevated"
                   />
                   <span className="text-sm text-text-secondary">
                     I have saved my backup codes in a secure location
@@ -521,7 +521,7 @@ export default function SecuritySettingsPage() {
                       )
                     }
                     placeholder="000000"
-                    className="bg-bg-elevated border-border-subtle text-text-primary placeholder:text-text-muted focus:border-signal focus:ring-signal/20 text-center font-mono text-xl tracking-[0.3em] h-12"
+                    className="bg-background border-input text-text-primary placeholder:text-text-muted focus:border-gs-900 focus:ring-0 text-center font-mono text-xl tracking-[0.3em] h-12"
                     autoFocus
                   />
 

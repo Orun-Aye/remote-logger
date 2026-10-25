@@ -107,7 +107,7 @@ export function IntegrationCard({
       <CardFooter className="pt-0">
         <Button
           asChild
-          variant={isConnected ? "outline" : "signal"}
+          variant="outline"
           size="sm"
           className="w-full"
         >

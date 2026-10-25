@@ -82,7 +82,7 @@ export default function NewProjectPage() {
   };
 
   return (
-    <div className="p-6 md:px-8 lg:p-10 space-y-6 max-w-2xl mx-auto">
+    <div className="space-y-6 max-w-2xl mx-auto">
       {/* Page Header */}
       <PageHeader
         title="Create New Project"

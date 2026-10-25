@@ -4,6 +4,8 @@ import type React from "react";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app-sidebar";
 import { TopBar } from "@/components/top-bar";
+import { PageTrail } from "@/components/page-trail";
+import { StatusBar } from "@/components/status-bar";
 import { useState } from "react";
 import { CommandPalette } from "@/components/command-palette";
 import { QueryClientProvider } from "@tanstack/react-query";
@@ -21,9 +23,13 @@ function DashboardShell({ children }: { children: React.ReactNode }) {
     <SidebarProvider defaultOpen={true}>
       <div className="flex min-h-screen w-full">
         <AppSidebar />
-        <div className="flex-1 flex flex-col">
+        <div className="flex min-w-0 flex-1 flex-col">
           <TopBar onCommandOpen={() => setCommandOpen(true)} />
-          <main className="flex-1 p-6 bg-bg-base">{children}</main>
+          <main id="main" className="flex-1 bg-background px-4 py-6 md:px-8 lg:px-10 lg:py-8">
+            <PageTrail />
+            {children}
+          </main>
+          <StatusBar />
         </div>
       </div>
       <CommandPalette open={commandOpen} onOpenChange={setCommandOpen} />

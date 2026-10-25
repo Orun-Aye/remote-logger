@@ -159,7 +159,7 @@ export default function ResetPasswordPage() {
           <div className="mt-2">
             <Link
               href="/forgot-password"
-              className="text-signal hover:text-signal-bright underline text-xs"
+              className="text-text-primary underline underline-offset-4 decoration-border-accent hover:decoration-current underline text-xs"
             >
               Request a new reset link
             </Link>
@@ -293,7 +293,7 @@ export default function ResetPasswordPage() {
       <div className="text-center">
         <Link
           href="/login"
-          className="inline-flex items-center text-sm text-signal hover:text-signal-bright"
+          className="inline-flex items-center text-sm text-text-primary underline underline-offset-4 decoration-border-accent hover:decoration-current"
         >
           <ArrowLeft className="w-4 h-4 mr-1" />
           Back to sign in

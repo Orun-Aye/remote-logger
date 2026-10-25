@@ -244,7 +244,7 @@ function SignupForm() {
           Already have an account?{" "}
           <Link
             href="/login"
-            className="text-signal hover:text-signal-bright font-medium transition-colors"
+            className="text-text-primary underline underline-offset-4 decoration-border-accent hover:decoration-current font-medium transition-colors"
           >
             Sign in
           </Link>

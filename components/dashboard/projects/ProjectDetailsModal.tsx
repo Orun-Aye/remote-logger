@@ -154,7 +154,7 @@ export function ProjectDetailsModal({
       case "down":
         return <TrendingDown className="w-4 h-4 text-status-danger" />;
       default:
-        return <Minus className="w-4 h-4 text-gray-500" />;
+        return <Minus className="w-4 h-4 text-text-muted" />;
     }
   };
 
@@ -165,7 +165,7 @@ export function ProjectDetailsModal({
       case "down":
         return "text-status-danger";
       default:
-        return "text-gray-600 dark:text-gray-400";
+        return "text-text-secondary";
     }
   };
 
@@ -189,7 +189,7 @@ export function ProjectDetailsModal({
             <div className="flex items-center space-x-3">
               <div
                 className={`w-3 h-3 rounded-full ${
-                  project.isActive ? "bg-status-ok" : "bg-gray-400"
+                  project.isActive ? "bg-status-ok" : "bg-gs-400"
                 }`}
               />
               <div>
@@ -357,7 +357,7 @@ export function ProjectDetailsModal({
               <Card>
                 <CardContent className="p-4">
                   <div className="flex items-center space-x-2">
-                    <Users className="w-4 h-4 text-purple-500" />
+                    <Users className="w-4 h-4 text-data-purple" />
                     <div>
                       <p className="text-2xl font-bold">
                         {project.teamMembers.length}
@@ -490,7 +490,7 @@ export function ProjectDetailsModal({
                   </div>
 
                   <div className="text-center">
-                    <div className="text-3xl font-bold text-purple-600 dark:text-purple-400">
+                    <div className="text-3xl font-bold text-data-purple">
                       {project.metrics.performance.p95ResponseTime}ms
                     </div>
                     <p className="text-sm text-muted-foreground mt-1">

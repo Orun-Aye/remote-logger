@@ -450,7 +450,7 @@ function TeamCard({
             <Input
               value={editName}
               onChange={(e) => setEditName(e.target.value)}
-              className="bg-bg-elevated border-border-subtle text-text-primary focus:border-signal focus:ring-signal/20"
+              className="bg-background border-input text-text-primary focus:border-gs-900 focus:ring-0"
             />
           </div>
           <DialogFooter>
@@ -782,7 +782,7 @@ export default function OrgTeamsPage() {
               value={newTeamName}
               onChange={(e) => setNewTeamName(e.target.value)}
               placeholder="e.g. Engineering, Design, Platform"
-              className="bg-bg-elevated border-border-subtle text-text-primary placeholder:text-text-muted focus:border-signal focus:ring-signal/20"
+              className="bg-background border-input text-text-primary placeholder:text-text-muted focus:border-gs-900 focus:ring-0"
             />
           </div>
           <DialogFooter>

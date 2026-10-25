@@ -83,10 +83,7 @@ export function OrgSwitcher() {
     <>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <button className="flex items-center gap-2 w-full px-2 py-1.5 rounded-md hover:bg-bg-elevated/50 transition-colors text-left">
-            <div className="w-6 h-6 rounded-md bg-signal/10 flex items-center justify-center shrink-0">
-              <Building2 className="w-3.5 h-3.5 text-signal" />
-            </div>
+          <button className="flex items-center gap-2 w-full px-3 py-1.5 rounded-sm hover:bg-gs-50 transition-colors text-left">
             <span className="text-sm text-text-primary truncate flex-1 font-medium">
               {isLoading
                 ? "Loading..."
@@ -152,7 +149,7 @@ export function OrgSwitcher() {
                 value={newOrgName}
                 onChange={(e) => setNewOrgName(e.target.value)}
                 placeholder="My Company"
-                className="bg-bg-elevated border-border-subtle text-text-primary placeholder:text-text-muted focus:border-signal focus:ring-signal/20"
+                className="bg-background border-input text-text-primary placeholder:text-text-muted focus:border-gs-900 focus:ring-0"
               />
             </div>
             <div className="space-y-2">
@@ -165,7 +162,7 @@ export function OrgSwitcher() {
                 value={newBillingEmail}
                 onChange={(e) => setNewBillingEmail(e.target.value)}
                 placeholder="billing@company.com"
-                className="bg-bg-elevated border-border-subtle text-text-primary placeholder:text-text-muted focus:border-signal focus:ring-signal/20"
+                className="bg-background border-input text-text-primary placeholder:text-text-muted focus:border-gs-900 focus:ring-0"
               />
             </div>
           </div>

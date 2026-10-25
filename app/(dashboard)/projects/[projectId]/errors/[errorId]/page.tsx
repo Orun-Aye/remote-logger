@@ -137,7 +137,7 @@ function formatCompact(value: number): string {
 
 function ErrorDetailSkeleton() {
   return (
-    <div className="p-6 bg-bg-base min-h-full space-y-6">
+    <div className="bg-bg-base min-h-full space-y-6">
       <div className="flex items-center gap-3">
         <div className="animate-pulse h-9 w-9 bg-bg-elevated rounded" />
         <div className="space-y-2">
@@ -235,7 +235,7 @@ export default function ErrorDetailPage() {
   // Fetch error
   if (fetchError) {
     return (
-      <div className="p-6 bg-bg-base min-h-full">
+      <div className="bg-bg-base min-h-full">
         <div className="text-center py-16 bg-bg-surface border border-border-subtle rounded-lg">
           <AlertTriangle className="w-12 h-12 text-status-danger mx-auto mb-4" />
           <h2 className="text-2xl font-display font-bold text-status-danger">
@@ -257,7 +257,7 @@ export default function ErrorDetailPage() {
   // No data
   if (!errorDetail) {
     return (
-      <div className="p-6 bg-bg-base min-h-full">
+      <div className="bg-bg-base min-h-full">
         <div className="text-center py-16 bg-bg-surface border border-border-subtle rounded-lg">
           <SignalDot status="ok" size="lg" pulse={false} className="mx-auto mb-4" />
           <h2 className="text-lg font-display font-semibold text-text-primary">
@@ -277,7 +277,7 @@ export default function ErrorDetailPage() {
   }
 
   return (
-    <div className="p-6 bg-bg-base min-h-full space-y-6">
+    <div className="bg-bg-base min-h-full space-y-6">
       {/* Header with back button */}
       <PageHeader
         title={errorName}
@@ -295,12 +295,12 @@ export default function ErrorDetailPage() {
         }
         badge={
           errorDetail.status === "resolved" ? (
-            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-status-ok/10 text-status-ok text-xs font-medium">
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-sm bg-status-ok/10 text-status-ok text-xs font-medium">
               <SignalDot status="ok" size="sm" pulse={false} />
               Resolved
             </span>
           ) : (
-            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-status-danger/10 text-status-danger text-xs font-medium">
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-sm bg-status-danger/10 text-status-danger text-xs font-medium">
               <SignalDot status="danger" size="sm" />
               Active
             </span>

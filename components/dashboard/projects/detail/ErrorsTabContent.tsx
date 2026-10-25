@@ -142,7 +142,7 @@ export function ErrorsTabContent({ errors, projectId }: ErrorsTabContentProps) {
                     </span>
                     <Link
                       href={`/logs?projectId=${projectId}&search=${encodeURIComponent(error._id)}`}
-                      className="flex items-center gap-1 text-signal hover:text-signal-bright transition-colors"
+                      className="flex items-center gap-1 text-text-primary underline underline-offset-4 decoration-border-accent hover:decoration-current transition-colors"
                     >
                       View in Logs
                       <ExternalLink className="w-3 h-3" />

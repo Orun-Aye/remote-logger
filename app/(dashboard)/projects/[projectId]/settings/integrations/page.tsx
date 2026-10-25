@@ -338,7 +338,7 @@ export default function IntegrationSettingsPage() {
               value={slackWebhookUrl}
               onChange={(e) => handleSlackChange(e.target.value)}
               placeholder="https://hooks.slack.com/services/..."
-              className={`bg-bg-elevated border-border-subtle text-text-primary placeholder:text-text-muted focus:border-signal focus:ring-signal/20 font-mono text-sm ${
+              className={`bg-background border-input text-text-primary placeholder:text-text-muted focus:border-gs-900 focus:ring-0 font-mono text-sm ${
                 slackError ? "border-status-danger focus:border-status-danger" : ""
               }`}
             />
@@ -410,7 +410,7 @@ export default function IntegrationSettingsPage() {
               value={emailRecipients}
               onChange={(e) => handleEmailChange(e.target.value)}
               placeholder="dev@example.com, ops@example.com"
-              className={`bg-bg-elevated border-border-subtle text-text-primary placeholder:text-text-muted focus:border-signal focus:ring-signal/20 ${
+              className={`bg-background border-input text-text-primary placeholder:text-text-muted focus:border-gs-900 focus:ring-0 ${
                 emailError
                   ? "border-status-danger focus:border-status-danger"
                   : ""
@@ -485,7 +485,7 @@ export default function IntegrationSettingsPage() {
               value={webhookUrl}
               onChange={(e) => handleWebhookChange(e.target.value)}
               placeholder="https://your-service.com/webhook"
-              className={`bg-bg-elevated border-border-subtle text-text-primary placeholder:text-text-muted focus:border-signal focus:ring-signal/20 font-mono text-sm ${
+              className={`bg-background border-input text-text-primary placeholder:text-text-muted focus:border-gs-900 focus:ring-0 font-mono text-sm ${
                 webhookError
                   ? "border-status-danger focus:border-status-danger"
                   : ""
@@ -641,7 +641,7 @@ function LinkedGithubRepoCard({
             No GitHub access yet. Install the GitHub App above, or{" "}
             <a
               href="/settings/integrations"
-              className="text-signal hover:underline"
+              className="text-text-primary underline underline-offset-4 decoration-border-accent hover:decoration-current"
             >
               connect a personal account in Account Settings →
             </a>

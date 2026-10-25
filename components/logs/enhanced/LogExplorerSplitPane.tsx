@@ -94,7 +94,7 @@ export function LogExplorerSplitPane({
           className={cn(
             "absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-10 w-0.5 rounded-full transition-all duration-150",
             isDragging
-              ? "bg-signal shadow-[0_0_8px_var(--signal-glow)]"
+              ? "bg-signal"
               : "bg-border-accent"
           )}
         />

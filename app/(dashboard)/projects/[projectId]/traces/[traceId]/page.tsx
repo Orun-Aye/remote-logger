@@ -402,7 +402,7 @@ export default function TraceDetailPage() {
 
   if (isLoading) {
     return (
-      <div className="p-6 max-w-7xl mx-auto space-y-6">
+      <div className="max-w-7xl mx-auto space-y-6">
         <Skeleton className="h-10 w-80" />
         <div className="grid grid-cols-3 gap-4">
           {[...Array(3)].map((_, i) => (
@@ -416,7 +416,7 @@ export default function TraceDetailPage() {
 
   if (detailError) {
     return (
-      <div className="p-6 max-w-7xl mx-auto">
+      <div className="max-w-7xl mx-auto">
         <div className="text-center py-16 bg-bg-surface border border-border-subtle rounded-lg">
           <AlertTriangle className="h-12 w-12 text-status-danger mx-auto mb-4" />
           <h2 className="text-2xl font-display font-bold text-status-danger">
@@ -436,7 +436,7 @@ export default function TraceDetailPage() {
   }
 
   return (
-    <div className="p-6 max-w-7xl mx-auto space-y-6">
+    <div className="max-w-7xl mx-auto space-y-6">
       {/* Header */}
       <PageHeader
         title={`Trace ${truncateId(traceId)}`}

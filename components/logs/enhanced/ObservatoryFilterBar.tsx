@@ -176,7 +176,7 @@ export function ObservatoryFilterBar({
             className={cn(
               "w-full bg-bg-elevated border border-border-faint rounded-md outline-none",
               "text-text-primary font-body transition-colors duration-150",
-              "focus:border-signal/40"
+              "focus:border-gs-900/40"
             )}
             style={{
               padding: "5px 28px 5px 30px",
@@ -480,7 +480,7 @@ export function ObservatoryFilterBar({
                 onFiltersChange({ ...filters, release: e.target.value })
               }
               placeholder="2.4.1"
-              className="font-mono bg-bg-elevated border border-border-faint rounded-sm outline-none text-text-primary focus:border-signal/40 transition-colors"
+              className="font-mono bg-bg-elevated border border-border-faint rounded-sm outline-none text-text-primary focus:border-gs-900/40 transition-colors"
               style={{ padding: "2px 8px", width: 80, fontSize: 11 }}
             />
           </div>

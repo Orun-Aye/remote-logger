@@ -336,7 +336,7 @@ export default function ActivityPage() {
   return (
     <div className="flex flex-col h-full bg-bg-base">
       {/* Header */}
-      <div className="shrink-0 px-6 pt-6">
+      <div className="shrink-0">
         <PageHeader
           title="Activity Feed"
           description="Real-time event stream"
@@ -385,7 +385,7 @@ export default function ActivityPage() {
       </div>
 
       {/* Content */}
-      <div className="flex-1 min-h-0 overflow-y-auto px-6 pb-6 space-y-6">
+      <div className="flex-1 min-h-0 overflow-y-auto pb-6 space-y-6">
         {/* Metric Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <MetricCard

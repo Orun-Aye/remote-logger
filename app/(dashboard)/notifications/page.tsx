@@ -42,7 +42,7 @@ export default function NotificationsPage() {
   };
 
   return (
-    <div className="p-6 space-y-8">
+    <div className="space-y-8">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
@@ -118,14 +118,14 @@ function NotificationCard({
   const getTypeColor = (type: string) => {
     switch (type) {
       case "error":
-        return "border-status-danger bg-status-danger/10";
+        return "border-l-status-danger";
       case "warning":
-        return "border-status-warn bg-status-warn/10";
+        return "border-l-status-warn";
       case "success":
-        return "border-status-ok bg-status-ok/10";
+        return "border-l-status-ok";
       case "info":
       default:
-        return "border-data-info bg-data-info/10";
+        return "border-l-data-info";
     }
   };
 
@@ -147,7 +147,7 @@ function NotificationCard({
     <Card
       className={`bg-bg-surface border-border-subtle ${
         !notification.read
-          ? "border-l-4 " + getTypeColor(notification.type)
+          ? "border-l-2 bg-gs-50 " + getTypeColor(notification.type)
           : ""
       }`}
     >

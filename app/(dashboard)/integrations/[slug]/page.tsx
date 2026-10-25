@@ -131,7 +131,7 @@ export default function IntegrationDetailPage() {
   const fields = getFieldsForType(slug);
 
   return (
-    <div className="flex flex-col gap-6 p-6 max-w-3xl">
+    <div className="flex flex-col gap-6 max-w-3xl">
       {/* Back link */}
       <Button asChild variant="ghost" size="sm" className="w-fit -mb-2">
         <Link href="/integrations">

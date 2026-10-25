@@ -131,7 +131,7 @@ export default function MfaVerifyPage() {
             value={code}
             onChange={(e) => handleCodeChange(e.target.value)}
             placeholder={useBackupCode ? "e.g. a1b2c3d4" : "000000"}
-            className={`bg-bg-base border-border-subtle text-text-primary placeholder:text-text-muted focus:border-signal focus:ring-signal/20 text-center font-mono text-2xl tracking-[0.3em] h-14 ${
+            className={`bg-bg-base border-border-subtle text-text-primary placeholder:text-text-muted focus:border-gs-900 focus:ring-gs-900/10 text-center font-mono text-2xl tracking-[0.3em] h-14 ${
               error ? "border-status-danger" : ""
             }`}
             disabled={isLoading}
@@ -162,7 +162,7 @@ export default function MfaVerifyPage() {
         <button
           type="button"
           onClick={toggleMode}
-          className="text-sm text-signal hover:text-signal-bright transition-colors"
+          className="text-sm text-text-primary underline underline-offset-4 decoration-border-accent hover:decoration-current transition-colors"
         >
           {useBackupCode
             ? "Use authenticator code instead"
@@ -173,7 +173,7 @@ export default function MfaVerifyPage() {
       <p className="text-center text-sm text-text-muted">
         <Link
           href="/login"
-          className="text-signal hover:text-signal-bright font-medium transition-colors inline-flex items-center gap-1"
+          className="text-text-primary underline underline-offset-4 decoration-border-accent hover:decoration-current font-medium transition-colors inline-flex items-center gap-1"
           onClick={() => sessionStorage.removeItem("mfaToken")}
         >
           <ArrowLeft className="w-3.5 h-3.5" />

@@ -4,309 +4,229 @@
 @custom-variant dark (&:is(.dark *));
 
 /* ============================================================================
-   OBSERVATORY DESIGN SYSTEM — Apperio
-   "A precision instrument pointed at a vast, complex sky"
+   LEDGER DESIGN SYSTEM: Apperio platform
+   A quiet, editorial instrument. A neutral grey ramp carries the interface;
+   colour is reserved for state and consequence (ok, attention, negative,
+   info). Hairline rules instead of shadowed cards, 4px radii at most.
 
-   Palette:
-     Mint Cream  #f7fff7  — light backgrounds
-     Grey Olive  #969a96  — muted text, subtle borders
-     Graphite    #343434  — dark backgrounds, primary text (light)
-     Taupe       #97716a  — warm tertiary accent
-     Apricot Cream #fcca87 — warm highlight, warnings
-     Signal      #AEF78E  — primary accent (dark); #1f7a3d on light
+   Type: Inter (body), Space Grotesk (display titles), JetBrains Mono
+   (eyebrows, identifiers, numbers). Loaded on <html> in app/layout.tsx.
+
+   The landing page and public docs keep their own tokens (app/landing.css).
    ============================================================================ */
 
-/* Light mode — Mint Cream base */
+/* Light (default) */
 :root {
-  --background: #f7fff7;
-  --foreground: #343434;
-  --card: #ffffff;
-  --card-foreground: #343434;
-  --popover: #ffffff;
-  --popover-foreground: #343434;
-  --primary: #1f7a3d;
-  --primary-foreground: #ffffff;
-  --secondary: #f0f5f0;
-  --secondary-foreground: #343434;
-  --muted: #f0f5f0;
-  --muted-foreground: #969a96;
-  --accent: #f0f5f0;
-  --accent-foreground: #343434;
-  --destructive: #d94f4f;
+  /* Neutral ramp */
+  --gs-0: #ffffff;
+  --gs-50: #fafafa;
+  --gs-100: #f4f4f4;
+  --gs-200: #e6e6e6;
+  --gs-300: #cfcfcf;
+  --gs-400: #a3a3a3;
+  --gs-500: #737373;
+  --gs-600: #525252;
+  --gs-700: #333333;
+  --gs-800: #1f1f1f;
+  --gs-900: #0a0a0a;
+
+  --background: var(--gs-0);
+  --foreground: var(--gs-900);
+  --card: var(--gs-0);
+  --card-foreground: var(--gs-900);
+  --popover: var(--gs-0);
+  --popover-foreground: var(--gs-900);
+  --primary: var(--gs-900);
+  --primary-foreground: var(--gs-0);
+  --secondary: var(--gs-100);
+  --secondary-foreground: var(--gs-900);
+  --muted: var(--gs-100);
+  --muted-foreground: var(--gs-500);
+  --accent: var(--gs-100);
+  --accent-foreground: var(--gs-900);
+  --destructive: #8c1d18;
   --destructive-foreground: #ffffff;
-  --border: #d4d8d4;
-  --input: #d4d8d4;
-  --ring: #1f7a3d;
-  --chart-1: #1f7a3d;
-  --chart-2: #d4a55c;
-  --chart-3: #97716a;
-  --chart-4: #d94f4f;
-  --chart-5: #AEF78E;
-  --sidebar: #eef4ee;
-  --sidebar-foreground: #343434;
-  --sidebar-primary: #1f7a3d;
-  --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: #e2e8e2;
-  --sidebar-accent-foreground: #343434;
-  --sidebar-border: #c4c8c4;
-  --sidebar-ring: #1f7a3d;
+  --border: var(--gs-200);
+  --input: var(--gs-300);
+  --ring: var(--gs-900);
+  --chart-1: #0a0a0a;
+  --chart-2: #737373;
+  --chart-3: #1b4b6e;
+  --chart-4: #8c1d18;
+  --chart-5: #8a5a00;
+  --sidebar: var(--gs-0);
+  --sidebar-foreground: var(--gs-900);
+  --sidebar-primary: var(--gs-900);
+  --sidebar-primary-foreground: var(--gs-0);
+  --sidebar-accent: var(--gs-100);
+  --sidebar-accent-foreground: var(--gs-900);
+  --sidebar-border: var(--gs-200);
+  --sidebar-ring: var(--gs-900);
 
-  --font-sans: var(--font-body), "DM Sans", sans-serif;
+  --font-sans: var(--font-body), "Inter", -apple-system, "Segoe UI", system-ui, sans-serif;
   --font-serif: Georgia, serif;
-  --font-mono: var(--font-geist-mono), "Geist Mono", "Fira Code", monospace;
+  --font-mono: var(--font-code), "JetBrains Mono", ui-monospace, "SF Mono", monospace;
 
-  --radius: 0.5rem;
+  --radius: 4px;
 
-  --shadow-2xs: 0 1px 2px 0 rgba(52, 52, 52, 0.04);
-  --shadow-xs: 0 1px 2px 0 rgba(52, 52, 52, 0.05);
-  --shadow-sm: 0 1px 3px 0 rgba(52, 52, 52, 0.08), 0 1px 2px -1px rgba(52, 52, 52, 0.08);
-  --shadow: 0 1px 3px 0 rgba(52, 52, 52, 0.08), 0 1px 2px -1px rgba(52, 52, 52, 0.08);
-  --shadow-md: 0 4px 6px -1px rgba(52, 52, 52, 0.08), 0 2px 4px -2px rgba(52, 52, 52, 0.06);
-  --shadow-lg: 0 10px 15px -3px rgba(52, 52, 52, 0.08), 0 4px 6px -4px rgba(52, 52, 52, 0.06);
-  --shadow-xl: 0 20px 25px -5px rgba(52, 52, 52, 0.08), 0 8px 10px -6px rgba(52, 52, 52, 0.06);
-  --shadow-2xl: 0 25px 50px -12px rgba(52, 52, 52, 0.15);
+  /* Elevation is for things that float (menus, dialogs); surfaces stay flat */
+  --shadow-2xs: none;
+  --shadow-xs: none;
+  --shadow-sm: none;
+  --shadow: none;
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.08);
+  --shadow-lg: 0 4px 16px rgba(0, 0, 0, 0.08);
+  --shadow-xl: 0 8px 24px rgba(0, 0, 0, 0.10);
+  --shadow-2xl: 0 8px 24px rgba(0, 0, 0, 0.10);
   --tracking-normal: 0em;
   --spacing: 0.25rem;
 
-  /* =========================================================================
-     OBSERVATORY EXTENSION TOKENS — Light Mode
-     ========================================================================= */
+  /* Surfaces */
+  --bg-void: var(--gs-50);
+  --bg-base: var(--gs-0);
+  --bg-surface: var(--gs-0);
+  --bg-elevated: var(--gs-100);
+  --bg-overlay: var(--gs-0);
 
-  /* Background layers — mint cream depth hierarchy */
-  --bg-void: #e8f0e8;
-  --bg-base: #f7fff7;
-  --bg-surface: #ffffff;
-  --bg-elevated: #f0f5f0;
-  --bg-overlay: #ffffff;
+  /* Rules */
+  --border-faint: #efefef;
+  --border-subtle: var(--gs-200);
+  --border-accent: var(--gs-300);
 
-  /* Borders — grey-olive derived, soft */
-  --border-faint: #dde1dd;
-  --border-subtle: #c4c8c4;
-  --border-accent: #969a96;
+  /* The accent is ink: active and selected states are near-black */
+  --signal: var(--gs-900);
+  --signal-glow: transparent;
+  --signal-muted: var(--gs-100);
+  --signal-bright: var(--gs-700);
 
-  /* Signal — deep green on light (AA on mint), lime on dark */
-  --signal: #1f7a3d;
-  --signal-glow: #1f7a3d20;
-  --signal-muted: #1f7a3d10;
-  --signal-bright: #186a33;
+  /* Data: attention ochre, plus info blue and a purple for third series */
+  --data: #8a5a00;
+  --data-muted: #faf3e6;
+  --data-bright: #a86e00;
+  --data-info: #1b4b6e;
+  --data-purple: #5b3f8c;
 
-  /* Data — Apricot Cream (darker for light bg) */
-  --data: #d4a55c;
-  --data-muted: #d4a55c15;
-  --data-bright: #fcca87;
+  /* State and consequence only, never decoration */
+  --status-warn: #8a5a00;
+  --status-danger: #8c1d18;
+  --status-fatal: #6b1512;
+  --status-ok: #10653a;
 
-  /* Status colors — tuned for light bg */
-  --status-warn: #d4a55c;
-  --status-danger: #d94f4f;
-  --status-fatal: #b93a3a;
-  --status-ok: #1f7a3d;
+  --rating-good: #10653a;
+  --rating-needs-improvement: #8a5a00;
+  --rating-poor: #8c1d18;
 
-  /* Web Vital rating colors */
-  --rating-good: #1f7a3d;
-  --rating-needs-improvement: #d4a55c;
-  --rating-poor: #d94f4f;
+  --level-trace: #a3a3a3;
+  --level-debug: #737373;
+  --level-info: #1b4b6e;
+  --level-warn: #8a5a00;
+  --level-error: #8c1d18;
+  --level-fatal: #6b1512;
 
-  /* Log level palette — readable on light bg */
-  --level-trace: #969a96;
-  --level-debug: #7a7e7a;
-  --level-info: #1f7a3d;
-  --level-warn: #d4a55c;
-  --level-error: #d94f4f;
-  --level-fatal: #993333;
+  /* Text */
+  --text-primary: var(--gs-900);
+  --text-secondary: var(--gs-600);
+  --text-muted: var(--gs-500);
+  --text-code: #1b4b6e;
 
-  /* Text hierarchy — graphite on mint cream */
-  --text-primary: #343434;
-  --text-secondary: #5c605c;
-  --text-muted: #969a96;
-  --text-code: #4a7f96;
+  /* No glows in this system; the names stay so existing classes resolve */
+  --glow-signal: none;
+  --glow-signal-sm: none;
+  --glow-data: none;
+  --glow-danger: none;
 
-  /* Glow effects — very subtle on light */
-  --glow-signal: 0 0 20px #1f7a3d12, 0 0 40px #1f7a3d08;
-  --glow-signal-sm: 0 0 8px #1f7a3d18;
-  --glow-data: 0 0 20px #d4a55c12, 0 0 40px #d4a55c08;
-  --glow-danger: 0 0 20px #d94f4f12, 0 0 40px #d94f4f08;
+  --shadow-card: none;
+  --shadow-float: 0 4px 16px rgba(0, 0, 0, 0.08);
+  --shadow-lift: 0 8px 24px rgba(0, 0, 0, 0.10);
+  --border-glow: none;
 
-  /* Card shadows — light and crisp */
-  --shadow-card: 0 1px 3px #3434340a, 0 1px 2px #34343408;
-  --shadow-float: 0 10px 40px #34343412, 0 4px 12px #3434340a;
-  --shadow-lift: 0 20px 60px #34343418, 0 8px 24px #34343410;
+  /* Syntax */
+  --syntax-keyword: #5b3f8c;
+  --syntax-string: #10653a;
+  --syntax-number: #8a5a00;
+  --syntax-comment: #a3a3a3;
+  --syntax-function: #1b4b6e;
+  --syntax-type: #8a5a00;
+  --syntax-property: #0a0a0a;
+  --syntax-operator: #525252;
 
-  /* Inner glow for active borders */
-  --border-glow: inset 0 1px 0 #ffffff80;
-
-  /* Syntax highlighting — light bg variants */
-  --syntax-keyword: #97716a;
-  --syntax-string: #4a7f96;
-  --syntax-number: #c27a3c;
-  --syntax-comment: #969a96;
-  --syntax-function: #1f7a3d;
-  --syntax-type: #97716a;
-  --syntax-property: #343434;
-  --syntax-operator: #5c605c;
-
-  /* Motion system — same timing for both modes */
-  --ease-smooth: cubic-bezier(0.4, 0, 0.2, 1);
+  /* Motion: short and quiet */
+  --ease-smooth: cubic-bezier(0.2, 0, 0, 1);
   --ease-snap: cubic-bezier(0.2, 0, 0, 1);
-  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
-  --ease-out: cubic-bezier(0, 0, 0.2, 1);
+  --ease-spring: cubic-bezier(0.2, 0, 0, 1);
+  --ease-out: cubic-bezier(0.2, 0, 0, 1);
 
   --dur-instant: 80ms;
-  --dur-fast: 150ms;
-  --dur-normal: 250ms;
-  --dur-slow: 400ms;
-  --dur-xslow: 700ms;
-  --dur-scene: 1200ms;
+  --dur-fast: 120ms;
+  --dur-normal: 160ms;
+  --dur-slow: 240ms;
+  --dur-xslow: 400ms;
+  --dur-scene: 600ms;
 }
 
-/* ============================================================================
-   DARK MODE — Vercel-style near-black
-   Near-black base (#0a0a0a), layered neutral grays, white-alpha borders.
-   Accent colors from the custom palette (Steel Blue, Apricot, Taupe).
-   ============================================================================ */
+/* Dark: the same system remapped onto a near-black ramp */
 .dark {
-  /* Core shadcn mappings → Vercel neutral scale */
-  --background: #0a0a0a;
-  --foreground: #ededed;
-  --card: #1a1a1a;
-  --card-foreground: #ededed;
-  --popover: #1a1a1a;
-  --popover-foreground: #ededed;
-  --primary: #AEF78E;
-  --primary-foreground: #0a0a0a;
-  --secondary: #262626;
-  --secondary-foreground: #ededed;
-  --muted: #262626;
-  --muted-foreground: #a0a0a0;
-  --accent: #262626;
-  --accent-foreground: #ededed;
-  --destructive: #e5484d;
-  --destructive-foreground: #ededed;
-  --border: rgba(255, 255, 255, 0.10);
-  --input: rgba(255, 255, 255, 0.15);
-  --ring: #AEF78E;
+  --gs-0: #0a0a0a;
+  --gs-50: #0f0f0f;
+  --gs-100: #171717;
+  --gs-200: #262626;
+  --gs-300: #333333;
+  --gs-400: #525252;
+  --gs-500: #8a8a8a;
+  --gs-600: #a3a3a3;
+  --gs-700: #cfcfcf;
+  --gs-800: #e6e6e6;
+  --gs-900: #f4f4f4;
 
-  /* Chart colors — palette accents on Vercel dark */
-  --chart-1: #AEF78E;
-  --chart-2: #fcca87;
-  --chart-3: #97716a;
-  --chart-4: #e5484d;
-  --chart-5: #8bbdd4;
+  --destructive: #e5675f;
+  --destructive-foreground: #0a0a0a;
+  --chart-1: #f4f4f4;
+  --chart-2: #8a8a8a;
+  --chart-3: #7aa7cc;
+  --chart-4: #e5675f;
+  --chart-5: #d9a441;
 
-  /* Sidebar — pure black base */
-  --sidebar: #000000;
-  --sidebar-foreground: #ededed;
-  --sidebar-primary: #AEF78E;
-  --sidebar-primary-foreground: #0a0a0a;
-  --sidebar-accent: #1a1a1a;
-  --sidebar-accent-foreground: #ededed;
-  --sidebar-border: rgba(255, 255, 255, 0.10);
-  --sidebar-ring: #AEF78E;
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.5);
+  --shadow-lg: 0 4px 16px rgba(0, 0, 0, 0.5);
+  --shadow-xl: 0 8px 24px rgba(0, 0, 0, 0.6);
+  --shadow-2xl: 0 8px 24px rgba(0, 0, 0, 0.6);
+  --shadow-float: 0 4px 16px rgba(0, 0, 0, 0.5);
+  --shadow-lift: 0 8px 24px rgba(0, 0, 0, 0.6);
 
-  /* Font stacks */
-  --font-sans: var(--font-body), "DM Sans", sans-serif;
-  --font-serif: Georgia, serif;
-  --font-mono: var(--font-geist-mono), "Geist Mono", "Fira Code", monospace;
+  --border-faint: #1c1c1c;
 
-  --radius: 0.5rem;
+  --data: #d9a441;
+  --data-muted: #2a2110;
+  --data-bright: #e8b85a;
+  --data-info: #7aa7cc;
+  --data-purple: #a58bd6;
 
-  /* Shadows — Vercel deep blacks */
-  --shadow-2xs: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
-  --shadow-xs: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
-  --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.4), 0 1px 2px -1px rgba(0, 0, 0, 0.4);
-  --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.4), 0 1px 2px -1px rgba(0, 0, 0, 0.4);
-  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.5), 0 2px 4px -2px rgba(0, 0, 0, 0.4);
-  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.5), 0 4px 6px -4px rgba(0, 0, 0, 0.5);
-  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.6), 0 8px 10px -6px rgba(0, 0, 0, 0.5);
-  --shadow-2xl: 0 25px 50px -12px rgba(0, 0, 0, 0.8);
+  --status-warn: #d9a441;
+  --status-danger: #e5675f;
+  --status-fatal: #c94a42;
+  --status-ok: #5fbf8a;
 
-  /* =========================================================================
-     OBSERVATORY EXTENSION TOKENS — Dark Mode (Vercel)
-     ========================================================================= */
+  --rating-good: #5fbf8a;
+  --rating-needs-improvement: #d9a441;
+  --rating-poor: #e5675f;
 
-  /* Background layers — Vercel near-black depth hierarchy */
-  --bg-void: #000000;
-  --bg-base: #0a0a0a;
-  --bg-surface: #1a1a1a;
-  --bg-elevated: #262626;
-  --bg-overlay: #2e2e2e;
+  --level-trace: #525252;
+  --level-debug: #8a8a8a;
+  --level-info: #7aa7cc;
+  --level-warn: #d9a441;
+  --level-error: #e5675f;
+  --level-fatal: #c94a42;
 
-  /* Borders — white-alpha, Vercel style */
-  --border-faint: rgba(255, 255, 255, 0.06);
-  --border-subtle: rgba(255, 255, 255, 0.10);
-  --border-accent: rgba(255, 255, 255, 0.15);
+  --text-code: #7aa7cc;
 
-  /* Signal — Steel Blue */
-  --signal: #AEF78E;
-  --signal-glow: #AEF78E26;
-  --signal-muted: #AEF78E12;
-  --signal-bright: #AEF78E;
-
-  /* Data — Apricot Cream */
-  --data: #fcca87;
-  --data-muted: #fcca8718;
-  --data-bright: #fdd9a5;
-
-  /* Status colors — Vercel-aligned red, custom accents */
-  --status-warn: #ffba18;
-  --status-danger: #e5484d;
-  --status-fatal: #c0392b;
-  --status-ok: #AEF78E;
-
-  /* Web Vital rating colors */
-  --rating-good: #AEF78E;
-  --rating-needs-improvement: #ffba18;
-  --rating-poor: #e5484d;
-
-  /* Log level palette — neutral trace/debug, accent info+ */
-  --level-trace: #454545;
-  --level-debug: #878787;
-  --level-info: #AEF78E;
-  --level-warn: #ffba18;
-  --level-error: #e5484d;
-  --level-fatal: #c0392b;
-
-  /* Text hierarchy — Vercel gray scale */
-  --text-primary: #ededed;
-  --text-secondary: #a0a0a0;
-  --text-muted: #6e6e6e;
-  --text-code: #018E42;
-
-  /* Glow effects — subtle against near-black */
-  --glow-signal: 0 0 30px #AEF78E25, 0 0 60px #AEF78E10;
-  --glow-signal-sm: 0 0 12px #AEF78E35;
-  --glow-data: 0 0 30px #fcca8725, 0 0 60px #fcca8710;
-  --glow-danger: 0 0 30px #e5484d25, 0 0 60px #e5484d10;
-
-  /* Card shadows — deep on near-black */
-  --shadow-card: 0 4px 24px #00000050, 0 1px 4px #00000070;
-  --shadow-float: 0 20px 60px #00000070, 0 8px 24px #00000050;
-  --shadow-lift: 0 40px 80px #00000090, 0 16px 40px #00000070;
-
-  /* Inner glow for active borders */
-  --border-glow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
-
-  /* Syntax highlighting — warm palette on Vercel dark */
-  --syntax-keyword: #97716a;
-  --syntax-string: #8bbdd4;
-  --syntax-number: #fcca87;
-  --syntax-comment: #6e6e6e;
-  --syntax-function: #AEF78E;
-  --syntax-type: #fcca87;
-  --syntax-property: #ededed;
-  --syntax-operator: #a0a0a0;
-
-  /* Motion system */
-  --ease-smooth: cubic-bezier(0.4, 0, 0.2, 1);
-  --ease-snap: cubic-bezier(0.2, 0, 0, 1);
-  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
-  --ease-out: cubic-bezier(0, 0, 0.2, 1);
-
-  --dur-instant: 80ms;
-  --dur-fast: 150ms;
-  --dur-normal: 250ms;
-  --dur-slow: 400ms;
-  --dur-xslow: 700ms;
-  --dur-scene: 1200ms;
+  --syntax-keyword: #a58bd6;
+  --syntax-string: #5fbf8a;
+  --syntax-number: #d9a441;
+  --syntax-comment: #525252;
+  --syntax-function: #7aa7cc;
+  --syntax-type: #d9a441;
+  --syntax-property: #f4f4f4;
+  --syntax-operator: #a3a3a3;
 }
 
 /* ============================================================================
@@ -346,6 +266,21 @@
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
+
+  /* Neutral ramp */
+  --color-gs-0: var(--gs-0);
+  --color-gs-50: var(--gs-50);
+  --color-gs-100: var(--gs-100);
+  --color-gs-200: var(--gs-200);
+  --color-gs-300: var(--gs-300);
+  --color-gs-400: var(--gs-400);
+  --color-gs-500: var(--gs-500);
+  --color-gs-600: var(--gs-600);
+  --color-gs-700: var(--gs-700);
+  --color-gs-800: var(--gs-800);
+  --color-gs-900: var(--gs-900);
+  --color-data-info: var(--data-info);
+  --color-data-purple: var(--data-purple);
 
   /* Observatory background layers */
   --color-bg-void: var(--bg-void, #000000);
@@ -410,10 +345,14 @@
   --font-serif: var(--font-serif);
 
   /* Border radii */
-  --radius-sm: calc(var(--radius) - 4px);
-  --radius-md: calc(var(--radius) - 2px);
+  /* 2px for small marks, 4px for everything else. The large steps collapse
+     to 4px so older rounded-xl/2xl classes stay square. */
+  --radius-sm: 2px;
+  --radius-md: var(--radius);
   --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) + 4px);
+  --radius-xl: var(--radius);
+  --radius-2xl: var(--radius);
+  --radius-3xl: var(--radius);
 
   /* Shadow scale */
   --shadow-2xs: var(--shadow-2xs);
@@ -432,24 +371,60 @@
   }
   body {
     @apply bg-background text-foreground;
+    font-family: var(--font-sans);
   }
 }
 
-/* Font utility classes */
+/* Font utility classes. Unlayered, so on the platform they win over
+   font-bold and tracking utilities: every display title shares one weight. */
 .font-display {
-  font-family: var(--font-display), "Syne", sans-serif;
+  font-family: var(--font-display), "Space Grotesk", var(--font-sans);
+}
+.font-display:not(:is(.landing, .docs) *) {
+  font-weight: 500;
+  letter-spacing: -0.02em;
 }
 
 .font-body {
-  font-family: var(--font-body), "DM Sans", sans-serif;
+  font-family: var(--font-body), "Inter", sans-serif;
 }
 
 .font-code {
-  font-family: var(--font-geist-mono), "Geist Mono", "Fira Code", monospace;
+  font-family: var(--font-mono);
 }
 
 .font-mono {
   font-family: var(--font-mono);
+}
+
+/* Page titles use the display face even where a class forgot to ask */
+h1:not(:is(.landing, .docs) *) {
+  font-family: var(--font-display), "Space Grotesk", var(--font-sans);
+  font-weight: 500;
+  letter-spacing: -0.02em;
+}
+
+/* The mono uppercase label above titles and sections */
+.eyebrow {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+/* Table and list column headings */
+.section-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--gs-600);
+}
+
+.tabular {
+  font-variant-numeric: tabular-nums;
 }
 
 /* Scrollbar hide utility */

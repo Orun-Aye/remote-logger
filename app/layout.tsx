@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
-import { Syne, DM_Sans } from "next/font/google";
-import { GeistMono } from "geist/font/mono";
+import { Inter, JetBrains_Mono, Space_Grotesk } from "next/font/google";
 import "./globals.css";
 import "./globals-animations.css";
 import { ThemeProvider } from "@/components/theme-provider";
@@ -8,16 +7,25 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { Toaster } from "@/components/ui/sonner";
 import { Analytics } from "@vercel/analytics/next";
 
-const syne = Syne({
+// Platform type: Space Grotesk for titles, Inter for text, JetBrains Mono for
+// eyebrows, identifiers and numbers. The landing loads its own (landing/fonts.ts).
+const display = Space_Grotesk({
   variable: "--font-display",
   subsets: ["latin"],
-  weight: ["700", "800"],
+  weight: ["500", "600"],
+  display: "swap",
 });
 
-const dmSans = DM_Sans({
+const body = Inter({
   variable: "--font-body",
   subsets: ["latin"],
-  weight: ["300", "400", "500", "600", "700"],
+  display: "swap",
+});
+
+const code = JetBrains_Mono({
+  variable: "--font-code",
+  subsets: ["latin"],
+  display: "swap",
 });
 
 export const metadata: Metadata = {
@@ -37,7 +45,7 @@ export default function RootLayout({
     // here before hydration, hence suppressHydrationWarning.
     <html
       lang="en"
-      className={`${syne.variable} ${dmSans.variable} ${GeistMono.variable}`}
+      className={`${display.variable} ${body.variable} ${code.variable}`}
       suppressHydrationWarning
     >
       <body className="font-body antialiased scrollbar-hide">

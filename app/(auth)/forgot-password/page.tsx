@@ -84,7 +84,7 @@ export default function ForgotPasswordPage() {
               Didn&apos;t receive the email? Check your spam folder or{" "}
               <button
                 onClick={() => setIsSubmitted(false)}
-                className="text-signal hover:text-signal-bright transition-colors"
+                className="text-text-primary underline underline-offset-4 decoration-border-accent hover:decoration-current transition-colors"
               >
                 try again
               </button>
@@ -95,7 +95,7 @@ export default function ForgotPasswordPage() {
         <div className="text-center">
           <Link
             href="/login"
-            className="inline-flex items-center text-sm text-signal hover:text-signal-bright transition-colors"
+            className="inline-flex items-center text-sm text-text-primary underline underline-offset-4 decoration-border-accent hover:decoration-current transition-colors"
           >
             <ArrowLeft className="w-4 h-4 mr-1" />
             Back to sign in
@@ -162,7 +162,7 @@ export default function ForgotPasswordPage() {
       <div className="text-center space-y-4">
         <Link
           href="/login"
-          className="inline-flex items-center text-sm text-signal hover:text-signal-bright transition-colors"
+          className="inline-flex items-center text-sm text-text-primary underline underline-offset-4 decoration-border-accent hover:decoration-current transition-colors"
         >
           <ArrowLeft className="w-4 h-4 mr-1" />
           Back to sign in
@@ -172,7 +172,7 @@ export default function ForgotPasswordPage() {
           Don&apos;t have an account?{" "}
           <Link
             href="/signup"
-            className="text-signal hover:text-signal-bright font-medium transition-colors"
+            className="text-text-primary underline underline-offset-4 decoration-border-accent hover:decoration-current font-medium transition-colors"
           >
             Sign up for free
           </Link>

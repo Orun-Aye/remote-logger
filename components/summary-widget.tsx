@@ -21,22 +21,22 @@ const variantStyles: Record<string, {
   success: {
     icon: "text-signal",
     border: "border-l-signal",
-    glow: "hover:shadow-[0_0_15px_rgba(0,217,126,0.15)]",
+    glow: "",
   },
   destructive: {
     icon: "text-status-danger",
     border: "border-l-status-danger",
-    glow: "hover:shadow-[0_0_15px_rgba(239,68,68,0.15)]",
+    glow: "",
   },
   warning: {
     icon: "text-status-warn",
     border: "border-l-status-warn",
-    glow: "hover:shadow-[0_0_15px_rgba(245,158,11,0.15)]",
+    glow: "",
   },
   default: {
     icon: "text-data-info",
     border: "border-l-data-info",
-    glow: "hover:shadow-[0_0_15px_rgba(77,142,248,0.15)]",
+    glow: "",
   },
 }
 

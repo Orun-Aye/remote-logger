@@ -83,7 +83,7 @@ export function UsageTabContent({ project, usage }: UsageTabContentProps) {
               <div className="flex items-center gap-2">
                 <button
                   onClick={() => setShowApiKey(!showApiKey)}
-                  className="text-xs text-signal hover:text-signal-bright transition-colors"
+                  className="text-xs text-text-primary underline underline-offset-4 decoration-border-accent hover:decoration-current transition-colors"
                 >
                   {showApiKey ? "Hide" : "Show"}
                 </button>

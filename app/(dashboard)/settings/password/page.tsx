@@ -137,7 +137,7 @@ export default function PasswordSettingsPage() {
                     setErrors((prev) => ({ ...prev, currentPassword: "" }));
                 }}
                 placeholder="Enter current password"
-                className="bg-bg-elevated border-border-subtle text-text-primary placeholder:text-text-muted focus:border-signal focus:ring-signal/20 pr-10"
+                className="bg-background border-input text-text-primary placeholder:text-text-muted focus:border-gs-900 focus:ring-0 pr-10"
               />
               <button
                 type="button"
@@ -177,7 +177,7 @@ export default function PasswordSettingsPage() {
                     setErrors((prev) => ({ ...prev, newPassword: "" }));
                 }}
                 placeholder="Enter new password"
-                className="bg-bg-elevated border-border-subtle text-text-primary placeholder:text-text-muted focus:border-signal focus:ring-signal/20 pr-10"
+                className="bg-background border-input text-text-primary placeholder:text-text-muted focus:border-gs-900 focus:ring-0 pr-10"
               />
               <button
                 type="button"
@@ -242,7 +242,7 @@ export default function PasswordSettingsPage() {
                     setErrors((prev) => ({ ...prev, confirmPassword: "" }));
                 }}
                 placeholder="Confirm new password"
-                className="bg-bg-elevated border-border-subtle text-text-primary placeholder:text-text-muted focus:border-signal focus:ring-signal/20 pr-10"
+                className="bg-background border-input text-text-primary placeholder:text-text-muted focus:border-gs-900 focus:ring-0 pr-10"
               />
               <button
                 type="button"

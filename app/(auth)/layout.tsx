@@ -10,12 +10,12 @@ export default function AuthLayout({
   return (
     <div className="flex min-h-screen w-full">
       {/* Left: branded panel (hidden on mobile) */}
-      <div className="hidden lg:flex lg:w-1/2 xl:w-[55%] relative">
+      <div className="hidden lg:flex lg:w-1/2 relative">
         <AuthBrandPanel />
       </div>
 
       {/* Right: form panel */}
-      <div className="flex-1 flex flex-col bg-bg-base overflow-y-auto">
+      <div className="flex-1 flex flex-col bg-background overflow-y-auto">
         <div className="flex justify-end p-4">
           <ThemeToggle />
         </div>

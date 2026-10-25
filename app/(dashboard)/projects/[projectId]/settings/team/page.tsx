@@ -146,7 +146,7 @@ export default function TeamSettingsPage() {
                 value={newEmail}
                 onChange={(e) => setNewEmail(e.target.value)}
                 placeholder="teammate@example.com"
-                className="bg-bg-elevated border-border-subtle text-text-primary placeholder:text-text-muted focus:border-signal focus:ring-signal/20"
+                className="bg-background border-input text-text-primary placeholder:text-text-muted focus:border-gs-900 focus:ring-0"
                 onKeyDown={(e) => e.key === "Enter" && handleAddMember()}
               />
             </div>
@@ -158,7 +158,7 @@ export default function TeamSettingsPage() {
                 id="memberRole"
                 value={newRole}
                 onChange={(e) => setNewRole(e.target.value)}
-                className="w-full h-9 px-3 rounded-md border bg-bg-elevated border-border-subtle text-text-primary text-sm focus:border-signal focus:ring-signal/20 focus:outline-none"
+                className="w-full h-9 px-3 rounded-md border bg-background border-input text-text-primary text-sm focus:border-gs-900 focus:ring-0 focus:outline-none"
               >
                 <option value="admin">Admin</option>
                 <option value="viewer">Viewer</option>

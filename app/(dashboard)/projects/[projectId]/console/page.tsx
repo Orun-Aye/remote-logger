@@ -90,7 +90,7 @@ export default function ConsoleMonitorPage() {
 
   if (ovLoading) {
     return (
-      <div className="p-6 bg-bg-base min-h-full">
+      <div className="bg-bg-base min-h-full">
         <PageHeader title="Console Monitor" description="Console output and message analytics" />
         <SkeletonDashboard />
       </div>
@@ -98,7 +98,7 @@ export default function ConsoleMonitorPage() {
   }
 
   return (
-    <div className="p-6 bg-bg-base min-h-full space-y-6">
+    <div className="bg-bg-base min-h-full space-y-6">
       <PageHeader title="Console Monitor" description="Console output and message analytics" />
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">

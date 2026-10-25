@@ -25,9 +25,9 @@ interface MetricCardProps {
 
 const variantStyles: Record<MetricCardVariant, string> = {
   default: 'border-border-subtle',
-  success: 'border-l-2 border-l-status-ok border-t-border-subtle border-r-border-subtle border-b-border-subtle bg-status-ok/5',
-  warning: 'border-l-2 border-l-status-warn border-t-border-subtle border-r-border-subtle border-b-border-subtle bg-status-warn/5',
-  danger: 'border-l-2 border-l-status-danger border-t-border-subtle border-r-border-subtle border-b-border-subtle bg-status-danger/5',
+  success: 'border-border-subtle shadow-[inset_2px_0_0_var(--status-ok)]',
+  warning: 'border-border-subtle shadow-[inset_2px_0_0_var(--status-warn)]',
+  danger: 'border-border-subtle shadow-[inset_2px_0_0_var(--status-danger)]',
 };
 
 const trendColors: Record<TrendDirection, string> = {
@@ -57,7 +57,7 @@ export function MetricCard({
   return (
     <div
       className={cn(
-        'rounded-lg border bg-bg-surface p-5 min-h-[120px] flex flex-col justify-between',
+        'rounded-md border bg-bg-surface p-5 min-h-[120px] flex flex-col justify-between',
         variantStyles[variant],
         className
       )}
@@ -66,12 +66,12 @@ export function MetricCard({
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             {icon && <span className="text-text-muted">{icon}</span>}
-            <span className="text-xs font-body text-text-muted uppercase tracking-wider">
+            <span className="section-label">
               {label}
             </span>
           </div>
           {trend && (
-            <div className={cn('flex items-center gap-1 text-xs', trendColors[trend.direction])}>
+            <div className={cn('flex items-center gap-1 font-mono text-xs', trendColors[trend.direction])}>
               <TrendIcon direction={trend.direction} />
               <span>{trend.value}</span>
             </div>
@@ -79,7 +79,7 @@ export function MetricCard({
         </div>
         <div
           className={cn(
-            "text-[28px] font-display font-bold text-text-primary leading-none",
+            "text-[28px] font-display tabular text-text-primary leading-none",
             valueClassName
           )}
           title={valueTitle}
