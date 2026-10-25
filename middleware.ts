@@ -4,11 +4,11 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
 /**
- * Beta-aware middleware.
+ * Auth middleware.
  *
  * Public paths pass through freely.
- * Protected paths require an auth token cookie.
- * If no token or token lacks betaAccess, redirect appropriately.
+ * Protected paths require a readable auth token cookie, otherwise /login.
+ * Signup has been open since launch, so there is no beta access check.
  */
 
 const PUBLIC_PATHS = new Set([
@@ -58,26 +58,11 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL("/login", request.url));
   }
 
-  // Decode token to check beta access
-  const payload = decodeJwtPayload(token);
-
-  if (!payload) {
-    // Invalid token, redirect to login
+  // An unreadable token is treated as no token
+  if (!decodeJwtPayload(token)) {
     return NextResponse.redirect(new URL("/login", request.url));
   }
 
-  // Admin users always get full access
-  if (payload.role === "admin") {
-    return NextResponse.next();
-  }
-
-  // Check beta access
-  if (!payload.betaAccess) {
-    // User exists but not a beta tester, send to waitlist
-    return NextResponse.redirect(new URL("/", request.url));
-  }
-
-  // Beta user: allow through (feature gating handled at component level)
   return NextResponse.next();
 }
 

@@ -3,12 +3,12 @@ import { Header } from "@/components/landing/Header";
 import { Footer } from "@/components/landing/Footer";
 import { HERO_SUBTITLE } from "@/components/landing/copy";
 import { landingFontClasses } from "@/components/landing/fonts";
-import { WaitlistPage } from "@/components/waitlist/WaitlistPage";
+import { LandingPage as Landing } from "@/components/landing/LandingPage";
 import { warnMissingShots } from "@/lib/screenshots";
 import "./landing.css";
 
 const TITLE = "Apperio: know which change broke production";
-const DESCRIPTION = `${HERO_SUBTITLE} Private beta.`;
+const DESCRIPTION = HERO_SUBTITLE;
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://www.apperio.dev"),
@@ -38,7 +38,9 @@ export default function LandingPage() {
   return (
     <div className={`landing ${landingFontClasses} relative min-h-screen`}>
       <Header />
-      <WaitlistPage />
+      <main>
+        <Landing />
+      </main>
       <Footer />
     </div>
   );

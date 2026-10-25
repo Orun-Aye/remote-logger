@@ -99,10 +99,9 @@ export default function IntroductionPage() {
 
       <DocH2 id="access">Getting access</DocH2>
       <DocP>
-        Apperio is in private beta. Join the waitlist on{" "}
-        <DocLink href="/">apperio.dev</DocLink>. Once your account has beta access, sign in
-        and create a project. An account without beta access is sent back to the waitlist
-        page when it opens the dashboard.
+        Anyone can sign up. <DocLink href="/signup">Create an account</DocLink> with your
+        email or GitHub, then create a project from the dashboard. No invite or credit card
+        is needed.
       </DocP>
       <DocCallout type="info" title="Beta features">
         Session replay and source map uploads work today but are still changing. Their pages

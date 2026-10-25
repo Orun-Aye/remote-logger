@@ -28,7 +28,7 @@ export default function QuickStartPage() {
     <DocPage slug="quickstart" toc={toc}>
       <DocH2 id="before-you-start">Before you start</DocH2>
       <DocP>
-        You need an Apperio account with beta access and a project. If you don’t have one
+        You need an Apperio account and a project. If you don’t have one
         yet, see <DocLink href="/docs/introduction#access">Getting access</DocLink>. Then, in
         the dashboard, create a project for the site or app you want to watch.
       </DocP>

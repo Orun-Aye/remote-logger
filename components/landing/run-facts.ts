@@ -1,11 +1,10 @@
 /**
- * Facts from the Demo Shop run that the landing copy quotes: the hero
- * headline, the incident timeline and the hero "last shipped" line.
+ * Facts from the Demo Shop run that the landing copy quotes in the hero
+ * headline.
  *
  * All from the run on Thursday 2026-10-08 (Africa/Lagos, UTC+1), project
  * "Coffee Kit Shop", repo Orun-Aye/apperio-demo-shop on branch demo-3, read
- * back from the API and the captures. Durations and the "eleven minutes
- * before" style phrases are computed from these times.
+ * back from the API and the captures.
  */
 export const RUN = {
   /** Day of the run, for "one Thursday night". */
@@ -34,42 +33,3 @@ export const RUN = {
   stackFile: "checkout.js",
 } as const;
 
-/**
- * Last thing shipped, for the hero line. Verified: apperio@1.5.0 (session
- * replay) was published to npm on 2026-09-29.
- * TODO(changelog): link to its /changelog entry once the backend's invented
- * seed entries are replaced with real ones.
- */
-export const LAST_SHIPPED = {
-  date: "2026-09-29",
-  item: "Session replay (beta) in apperio 1.5.0",
-};
-
-function toMinutes(hhmm: string): number {
-  const [h, m] = hhmm.split(":").map(Number);
-  return h * 60 + m;
-}
-
-export function minutesBetween(from: string, to: string): number {
-  return toMinutes(to) - toMinutes(from);
-}
-
-const ONES = [
-  "zero", "one", "two", "three", "four", "five", "six", "seven", "eight",
-  "nine", "ten", "eleven", "twelve", "thirteen", "fourteen", "fifteen",
-  "sixteen", "seventeen", "eighteen", "nineteen",
-];
-const TENS = ["", "", "twenty", "thirty", "forty", "fifty"];
-
-/** 0 to 59 in words, for copy like "Thirty-one minutes". */
-export function inWords(n: number): string {
-  if (n < 20) return ONES[n] ?? String(n);
-  if (n >= 60) return String(n);
-  const tens = TENS[Math.floor(n / 10)];
-  const ones = n % 10;
-  return ones ? `${tens}-${ONES[ones]}` : tens;
-}
-
-export function capitalise(s: string): string {
-  return s.charAt(0).toUpperCase() + s.slice(1);
-}

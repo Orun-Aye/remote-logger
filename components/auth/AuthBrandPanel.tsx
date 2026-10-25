@@ -57,7 +57,7 @@ export function AuthBrandPanel() {
         {/* Bottom */}
         <div className="flex items-center gap-3 text-xs text-text-muted">
           <span className="w-1.5 h-1.5 bg-signal rounded-full animate-pulse" />
-          Early Access Beta
+          Now open to everyone
         </div>
       </div>
     </div>

@@ -9,9 +9,7 @@ import { cn } from "@/lib/utils";
 
 const navItems = [
   { href: "#how-it-works", label: "How it works" },
-  { href: "#product", label: "Product" },
-  { href: "#build-log", label: "Build log" },
-  { href: "#faq", label: "FAQ" },
+  { href: "#features", label: "Features" },
   { href: "/docs", label: "Docs" },
 ];
 
@@ -80,8 +78,14 @@ export function Header() {
 
         <div className="hidden items-center gap-3 md:flex">
           <ThemeToggle />
+          <Link
+            href="/login"
+            className="text-sm text-text-secondary transition-colors duration-150 hover:text-text-primary"
+          >
+            Sign in
+          </Link>
           <Button variant="signal" size="sm" className="signal-fill shadow-none hover:translate-y-0" asChild>
-            <a href="#waitlist">Join waitlist</a>
+            <Link href="/signup">Start free</Link>
           </Button>
         </div>
 
@@ -114,13 +118,18 @@ export function Header() {
                 <ThemeToggle />
               </div>
               <Button
+                variant="outline"
+                className="w-full justify-center border-border-subtle"
+                asChild
+              >
+                <Link href="/login">Sign in</Link>
+              </Button>
+              <Button
                 variant="signal"
                 className="signal-fill w-full justify-center shadow-none hover:translate-y-0"
                 asChild
               >
-                <a href="#waitlist" onClick={() => setMobileOpen(false)}>
-                  Join waitlist
-                </a>
+                <Link href="/signup">Start free</Link>
               </Button>
             </div>
           </div>

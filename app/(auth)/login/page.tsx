@@ -168,21 +168,12 @@ export default function LoginPage() {
 
       <div className="text-center space-y-3 text-sm text-text-muted">
         <div>
-          Have an invite code?{" "}
+          New to Apperio?{" "}
           <Link
             href="/signup"
             className="text-signal hover:text-signal-bright font-medium transition-colors"
           >
             Create an account
-          </Link>
-        </div>
-        <div>
-          No invite yet?{" "}
-          <Link
-            href="/#waitlist"
-            className="text-signal hover:text-signal-bright font-medium transition-colors"
-          >
-            Join the waitlist
           </Link>
         </div>
       </div>

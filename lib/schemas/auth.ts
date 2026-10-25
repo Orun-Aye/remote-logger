@@ -3,11 +3,9 @@ import { z } from "zod";
 
 export const signUpSchema = z
   .object({
-    inviteCode: z
-      .string({
-        required_error: "An invite code is required for early access.",
-      })
-      .min(1, "An invite code is required for early access."),
+    // Not required since launch. An old invite link still fills it, so the
+    // backend can mark that waitlist entry as signed up.
+    inviteCode: z.string().optional(),
     firstName: z
       .string({
         required_error: "Everything has a name.",
