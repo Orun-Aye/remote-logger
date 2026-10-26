@@ -52,7 +52,7 @@ function Hero() {
   return (
     <section className="relative pt-16">
       <div className="mx-auto max-w-[1200px] px-4 pb-14 pt-16 sm:px-6 md:pb-20 md:pt-24">
-        <div className="max-w-3xl">
+        <div className="flex flex-col items-center text-center">
           <span className="mb-7 inline-flex items-center gap-2 rounded-full border border-border-subtle px-3 py-1 font-mono text-[11px] uppercase tracking-[0.12em] text-text-secondary">
             <span
               className="h-1.5 w-1.5 rounded-full bg-signal"
@@ -61,7 +61,7 @@ function Hero() {
             Now open to everyone
           </span>
 
-          <h1 className="text-balance font-display text-[clamp(34px,6vw,64px)] font-semibold leading-[1.04] tracking-[-0.035em] text-text-primary">
+          <h1 className="text-balance font-display text-[clamp(34px,6.4vw,76px)] font-semibold leading-[1.04] tracking-[-0.035em] text-text-primary">
             <span className="block">
               Your code shipped at{" "}
               <span className="tabular-nums">{RUN.commitTime}</span>.
@@ -83,7 +83,7 @@ function Hero() {
           </p>
 
           <div className="mt-9">
-            <StartButtons />
+            <StartButtons align="center" />
           </div>
 
           <p className="mt-5 text-xs text-text-muted">
